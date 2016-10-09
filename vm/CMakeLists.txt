@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 3.3)
 
+project(BufferVM)
+
+enable_language(ASM)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+
+#add_custom_target(bootloader bootloader.s)
 
 set(SOURCE_FILES main.c elf.c elf.h memory.c memory.h vm.c vm.h)
 add_executable(buffervm ${SOURCE_FILES})
 
-target_link_libraries(buffervm elf)
+add_dependencies(buffervm bootloader)
+target_link_libraries(buffervm bootloader elf)

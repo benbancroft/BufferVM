@@ -15,6 +15,8 @@
 #include "vm.h"
 #include "memory.h"
 
+extern const unsigned char code64[], code64_end[];
+
 void vm_init(struct vm_t *vm, size_t mem_size)
 {
     int api_ver;
@@ -151,19 +153,20 @@ void kvm_show_regs(struct vm_t *vm) {
 
 void fill_segment_descriptor(uint64_t *dt, struct kvm_segment *seg)
 {
+    uint16_t index = seg->selector >> 3;
     uint32_t limit = seg->g ? seg->limit >> 12 : seg->limit;
-    dt[seg->selector] = (limit & 0xffff) /* Limit bits 0:15 */
-                        | (seg->base & 0xffffff) << 16 /* Base bits 0:23 */
-                        | (uint64_t)seg->type << 40
-                        | (uint64_t)seg->s << 44 /* system or code/data */
-                        | (uint64_t)seg->dpl << 45 /* Privilege level */
-                        | (uint64_t)seg->present << 47
-                        | (limit & 0xf0000ULL) << 48 /* Limit bits 16:19 */
-                        | (uint64_t)seg->avl << 52 /* Available for system software */
-                        | (uint64_t)seg->l << 53 /* 64-bit code segment */
-                        | (uint64_t)seg->db << 54 /* 16/32-bit segment */
-                        | (uint64_t)seg->g << 55 /* 4KB granularity */
-                        | (seg->base & 0xff000000ULL) << 56; /* Base bits 24:31 */
+    dt[index] = (limit & 0xffff) /* Limit bits 0:15 */
+                | (seg->base & 0xffffff) << 16 /* Base bits 0:23 */
+                | (uint64_t)seg->type << 40
+                | (uint64_t)seg->s << 44 /* system or code/data */
+                | (uint64_t)seg->dpl << 45 /* Privilege level */
+                | (uint64_t)seg->present << 47
+                | (limit & 0xf0000ULL) << 48 /* Limit bits 16:19 */
+                | (uint64_t)seg->avl << 52 /* Available for system software */
+                | (uint64_t)seg->l << 53 /* 64-bit code segment */
+                | (uint64_t)seg->db << 54 /* 16/32-bit segment */
+                | (uint64_t)seg->g << 55 /* 4KB granularity */
+                | (seg->base & 0xff000000ULL) << 56; /* Base bits 24:31 */
 }
 
 static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs)
@@ -171,7 +174,6 @@ static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     struct kvm_segment seg = {
             .base = 0,
             .limit = 0xffffffff,
-            .selector = 1,
             .present = 1,
             .dpl = 0,
             .db = 1,
@@ -181,118 +183,90 @@ static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     };
     uint64_t *gdt;
 
-    //CR0_PE
-    sregs->cr0 |= 1; /* enter protected mode */
-    sregs->gdt.base = 4096;
+    sregs->cr0 |= CR0_PE; /* enter protected mode */
+    sregs->gdt.base = 0x1000;
     sregs->gdt.limit = 3 * 8 - 1;
 
     gdt = (void *)(vm->mem + sregs->gdt.base);
     /* gdt[0] is the null segment */
 
     seg.type = 11; /* Code: execute, read, accessed */
-    seg.selector = 1;
+    seg.selector = 1 << 3;
     fill_segment_descriptor(gdt, &seg);
     sregs->cs = seg;
 
     seg.type = 3; /* Data: read/write, accessed */
-    seg.selector = 2;
+    seg.selector = 2 << 3;
     fill_segment_descriptor(gdt, &seg);
-    sregs->cs = sregs->ds = sregs->es = sregs->fs = sregs->gs
+    sregs->ds = sregs->es = sregs->fs = sregs->gs
             = sregs->ss = seg;
 }
 
-/*void run_vm(struct vm_t *vm, uint64_t start_pointer) {
+static void setup_64bit_code_segment(struct vm_t *vm, struct kvm_sregs *sregs)
+{
+    struct kvm_segment seg = {
+            .base = 0,
+            .limit = 0xffffffff,
+            .selector = 3 << 3,
+            .present = 1,
+            .type = 11, /* Code: execute, read, accessed */
+            .dpl = 0,
+            .db = 0,
+            .s = 1, /* Code/data */
+            .l = 1,
+            .g = 1, /* 4KB granularity */
+    };
+    uint64_t *gdt = (void *)(vm->mem + sregs->gdt.base);
 
-    size_t mmap_size;
-    struct kvm_run *run;
+    sregs->gdt.limit = 4 * 8 - 1;
 
-    int ret;
+    fill_segment_descriptor(gdt, &seg);
+}
 
-    vm->vcpufd = ioctl(vm->vmfd, KVM_CREATE_VCPU, (unsigned long) 0);
-    if (vm->vcpufd == -1)
-        err(1, "KVM_CREATE_VCPU");
+static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
+{
+    uint64_t pml4_addr = 0x2000;
+    uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
 
-    // Map the shared kvm_run structure and following data.
-    ret = ioctl(vm->kvm, KVM_GET_VCPU_MMAP_SIZE, NULL);
-    if (ret == -1)
-        err(1, "KVM_GET_VCPU_MMAP_SIZE");
-    mmap_size = ret;
-    if (mmap_size < sizeof(*run))
-        errx(1, "KVM_GET_VCPU_MMAP_SIZE unexpectedly small");
-    run = mmap(NULL, mmap_size, PROT_READ | PROT_WRITE, MAP_SHARED, vm->vcpufd, 0);
-    if (!run)
-        err(1, "mmap vcpu");
+    uint64_t pdpt_addr = 0x3000;
+    uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
 
-    struct kvm_sregs sregs;
-    struct kvm_regs regs;
+    uint64_t pd_addr = 0x4000;
+    uint64_t *pd = (void *)(vm->mem + pd_addr);
 
-    printf("Testing protected mode\n");
+    pml4[0] = PDE64_PRESENT | PDE64_RW | PDE64_USER | pdpt_addr;
+    pdpt[0] = PDE64_PRESENT | PDE64_RW | PDE64_USER | pd_addr;
+    pd[0] = PDE64_PRESENT | PDE64_RW | PDE64_USER | PDE64_PS;
 
-    if (ioctl(vm->vcpufd, KVM_GET_SREGS, &sregs) < 0) {
-        perror("KVM_GET_SREGS");
-        exit(1);
-    }
+    sregs->cr3 = pml4_addr;
+    sregs->cr4 = CR4_PAE;
+    sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
+    sregs->efer = EFER_LME;
 
-    setup_protected_mode(vm, &sregs);
-
-    if (ioctl(vm->vcpufd, KVM_SET_SREGS, &sregs) < 0) {
-        perror("KVM_SET_SREGS");
-        exit(1);
-    }
-
-    memset(&regs, 0, sizeof(regs));
-    // Clear all FLAGS bits, except bit 1 which is always set.
-    regs.rflags = 2;
-    regs.rip = start_pointer-0x8048000;
-
-    ret = ioctl(vm->vcpufd, KVM_SET_REGS, &regs);
-    if (ret == -1)
-        err(1, "KVM_SET_REGS");
-
-    // Repeatedly run code and handle VM exits.
-    while (1) {
-        ret = ioctl(vm->vcpufd, KVM_RUN, NULL);
-        if (ret == -1)
-            err(1, "KVM_RUN");
-        switch (run->exit_reason) {
-            case KVM_EXIT_HLT:
-                puts("KVM_EXIT_HLT");
-                return 0;
-            case KVM_EXIT_IO:
-                if (run->io.direction == KVM_EXIT_IO_OUT && run->io.size == 1 && run->io.port == 0x3f8 &&
-                    run->io.count == 1)
-                    putchar(*(((char *) run) + run->io.data_offset));
-                else
-                    errx(1, "unhandled KVM_EXIT_IO");
-                break;
-            case KVM_EXIT_FAIL_ENTRY:
-                errx(1, "KVM_EXIT_FAIL_ENTRY: hardware_entry_failure_reason = 0x%llx",
-                     (unsigned long long) run->fail_entry.hardware_entry_failure_reason);
-                break;
-            case KVM_EXIT_INTERNAL_ERROR: {
-                kvm_show_regs(vm);
-
-                //printf("PC: %p", err_regs.rip);
-
-                errx(1, "KVM_EXIT_INTERNAL_ERROR: suberror = 0x%x", run->internal.suberror);
-            }
-                break;
-            default:
-                errx(1, "exit_reason = 0x%x", run->exit_reason);
-                break;
-        }
-    }
-}*/
+    /* We don't set cr0.pg here, because that causes a vm entry
+       failure. It's not clear why. Instead, we set it in the VM
+       code. */
+    setup_64bit_code_segment(vm, sregs);
+}
 
 int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz)
 {
     struct kvm_regs regs;
     uint64_t memval = 0;
 
-    memcpy(&memval, &vm->mem[get_physaddr(0xDEADBEEF, vm)], sz);
+    if (ioctl(vcpu->fd, KVM_GET_REGS, &regs) < 0) {
+        perror("KVM_GET_REGS");
+        exit(1);
+    }
 
+    if (regs.rax != 42) {
+        printf("Wrong result: {E,R,}AX is %lld\n", regs.rax);
+        return 0;
+    }
+
+    memcpy(&memval, &vm->mem[0x400], sz);
     if (memval != 42) {
-        printf("Wrong result: memory at 0xDEADBEEF is %lld\n",
+        printf("Wrong result: memory at 0x400 is %lld\n",
                (unsigned long long)memval);
         return 0;
     }
@@ -300,21 +274,7 @@ int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz)
     return 1;
 }
 
-static void setup_paged_32bit_mode(struct vm_t *vm, struct kvm_sregs *sregs)
-{
-
-    sregs->cr3 = pd_addr;
-    sregs->cr4 = CR4_PSE;
-    sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
-    //sregs->cr0 |= 0x80000000;
-    sregs->efer = 0;
-
-    /* We don't set cr0.pg here, because that causes a vm entry
-       failure. It's not clear why. Instead, we set it in the VM
-       code. */
-}
-
-void run_protected_mode(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
+void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
 {
     struct kvm_sregs sregs;
     struct kvm_regs regs;
@@ -347,7 +307,7 @@ void run_protected_mode(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_poi
     }
 
     setup_protected_mode(vm, &sregs);
-    setup_paged_32bit_mode(vm, &sregs);
+    setup_long_mode(vm, &sregs);
 
     //sregs.cr0 = 0x80000000;
 
@@ -359,14 +319,16 @@ void run_protected_mode(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_poi
     memset(&regs, 0, sizeof(regs));
     /* Clear all FLAGS bits, except bit 1 which is always set. */
     regs.rflags = 2;
-    regs.rip = entry_point;
-    regs.rsp = 0xc0000000;
+    regs.rip = 0;
+    //regs.rsp = 0xc0000000;
     //regs.rip = entry_point;
 
     if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
         perror("KVM_SET_REGS");
         exit(1);
     }
+
+    memcpy(vm->mem, code64, code64_end-code64);
 
     // Repeatedly run code and handle VM exits.
     while (1) {
@@ -426,6 +388,7 @@ void run_protected_mode(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_poi
                 }else{
                     printf("Instruction: %#04hhx\n", vm->mem[regs.rip]);
                     printf("MMIO Error: code = %d\n", vcpu->kvm_run->exit_reason);
+                    check(vm, vcpu, 4);
                     return;
                 }
 

@@ -94,6 +94,6 @@ int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz);
 
 static void setup_paged_32bit_mode(struct vm_t *vm, struct kvm_sregs *sregs);
 
-void run_protected_mode(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point);
+void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point);
 
 #endif //BUFFERVM_VM_H

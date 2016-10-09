@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
+
+project(ExampleProgram)
+
 enable_language(ASM)
 
 set(CMAKE_C_FLAGS "-g -w -m32 -nostdlib")
