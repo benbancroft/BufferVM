@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/buffervm.iml" filepath="$PROJECT_DIR$/.idea/buffervm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/BufferVM.iml" filepath="$PROJECT_DIR$/.idea/BufferVM.iml" />
     </modules>
   </component>
 </project>

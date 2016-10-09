@@ -1,9 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
-project(buffervm)
+cmake_minimum_required(VERSION 3.2)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+project(BufferVM)
 
-set(SOURCE_FILES main.c)
-add_executable(buffervm ${SOURCE_FILES})
-
-target_link_libraries(buffervm elf)
+add_subdirectory(vm)
+add_subdirectory(example-program)
