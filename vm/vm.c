@@ -15,7 +15,7 @@
 #include "vm.h"
 #include "memory.h"
 
-extern const unsigned char code64[], code64_end[];
+extern const unsigned char bootloader[], bootloader_end[];
 
 void vm_init(struct vm_t *vm, size_t mem_size)
 {
@@ -328,7 +328,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
         exit(1);
     }
 
-    memcpy(vm->mem, code64, code64_end-code64);
+    memcpy(vm->mem, bootloader, bootloader_end-bootloader);
 
     // Repeatedly run code and handle VM exits.
     while (1) {

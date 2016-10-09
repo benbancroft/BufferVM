@@ -7,8 +7,8 @@ project(bootloader ASM)
 set(SOURCE_FILES bootloader.s)
 add_library(bootloader.o OBJECT ${SOURCE_FILES})
 
-SET(BOOTLOADER_S_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/bootloader)
-SET(BOOTLOADER_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/bootloader.o)
+SET(BOOTLOADER_S_OBJECT ${CMAKE_BINARY_DIR}/bootloader/CMakeFiles/bootloader.o.dir/bootloader.s.o)
+SET(BOOTLOADER_OBJECT ${CMAKE_BINARY_DIR}/bootloader/bootloader.o)
 
 add_custom_command(OUTPUT ${BOOTLOADER_OBJECT}
         COMMAND ${CMAKE_C_LINK_EXECUTABLE} -T ${CMAKE_SOURCE_DIR}/bootloader/bootloader.ld ${BOOTLOADER_S_OBJECT} -o ${BOOTLOADER_OBJECT}

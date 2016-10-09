@@ -1,4 +1,4 @@
-        .global code64, code64_end
+        .global bootloader, bootloader_end
         .code32
 bootloader:
         // Set cr0.pg
