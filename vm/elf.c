@@ -110,9 +110,10 @@ void *image_load(int fd, struct vm_t *vm) {
             // Executable.
             flags = PROT_EXEC;
 
-        if (load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags, vm)) {
+        //TODO - re-enable
+        /*if (load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags, vm)) {
             return 0;
-        }
+        }*/
 
         printf("Loaded header at %p\n", taddr);
     }

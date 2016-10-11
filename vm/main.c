@@ -21,7 +21,7 @@ int main(int argc, char **argv, char **envp) {
     struct vm_t vm;
     struct vcpu_t vcpu;
 
-    vm_init(&vm, 0x100000);
+    vm_init(&vm, 0xFFF00000);
     vcpu_init(&vm, &vcpu);
 
     //char *entry_point = image_load(binary_fd, &vm);

@@ -225,18 +225,34 @@ static void setup_64bit_code_segment(struct vm_t *vm, struct kvm_sregs *sregs)
 
 static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
 {
-    uint64_t pml4_addr = 0x2000;
+    uint64_t pml4_addr = 0x1024000;
     uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
 
-    uint64_t pdpt_addr = 0x3000;
+    uint64_t pdpt_addr = 0x1025000;
     uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
 
-    uint64_t pd_addr = 0x4000;
+    uint64_t pd_addr = 0x1026000;
     uint64_t *pd = (void *)(vm->mem + pd_addr);
 
-    pml4[0] = PDE64_PRESENT | PDE64_RW | PDE64_USER | pdpt_addr;
-    pdpt[0] = PDE64_PRESENT | PDE64_RW | PDE64_USER | pd_addr;
-    pd[0] = PDE64_PRESENT | PDE64_RW | PDE64_USER | PDE64_PS;
+    uint64_t pd2_addr = 0x1027000;
+    uint64_t *pd2 = (void *)(vm->mem + pd2_addr);
+
+    uint64_t p_addr = 0;
+
+    /*for (size_t i = 0; i < 8; i++)
+        for (size_t j = 0; i < 64; j++)
+            pml4[i*8+j] = p_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;*/
+    for (size_t i = 0; i < 512; i++)
+        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+    pdpt[0] = pd_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+    pd[0] = pd2_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+    //pd[1] = pd2_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+    for (size_t i = 0; i < 2; i++) {
+        pd2[i] = p_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+        p_addr += 0x1000;
+    }
+    p_addr = 0x10000;
+    pd2[2] = p_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
 
     sregs->cr3 = pml4_addr;
     sregs->cr4 = CR4_PAE;
@@ -264,7 +280,7 @@ int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz)
         return 0;
     }
 
-    memcpy(&memval, &vm->mem[0x400], sz);
+    memcpy(&memval, &vm->mem[0x10000], sz);
     if (memval != 42) {
         printf("Wrong result: memory at 0x400 is %lld\n",
                (unsigned long long)memval);
@@ -281,9 +297,14 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
 
     uint32_t physical_addr = 0x10000 + page_counter++ * 0x1000;
 
-    //int magic = 21;
+    int magic = 21;
 
-    //memcpy(vm->mem+physical_addr, magic, sizeof(magic));
+    *(vm->mem+physical_addr) = magic;
+    printf("Page: %p\n", *(vm->mem+physical_addr));
+
+    //memcpy(vm->mem+physical_addr, magic, sizeof(int));
+
+    build_page_tables(vm);
 
     //map_address_space(0xDEADB000, physical_addr, vm);
     //map_address_space(0xC0DED000, physical_addr, vm);
@@ -329,6 +350,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
     }
 
     memcpy(vm->mem, bootloader, bootloader_end-bootloader);
+    printf("Loaded bootloader: %d\n", bootloader_end-bootloader);
 
     // Repeatedly run code and handle VM exits.
     while (1) {
@@ -386,7 +408,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
 
                     }
                 }else{
-                    printf("Instruction: %#04hhx\n", vm->mem[regs.rip]);
+                    printf("Instruction: %#04hhx Addr: %p\n", vm->mem[regs.rip], regs.rip);
                     printf("MMIO Error: code = %d\n", vcpu->kvm_run->exit_reason);
                     check(vm, vcpu, 4);
                     return;
