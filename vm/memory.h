@@ -40,11 +40,8 @@ uint64_t allocate_page(struct vm_t *vm, bool zero_page);
 
 uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t page, struct vm_t *vm);
 
-/**
-start_addr should be page aligned
-*/
-int load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm);
+void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm);
 
-void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, size_t num_pages, struct vm_t *vm);
+void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, uint64_t flags, size_t num_pages, struct vm_t *vm);
 
 #endif //BUFFERVM_MEMORY_H

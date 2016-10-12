@@ -46,15 +46,10 @@
 #define EFER_LMA (1 << 10)
 #define EFER_NXE (1 << 11)
 
-/* 32-bit page directory entry bits */
-#define PDE32_PRESENT 1
-#define PDE32_RW (1 << 1)
-#define PDE32_USER (1 << 2)
-#define PDE32_PS (1 << 7)
-
 /* 64-bit page * entry bits */
 #define PDE64_PRESENT 1
 #define PDE64_RW (1 << 1)
+#define PDE64_NO_EXE (1 << 63)
 #define PDE64_USER (1 << 2)
 #define PDE64_WRITE_MEM (1 << 3)
 #define PDE64_DISABLE_CACHE (1 << 4)

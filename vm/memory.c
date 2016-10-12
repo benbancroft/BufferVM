@@ -46,30 +46,25 @@ int32_t get_physaddr(uint32_t virtualaddr, struct vm_t *vm)
 /**
 start_addr should be page aligned
 */
-/*int load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm) {
+void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm) {
 
     for (uint32_t i = start_addr; i < start_addr + mem_size; i += 0x1000) {
 
-        uint32_t physical_addr = 0x10000 + page_counter++ * 0x1000;
+        uint64_t phy_addr = allocate_page(vm, false);
 
-        memset(vm->mem + physical_addr, 0x0, mem_size);
-        memcpy(vm->mem + physical_addr, elf_seg_start, elf_seg_size);
+        memset(vm->mem + phy_addr, 0x0, mem_size);
+        memcpy(vm->mem + phy_addr, elf_seg_start, elf_seg_size);
 
-        map_address_space(i, physical_addr, vm);
-
+        map_physical_page(i, phy_addr, flags, 1, vm);
     }
-
-
-    return 0;
-}*/
+}
 
 //TODO - make this better
 uint64_t allocate_page(struct vm_t *vm, bool zero_page){
     uint64_t new_page = (page_counter++)*0x1000;
 
     if (zero_page)
-        for (size_t i = 0; i < 0x1000; i++)
-                vm->mem[new_page+i] = 0;
+        memset(vm->mem + new_page, 0x0, 0x1000);
 
 
     return new_page;
@@ -98,7 +93,7 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
     return table[index] & 0xFFFFFFFFFFF000;
 }
 
-void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, size_t num_pages, struct vm_t *vm) {
+void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, uint64_t flags, size_t num_pages, struct vm_t *vm) {
 
     //TODO - num_pages: painful algorithm needed. Could also look at option to use bigger pages for large allocation?
 
@@ -115,5 +110,5 @@ void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, 
     uint64_t pd2_addr = map_page_entry(pd, info.pg_dir_offset, 0, PAGE_CREATE, vm);
     uint64_t *pd2 = (void *)(vm->mem + pd2_addr);
 
-    map_page_entry(pd2, info.pg_tbl_offset, 0, physical_page_addr, vm);
+    map_page_entry(pd2, info.pg_tbl_offset, flags, physical_page_addr, vm);
 }

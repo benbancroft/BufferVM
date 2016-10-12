@@ -24,45 +24,45 @@ _start:
 	call main
 
 	# exit
-	movl $1, %eax
-	xorl %ebx, %ebx
-	int $0x80
+	movq $60, %rax
+	xorq %rbx, %rbx
+	syscall
 
 read:
-	push    %ebp            # create stack frame
-    movl    %esp, %ebp
+	push    %rbp            # create stack frame
+    movq    %rsp, %rbp
 
-    movl    16(%ebp),%edx    # third argument: message length.
-    movl    12(%ebp),%ecx   # second argument: pointer to message to write.
-    movl    8(%ebp),%ebx	# first argument: file handle.
-    movl    $3,%eax	        # system call number (read).
-    int     $0x80           # call kernel.
+    # third argument: message length.
+    # second argument: pointer to message to write.
+    # first argument: file handle.
+    movq    $0,%rax	        # system call number (read).
+    syscall                 # call kernel.
 
-	pop     %ebp            # restore the base pointer
-	movl	%edx, %eax
+	pop     %rbp            # restore the base pointer
+	# return already in rax
 	ret
 
 write:
-	push    %ebp            # create stack frame
-    movl    %esp, %ebp
+	push    %rbp            # create stack frame
+    movq    %rsp, %rbp
 
-    movl    16(%ebp),%edx    # third argument: message length.
-    movl    12(%ebp),%ecx   # second argument: pointer to message to write.
-    movl    8(%ebp),%ebx	# first argument: file handle.
-    movl    $4,%eax	        # system call number (sys_write).
-    int     $0x80           # call kernel.
+    # third argument: message length.
+    # second argument: pointer to message to write.
+    # first argument: file handle.
+    movq    $1,%rax	        # system call number (sys_write).
+    syscall                 # call kernel.
 
-	pop     %ebp            # restore the base pointer
-	movl	%edx, %eax
+	pop     %rbp            # restore the base pointer
+	# return already in rax
 	ret
 
 _brk:
-	push    %ebp            # create stack frame
-    movl    %esp, %ebp
+	push    %rbp            # create stack frame
+    movq    %rsp, %rbp
 
-    movl    8(%ebp),%ebx	# first argument: file handle (stdout).
-    movl    $45,%eax	# system call number (sys_brk).
-    int     $0x80           # call kernel.
+    # first argument: file handle (stdout).
+    movq    $12,%rax	    # system call number (sys_brk).
+    syscall                 # call kernel.*/
 
-	pop     %ebp            # restore the base pointer
+	pop     %rbp            # restore the base pointer
 	ret

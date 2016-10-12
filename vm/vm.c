@@ -229,12 +229,12 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
 {
     build_page_tables(vm);
 
-    map_physical_page(0x0000, 0x0000, 1, vm);
-    map_physical_page(0x1000, 0x1000, 1, vm);
+    map_physical_page(0x0000, 0x0000, 0, 1, vm);
+    map_physical_page(0x1000, 0x1000, 0, 1, vm);
 
     my_page = allocate_page(vm, true);
     //printf("my page");
-    map_physical_page(0x0000000000002000, my_page, 1, vm);
+    map_physical_page(0x0000000000002000, my_page, 0, 1, vm);
 
     sregs->cr3 = pml4_addr;
     sregs->cr4 = CR4_PAE;
@@ -277,26 +277,18 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
-    uint32_t physical_addr = 0x10000 + page_counter++ * 0x1000;
-
-    int magic = 21;
-
-    *(vm->mem+physical_addr) = magic;
-    printf("Page: %p\n", *(vm->mem+physical_addr));
-
     //memcpy(vm->mem+physical_addr, magic, sizeof(int));
 
     //map_address_space(0xDEADB000, physical_addr, vm);
     //map_address_space(0xC0DED000, physical_addr, vm);
 
     //allocate 50 stack pages
-    /*for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
+    for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
 
-        uint32_t physical_addr = 0x10000 + page_counter++ * 0x1000;
+        uint64_t phy_addr = allocate_page(vm, false);
 
-        map_address_space(i, physical_addr, vm);
-
-    }*/
+        map_physical_page(i, phy_addr, PDE64_NO_EXE, 1, vm);
+    }
 
     int ret;
 

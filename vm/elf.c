@@ -104,16 +104,13 @@ void *image_load(int fd, struct vm_t *vm) {
 
         if (!(phdr.p_flags & PF_W))
             //Read only.
-            flags = PROT_READ;
+            flags = PDE64_RW;
 
-        if (phdr.p_flags & PF_X)
+        if (!(phdr.p_flags & PF_X))
             // Executable.
-            flags = PROT_EXEC;
+            flags = PDE64_NO_EXE;
 
-        //TODO - re-enable
-        /*if (load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags, vm)) {
-            return 0;
-        }*/
+        load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags, vm);
 
         printf("Loaded header at %p\n", taddr);
     }
