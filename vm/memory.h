@@ -11,44 +11,40 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <memory.h>
 
 #include "vm.h"
 
 
-typedef struct __attribute__ ((packed)){
+typedef struct {
     uint32_t version;
     uint32_t pg_dir_ptr_offset;
     uint32_t pg_dir_offset;
     uint32_t pg_tbl_offset;
     uint32_t phys_offset;
-}pointer_info, *p_pointer_info;
-
-typedef struct {
-    uint64_t pml4e;
-    uint64_t pdpe;
-    uint64_t pde;
-    uint64_t pte;
-} page_table_info_t;
+} virt_addr_info_t;
 
 extern uint32_t pd_addr;
 extern uint32_t pt_start_addr;
-extern uint32_t page_counter;
-extern page_table_info_t page_table_info;
+extern uint64_t page_counter;
+extern uint64_t pml4_addr;
 
-pointer_info mm_virtaddrtopageindex(unsigned long addr);
+virt_addr_info_t get_virt_addr_info(uint64_t addr);
 
 int32_t get_physaddr(uint32_t virtualaddr, struct vm_t *vm);
 
-page_table_info_t build_page_tables(struct vm_t *vm);
+void build_page_tables(struct vm_t *vm);
 
-void *map_page_entry(uint64_t *table, size_t index, uint64_t address, uint64_t flags);
+uint64_t allocate_page(struct vm_t *vm, bool zero_page);
+
+uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t page, struct vm_t *vm);
 
 /**
 start_addr should be page aligned
 */
 int load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm);
 
-//int map_address_space(uint64_t virtual_addr, uint64_t physical_addr, struct vm_t *vm);
+void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, size_t num_pages, struct vm_t *vm);
 
 #endif //BUFFERVM_MEMORY_H

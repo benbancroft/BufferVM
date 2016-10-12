@@ -14,6 +14,6 @@ bootloader:
 1:
         movabsq $42, %rbx
         movq %rbx, 0x0000000000002000
-        movq 0x0000100000002000, %rax
+        movq 0x100000002000, %rax
         hlt
 bootloader_end:

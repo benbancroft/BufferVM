@@ -63,6 +63,8 @@
 #define PDE64_PS (1 << 7)
 #define PDE64_G (1 << 8)
 
+#define PAGE_CREATE -1
+
 #define ALIGN(x, y) (((x)+(y)-1) & ~((y)-1))
 
 struct vm_t {

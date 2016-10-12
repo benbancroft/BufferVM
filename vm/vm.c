@@ -17,6 +17,8 @@
 
 extern const unsigned char bootloader[], bootloader_end[];
 
+uint64_t my_page;
+
 void vm_init(struct vm_t *vm, size_t mem_size)
 {
     int api_ver;
@@ -225,34 +227,14 @@ static void setup_64bit_code_segment(struct vm_t *vm, struct kvm_sregs *sregs)
 
 static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
 {
-    uint64_t pml4_addr = 0x1024000;
-    uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
+    build_page_tables(vm);
 
-    uint64_t pdpt_addr = 0x1025000;
-    uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
+    map_physical_page(0x0000, 0x0000, 1, vm);
+    map_physical_page(0x1000, 0x1000, 1, vm);
 
-    uint64_t pd_addr = 0x1026000;
-    uint64_t *pd = (void *)(vm->mem + pd_addr);
-
-    uint64_t pd2_addr = 0x1027000;
-    uint64_t *pd2 = (void *)(vm->mem + pd2_addr);
-
-    uint64_t p_addr = 0;
-
-    /*for (size_t i = 0; i < 8; i++)
-        for (size_t j = 0; i < 64; j++)
-            pml4[i*8+j] = p_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;*/
-    for (size_t i = 0; i < 512; i++)
-        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
-    pdpt[0] = pd_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
-    pd[0] = pd2_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
-    //pd[1] = pd2_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
-    for (size_t i = 0; i < 2; i++) {
-        pd2[i] = p_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
-        p_addr += 0x1000;
-    }
-    p_addr = 0x10000;
-    pd2[2] = p_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+    my_page = allocate_page(vm, true);
+    //printf("my page");
+    map_physical_page(0x0000000000002000, my_page, 1, vm);
 
     sregs->cr3 = pml4_addr;
     sregs->cr4 = CR4_PAE;
@@ -280,7 +262,7 @@ int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz)
         return 0;
     }
 
-    memcpy(&memval, &vm->mem[0x10000], sz);
+    memcpy(&memval, &vm->mem[my_page], sz);
     if (memval != 42) {
         printf("Wrong result: memory at 0x400 is %lld\n",
                (unsigned long long)memval);
@@ -303,8 +285,6 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
     printf("Page: %p\n", *(vm->mem+physical_addr));
 
     //memcpy(vm->mem+physical_addr, magic, sizeof(int));
-
-    build_page_tables(vm);
 
     //map_address_space(0xDEADB000, physical_addr, vm);
     //map_address_space(0xC0DED000, physical_addr, vm);
