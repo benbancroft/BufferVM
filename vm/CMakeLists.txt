@@ -5,6 +5,7 @@ project(BufferVM)
 enable_language(ASM)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+#set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror" )
 
 #add_custom_target(bootloader bootloader.s)
 

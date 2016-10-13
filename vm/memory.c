@@ -63,7 +63,7 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
     size_t size_left_mem = mem_size;
     size_t size_left_elf = elf_seg_size;
 
-    for (uint32_t p = start_addr, i = 0; p < start_addr + mem_size; p += 0x1000, i += 0x1000) {
+    for (uint64_t p = start_addr, i = 0; p < start_addr + mem_size; p += 0x1000, i += 0x1000) {
 
         uint64_t phy_addr = allocate_page(vm, false);
 

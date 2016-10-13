@@ -1,4 +1,4 @@
-#include "stdlib.h"
+#include "../libc/stdlib.h"
 
 static int numbers[] = {5, 7, 11, 13, 6};
 

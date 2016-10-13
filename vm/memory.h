@@ -18,11 +18,11 @@
 
 
 typedef struct {
-    uint32_t version;
-    uint32_t pg_dir_ptr_offset;
-    uint32_t pg_dir_offset;
-    uint32_t pg_tbl_offset;
-    uint32_t phys_offset;
+    uint64_t version;
+    uint64_t pg_dir_ptr_offset;
+    uint64_t pg_dir_offset;
+    uint64_t pg_tbl_offset;
+    uint64_t phys_offset;
 } virt_addr_info_t;
 
 extern uint32_t pd_addr;

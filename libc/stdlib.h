@@ -1,5 +1,5 @@
-#ifndef STDLIB_D
-#define STDLIB_D
+#ifndef STDLIB_H
+#define STDLIB_H
 
 #define NULL 0
 
@@ -28,13 +28,12 @@ typedef __builtin_va_list __isoc_va_list; /* wchar.h */
 #define va_arg(v,l)     __builtin_va_arg(v,l)
 #define va_copy(d,s) __builtin_va_copy(d,s)
 
-#define va_end(ap)	((void)0)
-
 extern int write(int file, const void *buffer, size_t count);
 extern size_t read(int fd, void *buffer, size_t length);
 
 int fgetc(int fd);
 void memcpy(void *dest, void *src, size_t n);
+void *memset(void *dest, int src, size_t n);
 int puts(const char *string);
 void putchar(char c);
 char *convert(uint64_t num, size_t base);

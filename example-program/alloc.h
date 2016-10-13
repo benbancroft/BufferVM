@@ -1,7 +1,7 @@
 #ifndef ALLOC_D
 #define ALLOC_D
 
-#include "stdlib.h"
+#include "../libc/stdlib.h"
 #include "sbrk.h"
 
 /* titel: malloc()/free()-Paar nach K&R 2, p.185ff */

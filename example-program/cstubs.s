@@ -1,9 +1,4 @@
-.data
-hello:
-    .string "Hello world!\n"
-
 .text
-.globl _start
 .globl read
 .globl write
 .globl _brk
@@ -11,13 +6,6 @@ hello:
 .type write, @function
 .type _brk, @function
 
-_start:
-	call main
-
-	# exit
-	movq $60, %rax
-	xorq %rdi, %rdi
-	syscall
 
 read:
 	push    %rbp            # create stack frame

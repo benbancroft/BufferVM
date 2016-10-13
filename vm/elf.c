@@ -112,7 +112,7 @@ void *image_load(int fd, struct vm_t *vm) {
 
         load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags, vm);
 
-        printf("Loaded header at %p\n", taddr);
+        printf("Loaded header at %p of size: %d\n", taddr, phdr.p_memsz);
     }
 
     GElf_Shdr shdr;

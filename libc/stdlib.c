@@ -10,6 +10,14 @@ void memcpy(void *dest, void *src, size_t n) {
         cdest[i] = csrc[i];
 }
 
+void *memset(void *dest, int src, size_t n)
+{
+    size_t i;
+    for (i = 0; i < n; i++)
+        ((unsigned char *)dest)[i] = src;
+    return dest;
+}
+
 int puts(const char *str) {
     int i = 0;
     while (str[i]) {
