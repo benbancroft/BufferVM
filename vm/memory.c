@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <memory.h>
+#include <assert.h>
 
 #include "memory.h"
 
@@ -26,21 +27,32 @@ virt_addr_info_t get_virt_addr_info(uint64_t addr){
     return pginf;
 }
 
-int32_t get_physaddr(uint32_t virtualaddr, struct vm_t *vm)
+int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, struct vm_t *vm)
 {
-    /*pageinfo pginf = mm_virtaddrtopageindex(virtualaddr); // get the PDE and PTE indexes for the addr
+    uint64_t page_addr;
 
-    uint32_t *pd = (void *)(vm->mem + pd_addr);
-    uint32_t *pt = (void *)(vm->mem + pt_start_addr);
+    virt_addr_info_t info = get_virt_addr_info(virtual_addr);
 
-    if(pd[pginf.pagetable] & 1){
-        // page table exists.
-        uint32_t *page_physical = (void *)(vm->mem + (pd[pginf.pagetable] & 0xFFFFF000));
+    uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
 
-        return (page_physical[pginf.page] & 0xFFFFF000) + pginf.offset;
-    }*/
+    if (!get_page_entry(pml4, 0, &page_addr, vm))
+        return 0;
 
-    return 0;
+    uint64_t *pdpt = (void *)(vm->mem + page_addr);
+    if (!get_page_entry(pdpt, info.pg_dir_ptr_offset, &page_addr, vm))
+        return 0;
+
+    uint64_t *pd = (void *)(vm->mem + page_addr);
+    if (!get_page_entry(pd, info.pg_dir_offset, &page_addr, vm))
+        return 0;
+
+    uint64_t *pd2 = (void *)(vm->mem + page_addr);
+    if (!get_page_entry(pd2, info.pg_tbl_offset, &page_addr, vm))
+        return 0;
+
+    *phys_addr = page_addr + info.phys_offset;
+
+    return 1;
 }
 
 /**
@@ -48,14 +60,21 @@ start_addr should be page aligned
 */
 void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm) {
 
-    for (uint32_t i = start_addr; i < start_addr + mem_size; i += 0x1000) {
+    size_t size_left_mem = mem_size;
+    size_t size_left_elf = elf_seg_size;
+
+    for (uint32_t p = start_addr, i = 0; p < start_addr + mem_size; p += 0x1000, i += 0x1000) {
 
         uint64_t phy_addr = allocate_page(vm, false);
 
-        memset(vm->mem + phy_addr, 0x0, mem_size);
-        memcpy(vm->mem + phy_addr, elf_seg_start, elf_seg_size);
+        memset(vm->mem + phy_addr, 0x0, size_left_mem < 0x1000 ? mem_size : 0x1000);
+        memcpy(vm->mem + phy_addr, elf_seg_start+i, size_left_elf < 0x1000 ? size_left_elf : 0x1000);
 
-        map_physical_page(i, phy_addr, flags, 1, vm);
+        printf("Loaded page: %p %p, %#04hhx\n", p, phy_addr, vm->mem[phy_addr+0xc0a]);
+        map_physical_page(p, phy_addr, flags, 1, vm);
+
+        size_left_mem -= 0x1000;
+        size_left_elf -= 0x1000;
     }
 }
 
@@ -79,6 +98,15 @@ void build_page_tables(struct vm_t *vm){
 
     for (size_t i = 0; i < 512; i++)
         pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+}
+
+int get_page_entry(uint64_t *table, size_t index, uint64_t *page, struct vm_t *vm) {
+
+    if (table[index] & PDE64_PRESENT) {
+        *page = table[index] & 0xFFFFFFFFFFF000;
+        return 1;
+    } else
+        return 0;
 }
 
 uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t page, struct vm_t *vm){

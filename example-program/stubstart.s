@@ -12,20 +12,11 @@ hello:
 .type _brk, @function
 
 _start:
-
-	#movl %cr0, %eax
-	#orl 0x80000000, %eax
-    #movl %eax, %cr0
-
-	#movl $42, %eax
-    #movl %eax, 0xDEADB000
-    #hlt
-
 	call main
 
 	# exit
 	movq $60, %rax
-	xorq %rbx, %rbx
+	xorq %rdi, %rdi
 	syscall
 
 read:

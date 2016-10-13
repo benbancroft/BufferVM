@@ -32,7 +32,8 @@ extern uint64_t pml4_addr;
 
 virt_addr_info_t get_virt_addr_info(uint64_t addr);
 
-int32_t get_physaddr(uint32_t virtualaddr, struct vm_t *vm);
+int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, struct vm_t *vm);
+int get_page_entry(uint64_t *table, size_t index, uint64_t *page, struct vm_t *vm);
 
 void build_page_tables(struct vm_t *vm);
 

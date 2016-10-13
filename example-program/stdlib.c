@@ -23,7 +23,7 @@ void putchar(char c) {
     (void) write(1, &c, 1);
 }
 
-char *convert(unsigned int num, int base) {
+char *convert(uint64_t num, size_t base) {
     static const char num_chars[] = "0123456789ABCDEF";
     static char buffer[50];
     char *ptr;
@@ -79,6 +79,11 @@ void printf(char *format, ...) {
                     break;
                 case 'x':
                     i = va_arg(arg, unsigned int); //hexadecimal
+                    puts(convert(i, 16));
+                    break;
+                case 'p':
+                    i = va_arg(arg, uint64_t); //pointer
+                    puts("0x");
                     puts(convert(i, 16));
                     break;
             }

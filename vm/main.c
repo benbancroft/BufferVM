@@ -24,19 +24,15 @@ int main(int argc, char **argv, char **envp) {
     vm_init(&vm, 0xFFF00000);
     vcpu_init(&vm, &vcpu);
 
-    char *entry_point = image_load(binary_fd, &vm);
-
-    //close(binary_fd);
-
-    printf("Entry point: %p, physical addr: %p\n", entry_point, get_physaddr(entry_point, &vm));
-
     //printf("Main addr: %p\n", get_physaddr(0x804881e, &vm));
 
-    run(&vm, &vcpu, NULL/*get_physaddr(entry_point, &vm)*/);
+    run(&vm, &vcpu, binary_fd);
     //run_long_mode(&vm, &vcpu);
     //run_long_mode(&vm, &vcpu);
 
     //run_vm(&vm, ptr);
+
+    close(binary_fd);
 
     return 0;
 }

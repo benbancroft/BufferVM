@@ -14,6 +14,7 @@
 
 #include "vm.h"
 #include "memory.h"
+#include "elf.h"
 
 extern const unsigned char bootloader[], bootloader_end[];
 
@@ -232,9 +233,9 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     map_physical_page(0x0000, 0x0000, 0, 1, vm);
     map_physical_page(0x1000, 0x1000, 0, 1, vm);
 
-    my_page = allocate_page(vm, true);
+    //my_page = allocate_page(vm, true);
     //printf("my page");
-    map_physical_page(0x0000000000002000, my_page, 0, 1, vm);
+    //map_physical_page(0x0000000000002000, my_page, 0, 1, vm);
 
     sregs->cr3 = pml4_addr;
     sregs->cr4 = CR4_PAE;
@@ -272,23 +273,10 @@ int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz)
     return 1;
 }
 
-void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
+void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
 {
     struct kvm_sregs sregs;
     struct kvm_regs regs;
-
-    //memcpy(vm->mem+physical_addr, magic, sizeof(int));
-
-    //map_address_space(0xDEADB000, physical_addr, vm);
-    //map_address_space(0xC0DED000, physical_addr, vm);
-
-    //allocate 50 stack pages
-    for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
-
-        uint64_t phy_addr = allocate_page(vm, false);
-
-        map_physical_page(i, phy_addr, PDE64_NO_EXE, 1, vm);
-    }
 
     int ret;
 
@@ -309,10 +297,24 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
         exit(1);
     }
 
+    void *entry_point = image_load(binary_fd, vm);
+    printf("Entry point: %p\n", entry_point);
+
+    //allocate 50 stack pages
+    for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
+
+        uint64_t phy_addr = allocate_page(vm, false);
+
+        map_physical_page(i, phy_addr, PDE64_NO_EXE, 1, vm);
+    }
+
+    printf("Jump %#04hhx\n", vm->mem[0x400c0a]);
+
     memset(&regs, 0, sizeof(regs));
     /* Clear all FLAGS bits, except bit 1 which is always set. */
     regs.rflags = 2;
     regs.rip = 0;
+    regs.rbx = entry_point;
     //regs.rsp = 0xc0000000;
     //regs.rip = entry_point;
 
@@ -331,7 +333,8 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
             err(1, "KVM_RUN");
         switch (vcpu->kvm_run->exit_reason) {
             case KVM_EXIT_IO:
-                if (vcpu->kvm_run->io.direction == KVM_EXIT_IO_OUT && vcpu->kvm_run->io.size == 1 && vcpu->kvm_run->io.port == 0x3f8 &&
+                if (vcpu->kvm_run->io.direction == KVM_EXIT_IO_OUT && vcpu->kvm_run->io.size == 1 &&
+                    vcpu->kvm_run->io.port == 0x3f8 &&
                     vcpu->kvm_run->io.count == 1)
                     putchar(*(((char *) vcpu->kvm_run) + vcpu->kvm_run->io.data_offset));
                 else
@@ -360,29 +363,50 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, uint64_t entry_point)
 
                 //add page table mapping in future
                 //check for interupt
-                if (vm->mem[regs.rip] == (char)0xCD && vm->mem[regs.rip+1] == (char)0x80){
 
-                    printf("Syscall at Instr: %p\n", regs.rip);
+                uint64_t rip_phys;
+                uint64_t rip_phys_second;
+                uint64_t syscall_arg_phys;
+                if (get_phys_addr(regs.rip, &rip_phys, vm) && (rip_phys_second+1 % 0x1000 != 0 &&
+                        (rip_phys_second = rip_phys + 1) || get_phys_addr(regs.rip+1, &rip_phys_second, vm))){
+                    if (vm->mem[rip_phys] == (char) 0x0F && vm->mem[rip_phys_second] == (char) 0x05) {
 
-                    //syscall(regs.rax, regs.rbx, vm->mem+regs.rcx, regs.rdx);
-                    //
+                        //printf("Syscall at Instr: %p\n", regs.rip);
 
-                    switch((int)regs.rax){
-                        //Exit
-                        case 1:
-                            printf("Exit syscall\n");
-                            check(vm, vcpu, 4);
-                            return;
-                        case 4:
-                            //printf("Write - buffer: %p, phys: %d, sp: %p\n", regs.rcx, get_physaddr(regs.rcx, vm), regs.rsp);
-                            write(regs.rbx, vm->mem + get_physaddr(regs.rcx, vm), regs.rdx);
-                            break;
+                        //syscall(regs.rax, regs.rbx, vm->mem+regs.rcx, regs.rdx);
+                        //
 
+                        switch (regs.rax) {
+                            //Exit
+                            case 60:
+                                printf("Exit syscall\n");
+                                check(vm, vcpu, 4);
+                                return;
+                            case 0:
+                                if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm)){
+                                    //printf("Write - buffer: %p, phys: %d, sp: %p\n", regs.rsi, syscall_arg_phys, vm, regs.rsp);
+                                    read(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);
+                                }
+                                break;
+                            case 1:
+                                if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm)){
+                                    //printf("Write - buffer: %p, phys: %d, sp: %p\n", regs.rsi, syscall_arg_phys, vm, regs.rsp);
+                                    write(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);
+                                }
+                                break;
+                            default:
+                                printf("Unsupported syscall %d\n", regs.rax);
+                                break;
+
+                        }
+                    } else {
+                        printf("Instruction: %#04hhx Virt Addr: %p, Phys Addr: %p\n", vm->mem[rip_phys], regs.rip, rip_phys);
+                        printf("MMIO Error\n");
+                        check(vm, vcpu, 4);
+                        return;
                     }
                 }else{
-                    printf("Instruction: %#04hhx Addr: %p\n", vm->mem[regs.rip], regs.rip);
-                    printf("MMIO Error: code = %d\n", vcpu->kvm_run->exit_reason);
-                    check(vm, vcpu, 4);
+                    printf("MMIO Error: Cannot resolve RIP page");
                     return;
                 }
 
