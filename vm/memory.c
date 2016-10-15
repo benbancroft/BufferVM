@@ -12,7 +12,7 @@
 
 uint32_t pd_addr = 0xFFEFF000;
 uint32_t pt_start_addr = 0xFFB00000;
-//reserve first few pages for bootloader
+//reserve first few pages for bootstrap
 uint64_t page_counter = 5;
 uint64_t pml4_addr;
 

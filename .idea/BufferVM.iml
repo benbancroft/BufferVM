@@ -23,8 +23,6 @@
       <sourceFolder url="file://$MODULE_DIR$/libc/stdlib.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/stdlib.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/bootloader/bootloader.s" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/bootloader/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/main.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/elf.h" isTestSource="false" />
@@ -33,6 +31,8 @@
       <sourceFolder url="file://$MODULE_DIR$/vm/memory.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/bootstrap/bootstrap.s" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/bootstrap/CMakeLists.txt" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

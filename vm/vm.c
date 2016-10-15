@@ -16,7 +16,7 @@
 #include "memory.h"
 #include "elf.h"
 
-extern const unsigned char bootloader[], bootloader_end[];
+extern const unsigned char bootstrap[], bootstrap_end[];
 
 uint64_t my_page;
 
@@ -323,8 +323,8 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
         exit(1);
     }
 
-    memcpy(vm->mem, bootloader, bootloader_end-bootloader);
-    printf("Loaded bootloader: %d\n", bootloader_end-bootloader);
+    memcpy(vm->mem, bootstrap, bootstrap_end-bootstrap);
+    printf("Loaded bootstrap: %d\n", bootstrap_end-bootstrap);
 
     // Repeatedly run code and handle VM exits.
     while (1) {

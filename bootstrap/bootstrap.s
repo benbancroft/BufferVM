@@ -1,6 +1,6 @@
-        .global bootloader, bootloader_end
+        .global bootstrap, bootstrap_end
         .code32
-bootloader:
+bootstrap:
 
         // Set cr0.pg
         movl %cr0, %eax
@@ -15,4 +15,4 @@ bootloader:
         movq $0xc0000000, %rsp
 
         jmp *%rbx
-bootloader_end:
+bootstrap_end:
