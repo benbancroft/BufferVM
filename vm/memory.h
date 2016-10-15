@@ -18,6 +18,9 @@
 
 #define PAGE_SIZE 0x1000
 
+#define P2ALIGN(x, align)    ((x) & -(align))
+#define P2ROUNDUP(x, align) (-(-(x) & -(align)))
+
 typedef struct {
     uint64_t version;
     uint64_t pg_dir_ptr_offset;

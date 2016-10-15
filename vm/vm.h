@@ -83,8 +83,6 @@ static void print_dt(FILE *file, const char *name, struct kvm_dtable *dt);
 
 void kvm_show_regs(struct vm_t *vm);
 
-void fill_segment_descriptor(uint64_t *dt, struct kvm_segment *seg);
-
 static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs);
 
 /*void run_vm(struct vm_t *vm, uint64_t start_pointer);*/

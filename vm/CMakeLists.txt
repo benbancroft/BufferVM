@@ -9,7 +9,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
 #add_custom_target(bootstrap bootstrap.s)
 
-set(SOURCE_FILES main.c elf.c elf.h memory.c memory.h vm.c vm.h)
+set(SOURCE_FILES main.c elf.c elf.h memory.c memory.h vm.c vm.h gdt.c gdt.h)
 add_executable(buffervm ${SOURCE_FILES})
 
 add_dependencies(buffervm bootstrap)

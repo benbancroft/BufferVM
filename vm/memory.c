@@ -120,7 +120,7 @@ void build_page_tables(struct vm_t *vm){
     uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
 
     for (size_t i = 0; i < 512; i++)
-        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW;
 }
 
 int get_page_entry(uint64_t *table, size_t index, uint64_t *page, struct vm_t *vm) {
@@ -136,10 +136,10 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
 
     if (page == PAGE_CREATE) {
         if (!(table[index] & PDE64_PRESENT)) {
-            table[index] = PDE64_PRESENT | PDE64_RW | PDE64_USER | flags | allocate_page(vm, true);
+            table[index] = PDE64_PRESENT | PDE64_RW | flags | allocate_page(vm, true);
         }
     }else
-        table[index] = PDE64_PRESENT | PDE64_RW | PDE64_USER | flags | (page & 0xFFFFFFFFFFF000);
+        table[index] = PDE64_PRESENT | PDE64_RW | flags | (page & 0xFFFFFFFFFFF000);
 
     return table[index] & 0xFFFFFFFFFFF000;
 }

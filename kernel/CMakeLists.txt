@@ -8,7 +8,7 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffreestanding -mcmodel=large -nostdlib -lg
 
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--build-id=none -T${PROJECT_SOURCE_DIR}/kernel.ld" )
 
-set(SOURCE_FILES start.s c/kernel.c asm/host.s c/idt.c asm/idt.s c/cstubs.c c/gdt.c asm/gdt.s)
+set(SOURCE_FILES start.s c/kernel.c asm/host.s c/idt.c asm/idt.s asm/page_fault.s c/cstubs.c)
 add_executable(kernel ${SOURCE_FILES})
 
 target_link_libraries(kernel c)

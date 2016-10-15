@@ -7,6 +7,10 @@
 # define EOF (-1)
 #endif
 
+#define	false	0
+#define	true	1
+#define	bool	_Bool
+
 typedef char int8_t;
 typedef unsigned char uint8_t;
 typedef short int16_t;
@@ -17,8 +21,8 @@ typedef long long int64_t;
 typedef unsigned long long uint64_t;
 
 typedef uint64_t size_t;
-typedef int32_t intptr_t;
-typedef uint32_t uintptr_t;
+typedef int64_t intptr_t;
+typedef uint64_t uintptr_t;
 
 typedef __builtin_va_list va_list;
 typedef __builtin_va_list __isoc_va_list; /* wchar.h */

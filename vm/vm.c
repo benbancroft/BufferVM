@@ -15,6 +15,7 @@
 #include "vm.h"
 #include "memory.h"
 #include "elf.h"
+#include "gdt.h"
 
 extern const unsigned char bootstrap[], bootstrap_end[];
 
@@ -154,25 +155,7 @@ void kvm_show_regs(struct vm_t *vm) {
             sregs.efer);
 }
 
-void fill_segment_descriptor(uint64_t *dt, struct kvm_segment *seg)
-{
-    uint16_t index = seg->selector >> 3;
-    uint32_t limit = seg->g ? seg->limit >> 12 : seg->limit;
-    dt[index] = (limit & 0xffff) /* Limit bits 0:15 */
-                | (seg->base & 0xffffff) << 16 /* Base bits 0:23 */
-                | (uint64_t)seg->type << 40
-                | (uint64_t)seg->s << 44 /* system or code/data */
-                | (uint64_t)seg->dpl << 45 /* Privilege level */
-                | (uint64_t)seg->present << 47
-                | (limit & 0xf0000ULL) << 48 /* Limit bits 16:19 */
-                | (uint64_t)seg->avl << 52 /* Available for system software */
-                | (uint64_t)seg->l << 53 /* 64-bit code segment */
-                | (uint64_t)seg->db << 54 /* 16/32-bit segment */
-                | (uint64_t)seg->g << 55 /* 4KB granularity */
-                | (seg->base & 0xff000000ULL) << 56; /* Base bits 24:31 */
-}
-
-static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs)
+static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
 {
     struct kvm_segment seg = {
             .base = 0,
@@ -186,12 +169,27 @@ static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     };
     uint64_t *gdt;
 
+    build_page_tables(vm);
+
+    //Page for bootstrap
+    map_physical_page(0x0000, 0x0000, 0, 1, vm);
+    //Page for gdt
+    map_physical_page(0x1000, 0x1000, 0, 1, vm);
+
+    //map_physical_page(0xDEADB000, allocate_page(vm, false), 0, 1, vm);
+
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = 0x1000;
-    sregs->gdt.limit = 3 * 8 - 1;
+    sregs->cr3 = pml4_addr;
+    sregs->cr4 = CR4_PAE;
+    sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
+    sregs->efer = EFER_LME;
 
     gdt = (void *)(vm->mem + sregs->gdt.base);
     /* gdt[0] is the null segment */
+
+    //32-bit code segments
+    sregs->gdt.limit = 3 * 8 - 1;
 
     seg.type = 11; /* Code: execute, read, accessed */
     seg.selector = 1 << 3;
@@ -203,74 +201,15 @@ static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     fill_segment_descriptor(gdt, &seg);
     sregs->ds = sregs->es = sregs->fs = sregs->gs
             = sregs->ss = seg;
-}
 
-static void setup_64bit_code_segment(struct vm_t *vm, struct kvm_sregs *sregs)
-{
-    struct kvm_segment seg = {
-            .base = 0,
-            .limit = 0xffffffff,
-            .selector = 3 << 3,
-            .present = 1,
-            .type = 11, /* Code: execute, read, accessed */
-            .dpl = 0,
-            .db = 0,
-            .s = 1, /* Code/data */
-            .l = 1,
-            .g = 1, /* 4KB granularity */
-    };
-    uint64_t *gdt = (void *)(vm->mem + sregs->gdt.base);
-
+    //64-bit code segments
     sregs->gdt.limit = 4 * 8 - 1;
 
+    seg.type = 11; /* Code: execute, read, accessed */
+    seg.selector = 3 << 3;
+    seg.db = 0;
+    seg.l = 1;
     fill_segment_descriptor(gdt, &seg);
-}
-
-static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
-{
-    build_page_tables(vm);
-
-    map_physical_page(0x0000, 0x0000, 0, 1, vm);
-    map_physical_page(0x1000, 0x1000, 0, 1, vm);
-
-    //my_page = allocate_page(vm, true);
-    //printf("my page");
-    //map_physical_page(0x0000000000002000, my_page, 0, 1, vm);
-
-    sregs->cr3 = pml4_addr;
-    sregs->cr4 = CR4_PAE;
-    sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
-    sregs->efer = EFER_LME;
-
-    /* We don't set cr0.pg here, because that causes a vm entry
-       failure. It's not clear why. Instead, we set it in the VM
-       code. */
-    setup_64bit_code_segment(vm, sregs);
-}
-
-int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz)
-{
-    struct kvm_regs regs;
-    uint64_t memval = 0;
-
-    if (ioctl(vcpu->fd, KVM_GET_REGS, &regs) < 0) {
-        perror("KVM_GET_REGS");
-        exit(1);
-    }
-
-    if (regs.rax != 42) {
-        printf("Wrong result: {E,R,}AX is %lld\n", regs.rax);
-        return 0;
-    }
-
-    memcpy(&memval, &vm->mem[my_page], sz);
-    if (memval != 42) {
-        printf("Wrong result: memory at 0x400 is %lld\n",
-               (unsigned long long)memval);
-        return 0;
-    }
-
-    return 1;
 }
 
 void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
@@ -287,7 +226,6 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
         exit(1);
     }
 
-    setup_protected_mode(vm, &sregs);
     setup_long_mode(vm, &sregs);
 
     //sregs.cr0 = 0x80000000;
@@ -368,7 +306,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
                     //Exit
                     case 0:
                         printf("Exit syscall\n");
-                        check(vm, vcpu, 4);
+                        /*if (read_virtual_addr(regs.rsi, regs.rsp-8, buffer, vm)){
+
+                        }*/
                         return;
                     case 1:
                         {
@@ -411,7 +351,6 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
                 return;
             default:
                 printf("Other exit: code = %d\n", vcpu->kvm_run->exit_reason);
-                check(vm, vcpu, 4);
                 return;
         }
         continue;

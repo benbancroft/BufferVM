@@ -1,7 +1,10 @@
 .section .text
-	.global idt_flush
-	.type idt_flush, @function
-	idt_flush:
-		mov 4(%esp), %eax
-		lidt (%eax)
+	.global idt_load
+	.global idt_null_handler
+	.type idt_load, @function
+	.type idt_null_handler, @function
+	idt_load:
+		lidt (%rdi)
         ret
+    idt_null_handler:
+        iretq

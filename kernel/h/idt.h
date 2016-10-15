@@ -7,27 +7,34 @@
 
 #include "../../libc/stdlib.h"
 
-extern void idt_flush(uint32_t);
+#define IDT_MAX 256
 
 struct idt_entry
 {
-    uint16_t base_lo;
-    uint16_t sel;
-    uint8_t always0;
+    uint16_t handler_low;
+    uint16_t selector;
+    uint8_t ist;
     uint8_t flags;
-    uint16_t base_hi;
+    uint16_t handler_medium;
+    uint32_t handler_high;
+    uint32_t zero;
 } __attribute__((packed));
 
-struct idt_ptr
+struct idtr
 {
     uint16_t limit;
-    uint32_t base;
+    uintptr_t base;
 } __attribute__((packed));
 
-struct idt_entry idt[256];
-struct idt_ptr idtptr;
+static struct idt_entry idt[IDT_MAX];
+static struct idtr idtr;
 
-void idt_initialize();
-void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
+extern void idt_null_handler(void);
+extern void idt_page_fault_handler(void);
+
+extern void idt_load(uint64_t idtr);
+
+void idt_init(bool bsp);
+void idt_set_gate(uint8_t num, uint64_t handler, uint8_t dpl);
 
 #endif //KERNEL_IDT_H
