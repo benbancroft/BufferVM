@@ -8,7 +8,6 @@ SECTIONS
 
     .text : AT(ADDR(.text) - KERNEL_VMA)
     {
-        _code = .;
         *(.text)
         *(.rodata*)
         . = ALIGN(4096);

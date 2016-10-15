@@ -16,6 +16,7 @@
 
 #include "vm.h"
 
+#define PAGE_SIZE 0x1000
 
 typedef struct {
     uint64_t version;
@@ -30,6 +31,7 @@ extern uint32_t pt_start_addr;
 extern uint64_t page_counter;
 extern uint64_t pml4_addr;
 
+int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, struct vm_t *vm);
 virt_addr_info_t get_virt_addr_info(uint64_t addr);
 
 int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, struct vm_t *vm);

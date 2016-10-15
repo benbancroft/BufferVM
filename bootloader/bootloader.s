@@ -14,7 +14,5 @@ bootloader:
 1:
         movq $0xc0000000, %rsp
 
-        jmp %rbx
-
-        hlt
+        jmp *%rbx
 bootloader_end:

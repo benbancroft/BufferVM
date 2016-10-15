@@ -10,19 +10,35 @@ void memcpy(void *dest, void *src, size_t n) {
         cdest[i] = csrc[i];
 }
 
-void *memset(void *dest, int src, size_t n)
+void *memset(void *dest, int c, size_t n)
 {
-    size_t i;
-    for (i = 0; i < n; i++)
-        ((unsigned char *)dest)[i] = src;
-    return dest;
+    if (n != 0) {
+        char *sp = dest;
+        do {
+            *sp++ = (char)c;
+        } while (--n != 0);
+    }
+    return (dest);
+}
+
+size_t strlen(const char *str)
+{
+    if (!str) {
+        return 0;
+    }
+
+    char *ptr = str;
+    while (*str) {
+        ++str;
+    }
+
+    return str - ptr;
 }
 
 int puts(const char *str) {
     int i = 0;
-    while (str[i]) {
-        putchar(str[i++]);
-    }
+    while (str[i++]);
+    write(1, str, i);
 
     return 1;
 }
@@ -49,17 +65,18 @@ char *convert(uint64_t num, size_t base) {
 
 
 void printf(char *format, ...) {
-    char *traverse;
-    unsigned int i;
+    char *traverse, *start;
+    unsigned int i = 0;
     char *s;
 
     va_list arg;
     va_start(arg, format);
 
-    for (traverse = format; *traverse != '\0'; traverse++) {
+    for (start = traverse = format; *traverse != '\0'; traverse++) {
         if (*traverse != '%') {
-            putchar(*traverse);
+            i++;
         } else {
+            write(1, start, i);
             traverse++;
 
             switch (*traverse) {
@@ -95,8 +112,11 @@ void printf(char *format, ...) {
                     puts(convert(i, 16));
                     break;
             }
+            start = traverse + 1;
+            i = 0;
         }
     }
+    write(1, start, i);
 
     va_end(arg);
 }

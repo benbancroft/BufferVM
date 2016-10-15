@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include <assert.h>
+#include <unistd.h>
 
 #include "memory.h"
 
@@ -25,6 +26,28 @@ virt_addr_info_t get_virt_addr_info(uint64_t addr){
     pginf.version = (addr & 0x0000ff8000000000) >> 39;
 
     return pginf;
+}
+
+int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, struct vm_t *vm){
+
+    uint64_t phys_addr;
+    size_t page_bytes;
+    size_t bytes_read = 0;
+    size_t bytes_left = size;
+
+    while (bytes_left > 0){
+        if (!get_phys_addr(virtual_addr + bytes_read, &phys_addr, vm)) return 0;
+
+        page_bytes = PAGE_SIZE - ((virtual_addr + bytes_read) % PAGE_SIZE);
+        if (page_bytes > bytes_left) page_bytes = bytes_left;
+
+        memcpy(buffer + bytes_read, vm->mem + phys_addr, page_bytes);
+
+        bytes_read += page_bytes;
+        bytes_left -= page_bytes;
+    }
+
+    return 1;
 }
 
 int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, struct vm_t *vm)

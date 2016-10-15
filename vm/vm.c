@@ -352,9 +352,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
                 errx(1, "KVM_EXIT_INTERNAL_ERROR: suberror = 0x%x", vcpu->kvm_run->internal.suberror);
             }
                 break;
-            case KVM_EXIT_SHUTDOWN:
-                /*errx(1, "KVM_EXIT_FAIL_ENTRY: hardware_entry_failure_reason = 0x%llx",
-                     (unsigned long long) vcpu->kvm_run->fail_entry.hardware_entry_failure_reason);*/
+            case KVM_EXIT_HLT:
 
                 if (ioctl(vcpu->fd, KVM_GET_REGS, &regs) < 0) {
                     perror("KVM_GET_REGS");
@@ -364,53 +362,36 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
                 //add page table mapping in future
                 //check for interupt
 
-                uint64_t rip_phys;
-                uint64_t rip_phys_second;
                 uint64_t syscall_arg_phys;
-                if (get_phys_addr(regs.rip, &rip_phys, vm) && (rip_phys_second+1 % 0x1000 != 0 &&
-                        (rip_phys_second = rip_phys + 1) || get_phys_addr(regs.rip+1, &rip_phys_second, vm))){
-                    if (vm->mem[rip_phys] == (char) 0x0F && vm->mem[rip_phys_second] == (char) 0x05) {
 
-                        //printf("Syscall at Instr: %p\n", regs.rip);
-
-                        //syscall(regs.rax, regs.rbx, vm->mem+regs.rcx, regs.rdx);
-                        //
-
-                        switch (regs.rax) {
-                            //Exit
-                            case 60:
-                                printf("Exit syscall\n");
-                                check(vm, vcpu, 4);
-                                return;
-                            case 0:
-                                if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm)){
-                                    //printf("Write - buffer: %p, phys: %d, sp: %p\n", regs.rsi, syscall_arg_phys, vm, regs.rsp);
-                                    read(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);
-                                }
-                                break;
-                            case 1:
-                                if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm)){
-                                    //printf("Write - buffer: %p, phys: %d, sp: %p\n", regs.rsi, syscall_arg_phys, vm, regs.rsp);
-                                    write(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);
-                                }
-                                break;
-                            default:
-                                printf("Unsupported syscall %d\n", regs.rax);
-                                break;
-
-                        }
-                    } else {
-                        printf("Instruction: %#04hhx Virt Addr: %p, Phys Addr: %p\n", vm->mem[rip_phys], regs.rip, rip_phys);
-                        printf("MMIO Error\n");
+                switch (regs.rax) {
+                    //Exit
+                    case 0:
+                        printf("Exit syscall\n");
                         check(vm, vcpu, 4);
                         return;
-                    }
-                }else{
-                    printf("MMIO Error: Cannot resolve RIP page");
-                    return;
-                }
+                    case 1:
+                        {
+                            char buffer[regs.rdx];
+                            if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm)){
+                                regs.rax = write(regs.rdi, buffer, regs.rdx);
+                            }else{
+                                printf("Failed to write - Un-paged buffer?\n");
+                            }
+                        }
+                        break;
+                    case 2:
+                        if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm)){
+                            //printf("Read - buffer: %p, phys: %d, sp: %p\n", regs.rsi, syscall_arg_phys, vm, regs.rsp);
+                            //Handle page boundary!
+                            regs.rax = read(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);
+                        }
+                        break;
+                    default:
+                        printf("Unsupported syscall %d\n", regs.rax);
+                        break;
 
-                regs.rip += 2;
+                }
 
                 if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
                     perror("KVM_SET_REGS");
@@ -419,9 +400,15 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
 
                 break;
             case KVM_EXIT_MMIO:
-                printf("MMIO Error: code = %d\n", vcpu->kvm_run->exit_reason);
-                break;
-            case KVM_EXIT_HLT:
+            case KVM_EXIT_SHUTDOWN:
+
+                if (ioctl(vcpu->fd, KVM_GET_REGS, &regs) < 0) {
+                    perror("KVM_GET_REGS");
+                    exit(1);
+                }
+
+                printf("MMIO Error: code = %d, PC: %p\n", vcpu->kvm_run->exit_reason, regs.rip);
+                return;
             default:
                 printf("Other exit: code = %d\n", vcpu->kvm_run->exit_reason);
                 check(vm, vcpu, 4);

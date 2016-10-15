@@ -9,10 +9,10 @@
 
 typedef char int8_t;
 typedef unsigned char uint8_t;
-typedef int int16_t;
-typedef unsigned int uint16_t;
-typedef long int32_t;
-typedef unsigned long uint32_t;
+typedef short int16_t;
+typedef unsigned short uint16_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
 
@@ -34,6 +34,7 @@ extern size_t read(int fd, void *buffer, size_t length);
 int fgetc(int fd);
 void memcpy(void *dest, void *src, size_t n);
 void *memset(void *dest, int src, size_t n);
+size_t strlen(const char *str);
 int puts(const char *string);
 void putchar(char c);
 char *convert(uint64_t num, size_t base);

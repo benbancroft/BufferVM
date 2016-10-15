@@ -3,4 +3,4 @@
 _start:
     movq $0xc0000000, %rsp
 	call kernel_main
-	hlt
+	call host_exit

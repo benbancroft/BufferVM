@@ -4,7 +4,7 @@ project(libc)
 
 enable_language(ASM)
 
-set(CMAKE_C_FLAGS "-g -w -m64 -nostdlib")
+set(CMAKE_C_FLAGS "-g -w -m64 -nostdlib -mcmodel=large")
 
 set(SOURCE_FILES stdlib.c)
 add_library(c STATIC ${SOURCE_FILES})
