@@ -9,10 +9,10 @@ bootstrap:
 
         // We are now in ia32e compatibility mode. Switch to 64-bit
 	    // code segment
-        ljmp $(3 << 3), $1f
+        ljmp $0x10, $1f
         .code64
 1:
         movq $0xc0000000, %rsp
 
-        jmp *%rbx
+        jmp *%rdi
 bootstrap_end:

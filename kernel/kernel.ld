@@ -1,6 +1,6 @@
 ENTRY(_start)
 
-KERNEL_VMA = 0xffffffff80000000;
+KERNEL_VMA = 0xffffffffc0000000;
 
 SECTIONS
 {

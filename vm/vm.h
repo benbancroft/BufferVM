@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#define TSS_START 0xfffbd000
+
 /* CR0 bits */
 #define CR0_PE 1
 #define CR0_MP (1 << 1)
@@ -61,6 +63,25 @@
 #define PAGE_CREATE -1
 
 #define ALIGN(x, y) (((x)+(y)-1) & ~((y)-1))
+
+typedef struct tss_entry {
+    uint32_t prev_tss;
+    uint64_t rsp0;
+    uint64_t rsp1;
+    uint64_t rsp2;
+    uint64_t reserve2;
+    uint64_t ist1;
+    uint64_t ist2;
+    uint64_t ist3;
+    uint64_t ist4;
+    uint64_t ist5;
+    uint64_t ist6;
+    uint64_t ist7;
+    uint64_t reserve3;
+    uint16_t reserve4;
+    uint16_t iomap_base;
+} __attribute__ ((packed))
+tss_entry_t;
 
 struct vm_t {
     int sys_fd;

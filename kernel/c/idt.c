@@ -1,6 +1,7 @@
 #include <linux/types.h>
 #include "../h/idt.h"
 #include "../h/host.h"
+#include "../h/kernel.h"
 
 static void idt_unhandled(void)
 {
@@ -28,7 +29,7 @@ void idt_set_gate(uint8_t num, uint64_t handler, uint8_t dpl)
         idt[num].handler_high = (handler >> 32) & 0xFFFFFFFF;
 
         /* Set the ISR's code segment selector */
-        idt[num].selector = 3 << 3;
+        idt[num].selector = KERNEL_CS;
         idt[num].ist = 0;
         idt[num].zero = 0;
 
@@ -44,10 +45,11 @@ void idt_init(bool bsp)
 
     size_t i;
     for (i = 0; i < IDT_MAX; ++i) {
-        idt_set_gate(i, (uintptr_t) &idt_unhandled, 0x0);
+        idt_set_gate(i, (uintptr_t) &idt_null_handler, 0x0);
     }
 
     idt_set_gate(14, (uintptr_t) &idt_page_fault_handler, 0x0);
+    idt_set_gate(0x0D, (uintptr_t) &idt_gpf_handler, 0x0);
     //idt_set_gate(&idt[13], (uintptr_t) &idt_fault_gp, 0x8, 0x0);
 
     /* Running on the bootstrap processor */

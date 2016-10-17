@@ -110,7 +110,7 @@ void *image_load(int fd, struct vm_t *vm) {
             // Executable.
             flags = PDE64_NO_EXE;
 
-        load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags, vm);
+        load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags | PDE64_USER, vm);
 
         printf("Loaded header at %p of size: %d\n", taddr, phdr.p_memsz);
     }

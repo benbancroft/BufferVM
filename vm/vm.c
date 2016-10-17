@@ -50,11 +50,6 @@ void vm_init(struct vm_t *vm, size_t mem_size)
         exit(1);
     }
 
-    if (ioctl(vm->fd, KVM_SET_TSS_ADDR, 0xfffbd000) < 0) {
-        perror("KVM_SET_TSS_ADDR");
-        exit(1);
-    }
-
     vm->mem = mmap(NULL, mem_size, PROT_READ | PROT_WRITE,
                    MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
     if (vm->mem == MAP_FAILED) {
@@ -82,6 +77,11 @@ void vcpu_init(struct vm_t *vm, struct vcpu_t *vcpu)
     vcpu->fd = ioctl(vm->fd, KVM_CREATE_VCPU, 0);
     if (vcpu->fd < 0) {
         perror("KVM_CREATE_VCPU");
+        exit(1);
+    }
+
+    if (ioctl(vm->fd, KVM_SET_TSS_ADDR, TSS_START) < 0) {
+        perror("KVM_SET_TSS_ADDR");
         exit(1);
     }
 
@@ -176,7 +176,11 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     //Page for gdt
     map_physical_page(0x1000, 0x1000, 0, 1, vm);
 
-    //map_physical_page(0xDEADB000, allocate_page(vm, false), 0, 1, vm);
+    //map 3 pages required for TSS
+    for (uint64_t p = TSS_START; p < TSS_START+3*PAGE_SIZE; p += PAGE_SIZE)
+        map_physical_page(p, 0x2000+(p-TSS_START), 0, 1, vm);
+
+    map_physical_page(0xDEADB000, allocate_page(vm, false),  PDE64_USER, 1, vm);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = 0x1000;
@@ -188,27 +192,56 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     gdt = (void *)(vm->mem + sregs->gdt.base);
     /* gdt[0] is the null segment */
 
-    //32-bit code segments
+    //32-bit code segment - needed for bootstrap
     sregs->gdt.limit = 3 * 8 - 1;
 
     seg.type = 11; /* Code: execute, read, accessed */
-    seg.selector = 1 << 3;
+    seg.selector = 0x08;
     fill_segment_descriptor(gdt, &seg);
     sregs->cs = seg;
 
-    seg.type = 3; /* Data: read/write, accessed */
-    seg.selector = 2 << 3;
-    fill_segment_descriptor(gdt, &seg);
-    sregs->ds = sregs->es = sregs->fs = sregs->gs
-            = sregs->ss = seg;
-
-    //64-bit code segments
-    sregs->gdt.limit = 4 * 8 - 1;
-
-    seg.type = 11; /* Code: execute, read, accessed */
-    seg.selector = 3 << 3;
-    seg.db = 0;
+    //64-bit stuff
+    sregs->gdt.limit = 8 * 8 - 1;
     seg.l = 1;
+
+    //64-bit kernel code segment
+    seg.type = 11; /* Code: execute, read, accessed */
+    seg.selector = 0x10;
+    seg.db = 0;
+    fill_segment_descriptor(gdt, &seg);
+
+    //64-bit kernel data segment
+    seg.type = 3; /* Data: read/write, accessed */
+    seg.selector = 0x18;
+    fill_segment_descriptor(gdt, &seg);
+
+    sregs->ds = sregs->es = sregs->fs = sregs->gs = sregs->ss = seg;
+
+    //64-bit user code segment
+    seg.dpl = 3;
+    seg.type = 11; /* Code: execute, read, accessed */
+    seg.selector = 0x20;
+    seg.db = 0;
+    fill_segment_descriptor(gdt, &seg);
+
+    //64-bit user data segment
+    seg.type = 3; /* Data: read/write, accessed */
+    seg.selector = 0x28;
+    fill_segment_descriptor(gdt, &seg);
+
+    //TSS segment
+
+    seg.selector = 0x30;
+    seg.limit = sizeof (tss_entry_t);
+    seg.base = TSS_START;
+    seg.type = 9;
+    seg.s = 0;
+    seg.dpl = 3;
+    seg.present = 1;
+    seg.avl = 0;
+    seg.l = 0;
+    seg.db = 0;
+    seg.g = 0;
     fill_segment_descriptor(gdt, &seg);
 }
 
@@ -238,23 +271,37 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
     void *entry_point = image_load(binary_fd, vm);
     printf("Entry point: %p\n", entry_point);
 
-    //allocate 50 stack pages
+    //allocate 50 stack pages for user stack
     for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
+
+        uint64_t phy_addr = allocate_page(vm, false);
+
+        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_USER, 1, vm);
+    }
+
+    //allocate 50 stack pages for kernel stack
+    //TODO - make this use secton in elf binary?
+    for (uint32_t i = 0xc0014000; i > 0xc0014000 - 0x50000; i -= 0x1000) {
 
         uint64_t phy_addr = allocate_page(vm, false);
 
         map_physical_page(i, phy_addr, PDE64_NO_EXE, 1, vm);
     }
 
-    printf("Jump %#04hhx\n", vm->mem[0x400c0a]);
-
     memset(&regs, 0, sizeof(regs));
     /* Clear all FLAGS bits, except bit 1 which is always set. */
     regs.rflags = 2;
+    //bootstrap entry
     regs.rip = 0;
-    regs.rbx = entry_point;
-    //regs.rsp = 0xc0000000;
-    //regs.rip = entry_point;
+    //kernel entry
+    regs.rdi = entry_point;
+    //user entry
+    regs.rsi = 0xDEADBEEF;
+    //kernel stack
+    regs.rdx = 0xc0014000;
+    regs.rsp = 0xc0014000;
+    //user stack
+    regs.rcx = 0xc000000;
 
     if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
         perror("KVM_SET_REGS");

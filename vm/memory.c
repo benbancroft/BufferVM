@@ -120,7 +120,7 @@ void build_page_tables(struct vm_t *vm){
     uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
 
     for (size_t i = 0; i < 512; i++)
-        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW;
+        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
 }
 
 int get_page_entry(uint64_t *table, size_t index, uint64_t *page, struct vm_t *vm) {
@@ -137,6 +137,8 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
     if (page == PAGE_CREATE) {
         if (!(table[index] & PDE64_PRESENT)) {
             table[index] = PDE64_PRESENT | PDE64_RW | flags | allocate_page(vm, true);
+        }else {
+            table[index] |= flags;
         }
     }else
         table[index] = PDE64_PRESENT | PDE64_RW | flags | (page & 0xFFFFFFFFFFF000);
@@ -152,13 +154,13 @@ void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, 
 
     uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
 
-    uint64_t pdpt_addr = map_page_entry(pml4, 0, 0, PAGE_CREATE, vm);
+    uint64_t pdpt_addr = map_page_entry(pml4, 0, PDE64_USER, PAGE_CREATE, vm);
     uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
 
-    uint64_t pd_addr = map_page_entry(pdpt, info.pg_dir_ptr_offset, 0, PAGE_CREATE, vm);
+    uint64_t pd_addr = map_page_entry(pdpt, info.pg_dir_ptr_offset, PDE64_USER, PAGE_CREATE, vm);
     uint64_t *pd = (void *)(vm->mem + pd_addr);
 
-    uint64_t pd2_addr = map_page_entry(pd, info.pg_dir_offset, 0, PAGE_CREATE, vm);
+    uint64_t pd2_addr = map_page_entry(pd, info.pg_dir_offset, PDE64_USER, PAGE_CREATE, vm);
     uint64_t *pd2 = (void *)(vm->mem + pd2_addr);
 
     map_page_entry(pd2, info.pg_tbl_offset, flags, physical_page_addr, vm);
