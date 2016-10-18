@@ -49,6 +49,7 @@ void idt_init(bool bsp)
     }
 
     idt_set_gate(14, (uintptr_t) &idt_page_fault_handler, 0x0);
+    idt_set_gate(6, (uintptr_t) &idt_null_handler, 0x0);
     idt_set_gate(0x0D, (uintptr_t) &idt_gpf_handler, 0x0);
     //idt_set_gate(&idt[13], (uintptr_t) &idt_fault_gp, 0x8, 0x0);
 

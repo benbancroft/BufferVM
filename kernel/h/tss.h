@@ -30,6 +30,6 @@ tss_entry_t* tss;
 
 extern void tss_load(void);
 
-void tss_init(uintptr_t kernel_stack);
+void tss_init(uint64_t kernel_stack);
 
 #endif //PROJECT_TSS_H

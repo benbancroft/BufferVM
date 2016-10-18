@@ -180,7 +180,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     for (uint64_t p = TSS_START; p < TSS_START+3*PAGE_SIZE; p += PAGE_SIZE)
         map_physical_page(p, 0x2000+(p-TSS_START), 0, 1, vm);
 
-    map_physical_page(0xDEADB000, allocate_page(vm, false),  PDE64_USER, 1, vm);
+    map_physical_page(0xDEADB000, allocate_page(vm, false),  0/*PDE64_USER*/, 1, vm);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = 0x1000;

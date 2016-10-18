@@ -28,8 +28,8 @@ void *sbrk(intptr_t increment) {
         return __curbrk;
 
     oldbrk = __curbrk;
-    if ((increment > 0 ? ((uintptr_t) oldbrk + (uintptr_t) increment < (uintptr_t) oldbrk) : ((uintptr_t) oldbrk <
-                                                                                              (uintptr_t) -increment)) ||
+    if ((increment > 0 ? ((size_t) oldbrk + (size_t) increment < (size_t) oldbrk) : ((size_t) oldbrk <
+                                                                                              (size_t) -increment)) ||
         brk(oldbrk + increment) < 0)
         return (void *) -1;
 

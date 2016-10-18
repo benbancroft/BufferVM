@@ -22,7 +22,7 @@ typedef unsigned long long uint64_t;
 
 typedef uint64_t size_t;
 typedef int64_t intptr_t;
-typedef uint64_t uintptr_t;
+typedef uint64_t *uintptr_t;
 
 typedef __builtin_va_list va_list;
 typedef __builtin_va_list __isoc_va_list; /* wchar.h */
