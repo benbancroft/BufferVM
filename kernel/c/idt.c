@@ -1,7 +1,7 @@
 #include <linux/types.h>
 #include "../h/idt.h"
 #include "../h/host.h"
-#include "../h/kernel.h"
+#include "../h/kernel_as.h"
 
 static void idt_unhandled(void)
 {
@@ -49,7 +49,8 @@ void idt_init(bool bsp)
     }
 
     idt_set_gate(14, (uintptr_t) &idt_page_fault_handler, 0x0);
-    idt_set_gate(6, (uintptr_t) &idt_null_handler, 0x0);
+    idt_set_gate(1, (uintptr_t) &idt_debug_handler, 0x0);
+    idt_set_gate(0x06, (uintptr_t) &idt_page_fault_handler, 0x0);
     idt_set_gate(0x0D, (uintptr_t) &idt_gpf_handler, 0x0);
     //idt_set_gate(&idt[13], (uintptr_t) &idt_fault_gp, 0x8, 0x0);
 

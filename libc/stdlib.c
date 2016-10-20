@@ -103,7 +103,7 @@ void printf(char *format, ...) {
                     puts(s);
                     break;
                 case 'x':
-                    i = va_arg(arg, unsigned int); //hexadecimal
+                    i = va_arg(arg, uint64_t); //hexadecimal
                     puts(convert(i, 16));
                     break;
                 case 'p':

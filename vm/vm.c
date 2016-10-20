@@ -201,7 +201,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     sregs->cs = seg;
 
     //64-bit stuff
-    sregs->gdt.limit = 8 * 8 - 1;
+    sregs->gdt.limit = 9 * 8 - 1;
     seg.l = 1;
 
     //64-bit kernel code segment
@@ -215,7 +215,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     seg.selector = 0x18;
     fill_segment_descriptor(gdt, &seg);
 
-    sregs->ds = sregs->es = sregs->fs = sregs->gs = sregs->ss = seg;
+    sregs->ds = sregs->es = sregs->fs = sregs->ss = seg;
 
     //64-bit user code segment
     seg.dpl = 3;
@@ -232,23 +232,42 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     //TSS segment
 
     seg.selector = 0x30;
-    seg.limit = sizeof (tss_entry_t);
+    seg.limit = sizeof (tss_entry_t)-1;
     seg.base = TSS_START;
     seg.type = 9;
     seg.s = 0;
     seg.dpl = 3;
     seg.present = 1;
     seg.avl = 0;
-    seg.l = 0;
+    seg.l = 1;
+    seg.db = 0;
+    seg.g = 0;
+    fill_segment_descriptor(gdt, &seg);
+
+
+    //64-bit cpu kernel data segment
+    seg.selector = 0x40;
+    seg.type = 19; /* Data: read/write, accessed */
+    //one for each cpu in future!
+    seg.limit = sizeof(cpu_t) - 1;
+    seg.base = CPU_START-0x1000;
+    seg.s = 0;
+    seg.dpl = 0;
+    seg.present = 1;
+    seg.avl = 0;
+    seg.l = 1;
     seg.db = 0;
     seg.g = 0;
     fill_segment_descriptor(gdt, &seg);
 }
 
-void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
+void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_binary_fd)
 {
     struct kvm_sregs sregs;
     struct kvm_regs regs;
+
+    void *entry_point_kernel;
+    void *entry_point_user;
 
     int ret;
 
@@ -268,8 +287,11 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
         exit(1);
     }
 
-    void *entry_point = image_load(binary_fd, vm);
-    printf("Entry point: %p\n", entry_point);
+    entry_point_kernel = image_load(kernel_binary_fd, vm);
+    printf("Entry point kernel: %p\n", entry_point_kernel);
+
+    entry_point_user = image_load(prog_binary_fd, vm);
+    printf("Entry point user: %p\n", entry_point_user);
 
     //allocate 50 stack pages for user stack
     for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
@@ -279,9 +301,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
         map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_USER, 1, vm);
     }
 
-    //allocate 50 stack pages for kernel stack
+    //allocate 4 stack pages for kernel stack
     //TODO - make this use secton in elf binary?
-    for (uint32_t i = 0xc0014000; i > 0xc0014000 - 0x50000; i -= 0x1000) {
+    for (uint32_t i = 0xc0032000; i > 0xc0032000 - 0x20000; i -= 0x1000) {
 
         uint64_t phy_addr = allocate_page(vm, false);
 
@@ -294,12 +316,12 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
     //bootstrap entry
     regs.rip = 0;
     //kernel entry
-    regs.rdi = entry_point;
+    regs.rdi = entry_point_kernel;
     //user entry
-    regs.rsi = 0xDEADBEEF;
+    regs.rsi = entry_point_user;
     //kernel stack
-    regs.rdx = 0xc0014000;
-    regs.rsp = 0xc0014000;
+    regs.rdx = 0xc0032000;
+    regs.rsp = 0xc0032000;
     //user stack
     regs.rcx = 0xc000000;
 
@@ -353,13 +375,11 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
                     //Exit
                     case 0:
                         printf("Exit syscall\n");
-                        /*if (read_virtual_addr(regs.rsi, regs.rsp-8, buffer, vm)){
-
-                        }*/
                         return;
                     case 1:
                         {
                             char buffer[regs.rdx];
+                            //printf("Size: %s %d\n", buffer, regs.rdx);
                             if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm)){
                                 regs.rax = write(regs.rdi, buffer, regs.rdx);
                             }else{
@@ -376,7 +396,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd)
                         break;
                     default:
                         printf("Unsupported syscall %d\n", regs.rax);
-                        break;
+                        return;
 
                 }
 

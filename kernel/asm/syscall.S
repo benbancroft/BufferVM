@@ -1,4 +1,4 @@
-#include "../h/kernel.h"
+#include "../h/kernel_as.h"
 #include "../h/syscall_as.h"
 
     .section .text
@@ -32,13 +32,14 @@ syscall_setup:
 syscall_entry:
     swapgs
     #use %r11 so we do not trash syscall args
-    #we are able to trash %rcx and %r11
-    movq %rsp, %r11
+    #we cannot trash %rcx and %r11 as they are ret pointer and RFLAGs
+    movq %r15, %gs:CPU_TMP_R15
+    movq %rsp, %gs:CPU_TMP_RSP
     movq $kernel_stack, %rsp
     movq (%rsp), %rsp
     pushq %rcx
-    pushq %r11
     pushq %rbp
+    pushq %rcx
 
     #bounds check
     cmpq $0, %rax
@@ -49,16 +50,18 @@ syscall_entry:
     #swap to match C amd64 abi
     movq %r10, %rcx
 
-    movq syscall_table(, %rax, 8), %r11
-    call *%r11
+    movq syscall_table(, %rax, 8), %r15
+    call *%r15
 
     movq %rcx, %r10
 
 syscall_entry_bail:
-    popq %rbp
-    popq %r11
     popq %rcx
-    mov %r11, %rsp
+    popq %rbp
+    popq %rcx
+
+    movq %gs:CPU_TMP_R15, %r15
+    movq %gs:CPU_TMP_RSP, %rsp
 
     swapgs
     sysretq

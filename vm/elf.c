@@ -181,7 +181,7 @@ void *image_load(int fd, struct vm_t *vm) {
 
 /* image_load */
 
-int read_binary(char *name, char **buffer) {
+int read_binary(char *name) {
     FILE *file;
 
     unsigned long file_len;

@@ -32,6 +32,7 @@ static struct idtr idtr;
 extern void idt_null_handler(void);
 extern void idt_gpf_handler(void);
 extern void idt_page_fault_handler(void);
+extern void idt_debug_handler(void);
 
 extern void idt_load(uint64_t idtr);
 

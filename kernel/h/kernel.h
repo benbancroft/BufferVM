@@ -1,24 +1,13 @@
 //
-// Created by ben on 14/10/16.
+// Created by ben on 18/10/16.
 //
 
-#ifndef KERNEL_KERNEL_H
-#define KERNEL_KERNEL_H
+#include "kernel_as.h"
 
-#define KERNEL_CS	0x10
-#define KERNEL_DS	0x18
-#define USER_CS	    0x20
-#define USER_DS	    0x28
+#ifndef PROJECT_KERNEL_H
+#define PROJECT_KERNEL_H
 
-#define TSS_S	    0x30
-
-#define TSS_START 0xfffbd000
-
-/* AMD64 MSR values */
-#define AMD64_MSR_EFER			0xC0000080
-#define AMD64_MSR_STAR			0xC0000081
-#define AMD64_MSR_LSTAR			0xC0000082
-#define AMD64_MSR_CSTAR			0xC0000083
-#define AMD64_MSR_SFMASK	0xC0000084
+void switch_usermode(void *entry);
+void test();
 
 #endif //PROJECT_KERNEL_H

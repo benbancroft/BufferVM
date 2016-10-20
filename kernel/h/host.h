@@ -11,4 +11,6 @@ void host_exit();
 
 int host_write(uint32_t fd, const char* buf, size_t count);
 
+int host_read(uint32_t fd, const char* buf, size_t count);
+
 #endif //KERNEL_HOST_H

@@ -16,6 +16,6 @@ void *find_sym(const char *name, Elf32_Shdr *shdr, const char *strings, const ch
 void *image_load(int fd, struct vm_t *vm);
 
 /* image_load */
-int read_binary(char *name, char **buffer);
+int read_binary(char *name);
 
 #endif //BUFFERVM_ELF_H

@@ -1,9 +1,9 @@
+        .section .text
         .global _start
-        .code64
+        .global switch_usermode
+        .global test
 _start:
 	call kernel_main
-
-	call jump_usermode
 
 	call host_exit
 test:
@@ -13,12 +13,11 @@ test:
 	movq $42, (%rax)
 
     hlt
-jump_usermode:
+switch_usermode:
     push $0x2B
     movq $0xc0000000, %rax
     push %rax
-    #push $0x200 #EFLAGS (enable ints)
-    pushf
+    push $0x200 #EFLAGS (enable ints)
     push $0x23 #(yes that is the correct GDT entry for DPL = 3 long mode)
-    push $test
+    push %rdi
     iretq

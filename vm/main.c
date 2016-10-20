@@ -5,16 +5,17 @@
 
 
 int main(int argc, char **argv, char **envp) {
-    if (argc < 2) {
-        fprintf(stderr, "%s binary.bin\n", argv[0]);
+    if (argc < 3) {
+        fprintf(stderr, "%s kernel.elf binary\n", argv[0]);
         return 1;
     }
 
 
-    //int (*ptr)(int, char **, char**);
-    char *code;
-    int binary_fd;
-    if (!(binary_fd = read_binary(argv[1], &code))) {
+    int kernel_binary_fd, prog_binary_fd;
+    if (!(kernel_binary_fd = read_binary(argv[1]))) {
+        return 1;
+    }
+    if (!(prog_binary_fd = read_binary(argv[2]))) {
         return 1;
     }
 
@@ -24,15 +25,10 @@ int main(int argc, char **argv, char **envp) {
     vm_init(&vm, 0xFFF00000);
     vcpu_init(&vm, &vcpu);
 
-    //printf("Main addr: %p\n", get_physaddr(0x804881e, &vm));
+    run(&vm, &vcpu, kernel_binary_fd, prog_binary_fd);
 
-    run(&vm, &vcpu, binary_fd);
-    //run_long_mode(&vm, &vcpu);
-    //run_long_mode(&vm, &vcpu);
-
-    //run_vm(&vm, ptr);
-
-    close(binary_fd);
+    close(kernel_binary_fd);
+    close(prog_binary_fd);
 
     return 0;
 }

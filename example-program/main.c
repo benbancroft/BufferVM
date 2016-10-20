@@ -28,11 +28,11 @@ void main() {
     int ret = sum_array(numbers, sizeof(numbers) / sizeof(int));
     printf("Hello world from C! - Number is: %d\n", ret);
 
+    write(1, "hi write\n", 9);
+
     printf("Two ");
     printf("Lines");
     printf("\n");
-
-    write(1, "hi write\n", 9);
 
     putchar('b');
     putchar('\n');

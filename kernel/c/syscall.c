@@ -3,7 +3,7 @@
 //
 
 #include "../../libc/stdlib.h"
-#include "../h/kernel.h"
+#include "../h/kernel_as.h"
 #include "../h/syscall.h"
 #include "../h/host.h"
 
@@ -28,8 +28,16 @@ void syscall_unregister(int num)
     }
 }
 
+void syscall_read(uint32_t fd, const char* buf, size_t count){
+    host_read(fd, buf, count);
+}
+
 void syscall_write(uint32_t fd, const char* buf, size_t count){
     host_write(fd, buf, count);
+}
+
+void syscall_exit(){
+    host_exit();
 }
 
 void syscall_init()
@@ -41,5 +49,7 @@ void syscall_init()
         syscall_register(i, (uintptr_t) &syscall_null_handler);
     }
 
+    syscall_register(0, (uintptr_t) &syscall_read);
     syscall_register(1, (uintptr_t) &syscall_write);
+    syscall_register(60, (uintptr_t) &syscall_exit);
 }

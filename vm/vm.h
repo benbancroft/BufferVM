@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #define TSS_START 0xfffbd000
+#define CPU_START 0xFFFBC000
 
 /* CR0 bits */
 #define CR0_PE 1
@@ -83,6 +84,12 @@ typedef struct tss_entry {
 } __attribute__ ((packed))
 tss_entry_t;
 
+typedef struct cpu_t {
+    uint64_t rtmp_r15;
+    uint64_t rtmp_rsp;
+} __attribute__
+((packed))cpu_t;
+
 struct vm_t {
     int sys_fd;
     int fd;
@@ -112,6 +119,6 @@ int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz);
 
 static void setup_paged_32bit_mode(struct vm_t *vm, struct kvm_sregs *sregs);
 
-void run(struct vm_t *vm, struct vcpu_t *vcpu, int binary_fd);
+void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_binary_fd);
 
 #endif //BUFFERVM_VM_H
