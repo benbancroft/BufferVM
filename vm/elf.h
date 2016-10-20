@@ -13,7 +13,7 @@ void relocate(Elf32_Shdr *shdr, const Elf32_Sym *syms, const char *strings, cons
 
 void *find_sym(const char *name, Elf32_Shdr *shdr, const char *strings, const char *src, char *dst);
 
-void *image_load(int fd, struct vm_t *vm);
+void *image_load(int fd, bool user, struct vm_t *vm);
 
 /* image_load */
 int read_binary(char *name);

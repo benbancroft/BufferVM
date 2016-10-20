@@ -17,10 +17,10 @@ void free(void *ap){
 
 }
 
-int write(int file, const void *buffer, size_t count){
-    host_write(file, buffer, count);
+ssize_t write(int file, const void *buffer, size_t count){
+    return host_write(file, buffer, count);
 }
 
-size_t read(int fd, void *buffer, size_t length){
-    //host_read(file, buffer, count);
+ssize_t read(int fd, void *buffer, size_t length){
+    return host_read(fd, buffer, length);
 }

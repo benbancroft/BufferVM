@@ -9,8 +9,10 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <zconf.h>
+#include <inttypes.h>
 
 #include "vm.h"
 #include "memory.h"
@@ -18,8 +20,6 @@
 #include "gdt.h"
 
 extern const unsigned char bootstrap[], bootstrap_end[];
-
-uint64_t my_page;
 
 void vm_init(struct vm_t *vm, size_t mem_size)
 {
@@ -99,62 +99,6 @@ void vcpu_init(struct vm_t *vm, struct vcpu_t *vcpu)
     }
 }
 
-static void print_seg(FILE *file, const char *name, struct kvm_segment *seg) {
-    fprintf(stderr,
-            "%s %04x (%08llx/%08x p %d dpl %d db %d s %d type %x l %d"
-                    " g %d avl %d)\n",
-            name, seg->selector, seg->base, seg->limit, seg->present,
-            seg->dpl, seg->db, seg->s, seg->type, seg->l, seg->g,
-            seg->avl);
-}
-
-static void print_dt(FILE *file, const char *name, struct kvm_dtable *dt) {
-    fprintf(stderr, "%s %llx/%x\n", name, dt->base, dt->limit);
-}
-
-void kvm_show_regs(struct vm_t *vm) {
-    int fd = vm->sys_fd;
-    struct kvm_regs regs;
-    struct kvm_sregs sregs;
-    int r;
-
-    r = ioctl(fd, KVM_GET_REGS, &regs);
-    if (r == -1) {
-        perror("KVM_GET_REGS");
-        return;
-    }
-    fprintf(stderr,
-            "rax %016llx rbx %016llx rcx %016llx rdx %016llx\n"
-                    "rsi %016llx rdi %016llx rsp %016llx rbp %016llx\n"
-                    "r8  %016llx r9  %016llx r10 %016llx r11 %016llx\n"
-                    "r12 %016llx r13 %016llx r14 %016llx r15 %016llx\n"
-                    "rip %016llx rflags %08llx\n",
-            regs.rax, regs.rbx, regs.rcx, regs.rdx,
-            regs.rsi, regs.rdi, regs.rsp, regs.rbp,
-            regs.r8, regs.r9, regs.r10, regs.r11,
-            regs.r12, regs.r13, regs.r14, regs.r15,
-            regs.rip, regs.rflags);
-    r = ioctl(fd, KVM_GET_SREGS, &sregs);
-    if (r == -1) {
-        perror("KVM_GET_SREGS");
-        return;
-    }
-    print_seg(stderr, "cs", &sregs.cs);
-    print_seg(stderr, "ds", &sregs.ds);
-    print_seg(stderr, "es", &sregs.es);
-    print_seg(stderr, "ss", &sregs.ss);
-    print_seg(stderr, "fs", &sregs.fs);
-    print_seg(stderr, "gs", &sregs.gs);
-    print_seg(stderr, "tr", &sregs.tr);
-    print_seg(stderr, "ldt", &sregs.ldt);
-    print_dt(stderr, "gdt", &sregs.gdt);
-    print_dt(stderr, "idt", &sregs.idt);
-    fprintf(stderr, "cr0 %llx cr2 %llx cr3 %llx cr4 %llx cr8 %llx"
-                    " efer %llx\n",
-            sregs.cr0, sregs.cr2, sregs.cr3, sregs.cr4, sregs.cr8,
-            sregs.efer);
-}
-
 static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
 {
     struct kvm_segment seg = {
@@ -172,22 +116,22 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     build_page_tables(vm);
 
     //Page for bootstrap
-    map_physical_page(0x0000, 0x0000, 0, 1, vm);
+    map_physical_page(0x0000, 0x0000, PDE64_WRITEABLE, 1, vm);
     //Page for gdt
-    map_physical_page(0x1000, 0x1000, 0, 1, vm);
+    map_physical_page(0x1000, 0x1000, PDE64_WRITEABLE, 1, vm);
 
     //map 3 pages required for TSS
     for (uint64_t p = TSS_START; p < TSS_START+3*PAGE_SIZE; p += PAGE_SIZE)
-        map_physical_page(p, 0x2000+(p-TSS_START), 0, 1, vm);
+        map_physical_page(p, 0x2000+(p-TSS_START), PDE64_WRITEABLE, 1, vm);
 
-    map_physical_page(0xDEADB000, allocate_page(vm, false),  0/*PDE64_USER*/, 1, vm);
+    map_physical_page(0xDEADB000, allocate_page(vm, false),  PDE64_WRITEABLE, 1, vm);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = 0x1000;
     sregs->cr3 = pml4_addr;
     sregs->cr4 = CR4_PAE;
     sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
-    sregs->efer = EFER_LME;
+    sregs->efer = EFER_LME | EFER_NXE;
 
     gdt = (void *)(vm->mem + sregs->gdt.base);
     /* gdt[0] is the null segment */
@@ -280,17 +224,15 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
     setup_long_mode(vm, &sregs);
 
-    //sregs.cr0 = 0x80000000;
-
     if (ioctl(vcpu->fd, KVM_SET_SREGS, &sregs) < 0) {
         perror("KVM_SET_SREGS");
         exit(1);
     }
 
-    entry_point_kernel = image_load(kernel_binary_fd, vm);
+    entry_point_kernel = image_load(kernel_binary_fd, false, vm);
     printf("Entry point kernel: %p\n", entry_point_kernel);
 
-    entry_point_user = image_load(prog_binary_fd, vm);
+    entry_point_user = image_load(prog_binary_fd, true, vm);
     printf("Entry point user: %p\n", entry_point_user);
 
     //allocate 50 stack pages for user stack
@@ -298,7 +240,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
         uint64_t phy_addr = allocate_page(vm, false);
 
-        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_USER, 1, vm);
+        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm);
     }
 
     //allocate 4 stack pages for kernel stack
@@ -307,7 +249,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
         uint64_t phy_addr = allocate_page(vm, false);
 
-        map_physical_page(i, phy_addr, PDE64_NO_EXE, 1, vm);
+        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE, 1, vm);
     }
 
     memset(&regs, 0, sizeof(regs));
@@ -316,9 +258,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     //bootstrap entry
     regs.rip = 0;
     //kernel entry
-    regs.rdi = entry_point_kernel;
+    regs.rdi = (uint64_t) entry_point_kernel;
     //user entry
-    regs.rsi = entry_point_user;
+    regs.rsi = (uint64_t) entry_point_user;
     //kernel stack
     regs.rdx = 0xc0032000;
     regs.rsp = 0xc0032000;
@@ -331,7 +273,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     }
 
     memcpy(vm->mem, bootstrap, bootstrap_end-bootstrap);
-    printf("Loaded bootstrap: %d\n", bootstrap_end-bootstrap);
+    printf("Loaded bootstrap: %" PRIu64 "\n", (uint64_t) (bootstrap_end-bootstrap));
 
     // Repeatedly run code and handle VM exits.
     while (1) {
@@ -351,14 +293,8 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                 errx(1, "KVM_EXIT_FAIL_ENTRY: hardware_entry_failure_reason = 0x%llx",
                      (unsigned long long) vcpu->kvm_run->fail_entry.hardware_entry_failure_reason);
                 break;
-            case KVM_EXIT_INTERNAL_ERROR: {
-                kvm_show_regs(vm);
-
-                //printf("PC: %p", err_regs.rip);
-
+            case KVM_EXIT_INTERNAL_ERROR:
                 errx(1, "KVM_EXIT_INTERNAL_ERROR: suberror = 0x%x", vcpu->kvm_run->internal.suberror);
-            }
-                break;
             case KVM_EXIT_HLT:
 
                 if (ioctl(vcpu->fd, KVM_GET_REGS, &regs) < 0) {
@@ -377,15 +313,15 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         printf("Exit syscall\n");
                         return;
                     case 1:
-                        {
-                            char buffer[regs.rdx];
-                            //printf("Size: %s %d\n", buffer, regs.rdx);
-                            if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm)){
-                                regs.rax = write(regs.rdi, buffer, regs.rdx);
-                            }else{
-                                printf("Failed to write - Un-paged buffer?\n");
-                            }
+                    {
+                        char buffer[regs.rdx];
+                        //printf("Size: %s %d\n", buffer, regs.rdx);
+                        if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm)){
+                            regs.rax = write(regs.rdi, buffer, regs.rdx);
+                        }else{
+                            printf("Failed to write - Un-paged buffer?\n");
                         }
+                    }
                         break;
                     case 2:
                         if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm)){
@@ -395,7 +331,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         }
                         break;
                     default:
-                        printf("Unsupported syscall %d\n", regs.rax);
+                        printf("Unsupported syscall %" PRIu64 "\n", (uint64_t) regs.rax);
                         return;
 
                 }
@@ -414,7 +350,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                     exit(1);
                 }
 
-                printf("MMIO Error: code = %d, PC: %p\n", vcpu->kvm_run->exit_reason, regs.rip);
+                printf("MMIO Error: code = %d, PC: %p\n", vcpu->kvm_run->exit_reason, (void *) regs.rip);
                 return;
             default:
                 printf("Other exit: code = %d\n", vcpu->kvm_run->exit_reason);

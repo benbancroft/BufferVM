@@ -5,7 +5,7 @@ project(ExampleProgram)
 enable_language(ASM)
 
 set(CMAKE_C_FLAGS "-g -w -m64 -nostdlib")
-#SET(CMAKE_ASM_FLAGS "-m32")
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror" )
 
 set(SOURCE_FILES sbrk.c alloc.c main.c start.s cstubs.s)
 add_executable(example-program ${SOURCE_FILES})

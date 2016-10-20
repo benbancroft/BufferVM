@@ -8,6 +8,7 @@
 #include <memory.h>
 #include <sysexits.h>
 #include <sys/mman.h>
+#include <lzma.h>
 
 #include "elf.h"
 
@@ -22,9 +23,9 @@
 
 void relocate(Elf32_Shdr *shdr, const Elf32_Sym *syms, const char *strings, const char *src, char *dst) {
     Elf32_Rel *rel = (Elf32_Rel *) (src + shdr->sh_offset);
-    int j;
+    size_t j;
     for (j = 0; j < shdr->sh_size / sizeof(Elf32_Rel); j += 1) {
-        const char *sym = strings + syms[ELF32_R_SYM(rel[j].r_info)].st_name;
+        //const char *sym = strings + syms[ELF32_R_SYM(rel[j].r_info)].st_name;
         switch (ELF32_R_TYPE(rel[j].r_info)) {
             case R_386_JMP_SLOT:
             case R_386_GLOB_DAT:
@@ -37,7 +38,7 @@ void relocate(Elf32_Shdr *shdr, const Elf32_Sym *syms, const char *strings, cons
 
 void *find_sym(const char *name, Elf32_Shdr *shdr, const char *strings, const char *src, char *dst) {
     Elf32_Sym *syms = (Elf32_Sym *) (src + shdr->sh_offset);
-    int i;
+    size_t i;
     for (i = 0; i < shdr->sh_size / sizeof(Elf32_Sym); i += 1) {
         if (strcmp(name, strings + syms[i].st_name) == 0) {
             return dst + syms[i].st_value;
@@ -46,9 +47,8 @@ void *find_sym(const char *name, Elf32_Shdr *shdr, const char *strings, const ch
     return NULL;
 }
 
-void *image_load(int fd, struct vm_t *vm) {
+void *image_load(int fd, bool user, struct vm_t *vm) {
     Elf *e;
-    char *id, bytes[5];
     size_t n;
     GElf_Ehdr ehdr;
 
@@ -66,7 +66,7 @@ void *image_load(int fd, struct vm_t *vm) {
     if (gelf_getehdr(e, &ehdr) == NULL)
         errx(EX_SOFTWARE, "getehdr () failed: %s.", elf_errmsg(-1));
 
-    entry = ehdr.e_entry;
+    entry = (void *) ehdr.e_entry;
 
     if (elf_getphdrnum(e, &n) != 0)
         errx(EX_DATAERR, "elf_getphdrnum () failed: %s.", elf_errmsg(-1));
@@ -75,7 +75,7 @@ void *image_load(int fd, struct vm_t *vm) {
     uint64_t start;
     uint64_t taddr;
 
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
 
         if (gelf_getphdr(e, i, &phdr) != &phdr)
             errx(EX_SOFTWARE, "getphdr () failed: %s.", elf_errmsg(-1));
@@ -95,27 +95,25 @@ void *image_load(int fd, struct vm_t *vm) {
 
         // p_filesz can be smaller than p_memsz,
         // the difference is zeroe'd out.
-        start = elf_rawfile(e, NULL) + phdr.p_offset;
+        start = (uint64_t) elf_rawfile(e, NULL) + phdr.p_offset;
         taddr = phdr.p_vaddr;
 
-        //char *segment = mmap(taddr, phdr[i].p_memsz, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);;
+        uint64_t flags = 0;
 
-        int flags = PROT_READ | PROT_WRITE | PROT_EXEC;
+        //Writeable.
+        if (phdr.p_flags & PF_W)
+            flags = PDE64_WRITEABLE;
 
-        if (!(phdr.p_flags & PF_W))
-            //Read only.
-            flags = PDE64_RW;
-
-        if (!(phdr.p_flags & PF_X))
-            // Executable.
+        // Executable.
+        if (phdr.p_flags & PF_X)
             flags = PDE64_NO_EXE;
 
-        load_address_space(taddr, phdr.p_memsz, start, phdr.p_filesz, flags | PDE64_USER, vm);
+        load_address_space(taddr, phdr.p_memsz, (char *) start, phdr.p_filesz, flags | user ? PDE64_USER : 0, vm);
 
-        printf("Loaded header at %p of size: %d\n", taddr, phdr.p_memsz);
+        printf("Loaded header at %p of size: %" PRIu64 "\n", (void *) taddr, (uint64_t) phdr.p_memsz);
     }
 
-    GElf_Shdr shdr;
+    /*GElf_Shdr shdr;
     size_t shstrndx, sz;
 
     if (elf_getshdrstrndx(e, &shstrndx) != 0)
@@ -125,7 +123,7 @@ void *image_load(int fd, struct vm_t *vm) {
     Elf_Data *data = NULL;
     char *name;
 
-    /*while ((scn = elf_nextscn(e, scn)) != NULL) {
+    while ((scn = elf_nextscn(e, scn)) != NULL) {
         if (gelf_getshdr(scn , &shdr) != &shdr)
             errx(EX_SOFTWARE , "getshdr () failed: %s.", elf_errmsg ( -1));
 
@@ -182,9 +180,7 @@ void *image_load(int fd, struct vm_t *vm) {
 /* image_load */
 
 int read_binary(char *name) {
-    FILE *file;
-
-    unsigned long file_len;
+    int file;
 
     //Open file
     file = open(name, O_RDONLY, 0);

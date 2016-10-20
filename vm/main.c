@@ -4,7 +4,7 @@
 #include "vm.h"
 
 
-int main(int argc, char **argv, char **envp) {
+int main(int argc, char **argv) {
     if (argc < 3) {
         fprintf(stderr, "%s kernel.elf binary\n", argv[0]);
         return 1;

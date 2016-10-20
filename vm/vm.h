@@ -51,8 +51,8 @@
 
 /* 64-bit page * entry bits */
 #define PDE64_PRESENT 1
-#define PDE64_RW (1 << 1)
-#define PDE64_NO_EXE (1 << 63)
+#define PDE64_WRITEABLE (1 << 1)
+#define PDE64_NO_EXE (UINT64_C(1) << 63)
 #define PDE64_USER (1 << 2)
 #define PDE64_WRITE_MEM (1 << 3)
 #define PDE64_DISABLE_CACHE (1 << 4)
@@ -64,6 +64,8 @@
 #define PAGE_CREATE -1
 
 #define ALIGN(x, y) (((x)+(y)-1) & ~((y)-1))
+
+typedef struct kvm_segment kvm_segment_t;
 
 typedef struct tss_entry {
     uint32_t prev_tss;
@@ -105,19 +107,7 @@ void vm_init(struct vm_t *vm, size_t mem_size);
 
 void vcpu_init(struct vm_t *vm, struct vcpu_t *vcpu);
 
-static void print_seg(FILE *file, const char *name, struct kvm_segment *seg);
-
-static void print_dt(FILE *file, const char *name, struct kvm_dtable *dt);
-
 void kvm_show_regs(struct vm_t *vm);
-
-static void setup_protected_mode(struct vm_t *vm, struct kvm_sregs *sregs);
-
-/*void run_vm(struct vm_t *vm, uint64_t start_pointer);*/
-
-int check(struct vm_t *vm, struct vcpu_t *vcpu, size_t sz);
-
-static void setup_paged_32bit_mode(struct vm_t *vm, struct kvm_sregs *sregs);
 
 void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_binary_fd);
 

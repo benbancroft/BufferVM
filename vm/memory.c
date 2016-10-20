@@ -58,19 +58,19 @@ int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, struct vm_t *vm)
 
     uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
 
-    if (!get_page_entry(pml4, 0, &page_addr, vm))
+    if (!get_page_entry(pml4, 0, &page_addr))
         return 0;
 
     uint64_t *pdpt = (void *)(vm->mem + page_addr);
-    if (!get_page_entry(pdpt, info.pg_dir_ptr_offset, &page_addr, vm))
+    if (!get_page_entry(pdpt, info.pg_dir_ptr_offset, &page_addr))
         return 0;
 
     uint64_t *pd = (void *)(vm->mem + page_addr);
-    if (!get_page_entry(pd, info.pg_dir_offset, &page_addr, vm))
+    if (!get_page_entry(pd, info.pg_dir_offset, &page_addr))
         return 0;
 
     uint64_t *pd2 = (void *)(vm->mem + page_addr);
-    if (!get_page_entry(pd2, info.pg_tbl_offset, &page_addr, vm))
+    if (!get_page_entry(pd2, info.pg_tbl_offset, &page_addr))
         return 0;
 
     *phys_addr = page_addr + info.phys_offset;
@@ -81,7 +81,7 @@ int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, struct vm_t *vm)
 /**
 start_addr should be page aligned
 */
-void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm) {
+void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags, struct vm_t *vm) {
 
     size_t size_left_mem = mem_size;
     size_t size_left_elf = elf_seg_size;
@@ -93,7 +93,7 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
         memset(vm->mem + phy_addr, 0x0, size_left_mem < 0x1000 ? mem_size : 0x1000);
         memcpy(vm->mem + phy_addr, elf_seg_start+i, size_left_elf < 0x1000 ? size_left_elf : 0x1000);
 
-        printf("Loaded page: %p %p, %#04hhx\n", p, phy_addr, vm->mem[phy_addr+0xc0a]);
+        printf("Loaded page: %p %p, %#04hhx\n", (void*) p, (void*) phy_addr, vm->mem[phy_addr+0xc0a]);
         map_physical_page(p, phy_addr, flags, 1, vm);
 
         size_left_mem -= 0x1000;
@@ -117,13 +117,12 @@ void build_page_tables(struct vm_t *vm){
     uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
 
     uint64_t pdpt_addr = allocate_page(vm, true);
-    uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
 
     for (size_t i = 0; i < 512; i++)
-        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_RW | PDE64_USER;
+        pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_USER | PDE64_WRITEABLE;
 }
 
-int get_page_entry(uint64_t *table, size_t index, uint64_t *page, struct vm_t *vm) {
+int get_page_entry(uint64_t *table, size_t index, uint64_t *page) {
 
     if (table[index] & PDE64_PRESENT) {
         *page = table[index] & 0xFFFFFFFFFFF000;
@@ -136,12 +135,12 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
 
     if (page == PAGE_CREATE) {
         if (!(table[index] & PDE64_PRESENT)) {
-            table[index] = PDE64_PRESENT | PDE64_RW | flags | allocate_page(vm, true);
+            table[index] = PDE64_PRESENT | flags | allocate_page(vm, true);
         }else {
             table[index] |= flags;
         }
     }else
-        table[index] = PDE64_PRESENT | PDE64_RW | flags | (page & 0xFFFFFFFFFFF000);
+        table[index] = PDE64_PRESENT | flags | (page & 0xFFFFFFFFFFF000);
 
     return table[index] & 0xFFFFFFFFFFF000;
 }
@@ -154,14 +153,14 @@ void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, 
 
     uint64_t *pml4 = (void *)(vm->mem + pml4_addr);
 
-    uint64_t pdpt_addr = map_page_entry(pml4, 0, PDE64_USER, PAGE_CREATE, vm);
+    uint64_t pdpt_addr = map_page_entry(pml4, 0, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, vm);
     uint64_t *pdpt = (void *)(vm->mem + pdpt_addr);
 
-    uint64_t pd_addr = map_page_entry(pdpt, info.pg_dir_ptr_offset, PDE64_USER, PAGE_CREATE, vm);
+    uint64_t pd_addr = map_page_entry(pdpt, info.pg_dir_ptr_offset, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, vm);
     uint64_t *pd = (void *)(vm->mem + pd_addr);
 
-    uint64_t pd2_addr = map_page_entry(pd, info.pg_dir_offset, PDE64_USER, PAGE_CREATE, vm);
+    uint64_t pd2_addr = map_page_entry(pd, info.pg_dir_offset, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, vm);
     uint64_t *pd2 = (void *)(vm->mem + pd2_addr);
 
-    map_page_entry(pd2, info.pg_tbl_offset, flags, physical_page_addr, vm);
+    map_page_entry(pd2, info.pg_tbl_offset, flags | PDE64_WRITEABLE, physical_page_addr, vm);
 }

@@ -38,7 +38,7 @@ int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, struct v
 virt_addr_info_t get_virt_addr_info(uint64_t addr);
 
 int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, struct vm_t *vm);
-int get_page_entry(uint64_t *table, size_t index, uint64_t *page, struct vm_t *vm);
+int get_page_entry(uint64_t *table, size_t index, uint64_t *page);
 
 void build_page_tables(struct vm_t *vm);
 
@@ -46,7 +46,7 @@ uint64_t allocate_page(struct vm_t *vm, bool zero_page);
 
 uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t page, struct vm_t *vm);
 
-void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, int flags, struct vm_t *vm);
+void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags, struct vm_t *vm);
 
 void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, uint64_t flags, size_t num_pages, struct vm_t *vm);
 
