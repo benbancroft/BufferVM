@@ -1,7 +1,7 @@
-#include <zconf.h>
 #include "memory.h"
 #include "elf.h"
 #include "vm.h"
+#include <unistd.h>
 
 
 int main(int argc, char **argv) {

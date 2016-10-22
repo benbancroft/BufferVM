@@ -8,7 +8,7 @@
 #include <memory.h>
 #include <sysexits.h>
 #include <sys/mman.h>
-#include <lzma.h>
+#include <inttypes.h>
 
 #include "elf.h"
 

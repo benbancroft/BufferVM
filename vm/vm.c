@@ -11,7 +11,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <zconf.h>
+#include <unistd.h>
 #include <inttypes.h>
 
 #include "vm.h"
