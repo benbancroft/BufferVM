@@ -7,7 +7,7 @@
 
 #include <gelf.h>
 
-#include "memory.h"
+#include "../common/memory.h"
 
 void relocate(Elf32_Shdr *shdr, const Elf32_Sym *syms, const char *strings, const char *src, char *dst);
 

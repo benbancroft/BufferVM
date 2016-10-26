@@ -15,7 +15,7 @@
 #include <inttypes.h>
 
 #include "vm.h"
-#include "memory.h"
+#include "../common/memory.h"
 #include "elf.h"
 #include "gdt.h"
 

@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include <memory.h>
 
-#include "vm.h"
+#include "../vm/vm.h"
 
 #define PAGE_SIZE 0x1000
 
