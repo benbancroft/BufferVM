@@ -24,8 +24,8 @@
       <sourceFolder url="file://$MODULE_DIR$/example-program/cstubs.s" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/sbrk.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/common/memory.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/common/memory.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/paging.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/paging.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/stdlib.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/CMakeLists.txt" isTestSource="false" />

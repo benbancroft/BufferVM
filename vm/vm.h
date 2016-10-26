@@ -49,20 +49,6 @@
 #define EFER_LMA (1 << 10)
 #define EFER_NXE (1 << 11)
 
-/* 64-bit page * entry bits */
-#define PDE64_PRESENT 1
-#define PDE64_WRITEABLE (1 << 1)
-#define PDE64_NO_EXE (UINT64_C(1) << 63)
-#define PDE64_USER (1 << 2)
-#define PDE64_WRITE_MEM (1 << 3)
-#define PDE64_DISABLE_CACHE (1 << 4)
-#define PDE64_ACCESSED (1 << 5)
-#define PDE64_DIRTY (1 << 6)
-#define PDE64_PS (1 << 7)
-#define PDE64_G (1 << 8)
-
-#define PAGE_CREATE -1
-
 #define ALIGN(x, y) (((x)+(y)-1) & ~((y)-1))
 
 typedef struct kvm_segment kvm_segment_t;

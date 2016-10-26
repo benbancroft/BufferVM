@@ -7,7 +7,8 @@
 
 #include <gelf.h>
 
-#include "../common/memory.h"
+#include "vm.h"
+#include "../common/paging.h"
 
 void relocate(Elf32_Shdr *shdr, const Elf32_Sym *syms, const char *strings, const char *src, char *dst);
 

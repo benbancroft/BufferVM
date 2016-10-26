@@ -15,7 +15,7 @@
 #include <inttypes.h>
 
 #include "vm.h"
-#include "../common/memory.h"
+#include "../common/paging.h"
 #include "elf.h"
 #include "gdt.h"
 
@@ -113,18 +113,18 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     };
     uint64_t *gdt;
 
-    build_page_tables(vm);
+    build_page_tables(vm->mem);
 
     //Page for bootstrap
-    map_physical_page(0x0000, 0x0000, PDE64_WRITEABLE, 1, vm);
+    map_physical_page(0x0000, 0x0000, PDE64_WRITEABLE, 1, vm->mem);
     //Page for gdt
-    map_physical_page(0x1000, 0x1000, PDE64_WRITEABLE, 1, vm);
+    map_physical_page(0x1000, 0x1000, PDE64_WRITEABLE, 1, vm->mem);
 
     //map 3 pages required for TSS
     for (uint64_t p = TSS_START; p < TSS_START+3*PAGE_SIZE; p += PAGE_SIZE)
-        map_physical_page(p, 0x2000+(p-TSS_START), PDE64_WRITEABLE, 1, vm);
+        map_physical_page(p, 0x2000+(p-TSS_START), PDE64_WRITEABLE, 1, vm->mem);
 
-    map_physical_page(0xDEADB000, allocate_page(vm, false),  PDE64_WRITEABLE, 1, vm);
+    map_physical_page(0xDEADB000, allocate_page(vm->mem, false),  PDE64_WRITEABLE, 1, vm->mem);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = 0x1000;
@@ -238,18 +238,18 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     //allocate 50 stack pages for user stack
     for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
 
-        uint64_t phy_addr = allocate_page(vm, false);
+        uint64_t phy_addr = allocate_page(vm->mem, false);
 
-        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm);
+        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
     }
 
     //allocate 4 stack pages for kernel stack
     //TODO - make this use secton in elf binary?
     for (uint32_t i = 0xc0032000; i > 0xc0032000 - 0x20000; i -= 0x1000) {
 
-        uint64_t phy_addr = allocate_page(vm, false);
+        uint64_t phy_addr = allocate_page(vm->mem, false);
 
-        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE, 1, vm);
+        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE, 1, vm->mem);
     }
 
     memset(&regs, 0, sizeof(regs));
@@ -316,7 +316,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                     {
                         char buffer[regs.rdx];
                         //printf("Size: %s %d\n", buffer, regs.rdx);
-                        if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm)){
+                        if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm->mem)){
                             regs.rax = write(regs.rdi, buffer, regs.rdx);
                         }else{
                             printf("Failed to write - Un-paged buffer?\n");
@@ -324,7 +324,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                     }
                         break;
                     case 2:
-                        if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm)){
+                        if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm->mem)){
                             //printf("Read - buffer: %p, phys: %d, sp: %p\n", regs.rsi, syscall_arg_phys, vm, regs.rsp);
                             //Handle page boundary!
                             regs.rax = read(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);

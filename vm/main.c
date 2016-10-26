@@ -1,4 +1,4 @@
-#include "../common/memory.h"
+#include "../common/paging.h"
 #include "elf.h"
 #include "vm.h"
 #include <unistd.h>

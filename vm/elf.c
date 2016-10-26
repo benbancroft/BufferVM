@@ -108,7 +108,7 @@ void *image_load(int fd, bool user, struct vm_t *vm) {
         if (phdr.p_flags & PF_X)
             flags = PDE64_NO_EXE;
 
-        load_address_space(taddr, phdr.p_memsz, (char *) start, phdr.p_filesz, flags | user ? PDE64_USER : 0, vm);
+        load_address_space(taddr, phdr.p_memsz, (char *) start, phdr.p_filesz, flags | user ? PDE64_USER : 0, vm->mem);
 
         printf("Loaded header at %p of size: %" PRIu64 "\n", (void *) taddr, (uint64_t) phdr.p_memsz);
     }
