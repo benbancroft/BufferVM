@@ -5,7 +5,7 @@ idt_page_fault_handler:
     movq $LC0, %rdi
     movq %cr2, %rsi
     movq 8(%rsp), %rdx
-    movl (%rsp), %ecx
+    movq (%rsp), %rcx
     clr %rax       # needed for printf
     call printf
 

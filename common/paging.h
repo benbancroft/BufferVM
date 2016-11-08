@@ -9,10 +9,7 @@
 // Created by ben on 09/10/16.
 //
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <memory.h>
+#include "stdlib_inc.h"
 
 /* 64-bit page * entry bits */
 #define PDE64_PRESENT 1
@@ -28,10 +25,12 @@
 
 #define PAGE_CREATE -1
 
-#define PAGE_SIZE 0x1000
+#define PAGE_SIZE 0x1000UL
 
 #define P2ALIGN(x, align)    ((x) & -(align))
 #define P2ROUNDUP(x, align) (-(-(x) & -(align)))
+
+#define PAGE_ALIGN(addr) P2ROUNDUP(addr, PAGE_SIZE)
 
 typedef struct {
     uint64_t version;

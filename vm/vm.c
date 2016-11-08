@@ -284,6 +284,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
             case KVM_EXIT_IO:
                 if (vcpu->kvm_run->io.direction == KVM_EXIT_IO_OUT && vcpu->kvm_run->io.size == 1 &&
                     vcpu->kvm_run->io.port == 0x3f8 &&
+                    vcpu->kvm_run->io.port == 0x3f8 &&
+                    vcpu->kvm_run->io.port == 0x3f8 &&
+                    vcpu->kvm_run->io.port == 0x3f8 &&
                     vcpu->kvm_run->io.count == 1)
                     putchar(*(((char *) vcpu->kvm_run) + vcpu->kvm_run->io.data_offset));
                 else
@@ -329,6 +332,12 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                             //Handle page boundary!
                             regs.rax = read(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);
                         }
+                        break;
+                    case 3:
+                        regs.rax = allocate_page(vm->mem, regs.rsi == 1);
+                        break;
+                    case 4:
+                        map_physical_page(regs.rdi, regs.rsi, regs.rdx, regs.rcx, vm->mem);
                         break;
                     default:
                         printf("Unsupported syscall %" PRIu64 "\n", (uint64_t) regs.rax);

@@ -18,8 +18,6 @@ int brk(void *addr) {
 void *sbrk(intptr_t increment) {
     void *oldbrk;
 
-    //printf("SBRK: %d\n", increment);
-
     if (__curbrk == NULL)
         if (brk(0) < 0)        /* Initialize the break.  */
             return (void *) -1;

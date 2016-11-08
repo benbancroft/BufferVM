@@ -2,11 +2,7 @@
 // Created by ben on 09/10/16.
 //
 
-#include <stdint.h>
-#include <stdio.h>
-#include <memory.h>
-
-#include "paging.h"
+#include "../common/paging.h"
 
 uint32_t pd_addr = 0xFFEFF000;
 uint32_t pt_start_addr = 0xFFB00000;

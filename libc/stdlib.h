@@ -3,6 +3,8 @@
 
 #define NULL 0
 
+#define UINT64_C(c)	c ## UL
+
 #ifndef EOF
 # define EOF (-1)
 #endif

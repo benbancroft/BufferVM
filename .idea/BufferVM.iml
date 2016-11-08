@@ -24,18 +24,17 @@
       <sourceFolder url="file://$MODULE_DIR$/example-program/cstubs.s" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/sbrk.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/common/paging.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/common/paging.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/stdlib_inc.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/libc/stdlib.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libc/stdlib_inc.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/libc/stdlib.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/main.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/elf.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/elf.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/gdt.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/vm/paging.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/gdt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/bootstrap/bootstrap.s" isTestSource="false" />
@@ -45,14 +44,14 @@
     <orderEntry type="module-library">
       <library name="Header Search Paths">
         <CLASSES>
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/6/include-fixed" />
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/6/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
           <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
         </CLASSES>
         <SOURCES>
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/6/include-fixed" />
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/6/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
           <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
         </SOURCES>

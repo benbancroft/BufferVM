@@ -1,4 +1,5 @@
 #include "../libc/stdlib.h"
+#include "alloc.h"
 
 static int numbers[] = {5, 7, 11, 13, 6};
 
@@ -47,14 +48,19 @@ void main() {
     ver_string = set_version(5, my_string);
     printf("Versioned string: %s Ver: %d\n", ver_string, (int)get_version(ver_string));
 
-    //read test cases
+    //heap test
 
-    printf("\nPlease enter a character: \n");
+    void *mem = malloc(10);
+    printf("Heap: %p\n", mem);
 
-    //char *name = getline();
-    //printf("My name is: %s", name);
+    //read test case
 
-    printf("Your character: %c\n", fgetc(1));
+    /*printf("\nPlease enter a character: \n");
+    printf("Your character: %c\n", fgetc(1));*/
+
+    printf("\nPlease enter your name: \n");
+    char *name = getline();
+    printf("My name is: %s", name);
 
     return;
 }

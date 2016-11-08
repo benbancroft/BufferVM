@@ -7,6 +7,7 @@
 #include "../h/tss.h"
 #include "../h/kernel.h"
 #include "../h/syscall.h"
+#include "../../common/paging.h"
 
 tss_entry_t *tss = (tss_entry_t*) TSS_START;
 
