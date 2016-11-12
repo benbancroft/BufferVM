@@ -55,7 +55,7 @@ uint64_t syscall_brk(uint64_t brk){
         new_brk = PAGE_ALIGN(brk);
 
         for (uint64_t p = curr_brk; p < new_brk; p += PAGE_SIZE)
-            map_physical_page(p, allocate_page(NULL, false), PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, 0);
+            map_physical_page(p, allocate_page(NULL, false), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
 
         curr_brk = new_brk;
     }

@@ -1,3 +1,5 @@
+#include "h/kernel_as.h"
+
         .section .text
         .global _start
         .global switch_usermode
@@ -14,10 +16,10 @@ test:
 
     hlt
 switch_usermode:
-    push $0x2B
+    push $(USER_DS | 3)
     movq $0xc0000000, %rax
     push %rax
     push $0x200 #EFLAGS (enable ints)
-    push $0x23 #(yes that is the correct GDT entry for DPL = 3 long mode)
+    push $(USER_CS | 3) #(yes that is the correct GDT entry for DPL = 3 long mode)
     push %rdi
     iretq

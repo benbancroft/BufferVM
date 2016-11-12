@@ -312,9 +312,19 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
                 switch (regs.rax) {
                     //Exit
-                    case 0:
+                    case 0: {
                         printf("Exit syscall\n");
+
+                        char buffer[0x1000];
+                        uint64_t number;
+                        //printf("Size: %s %d\n", buffer, regs.rdx);
+                        if (read_virtual_addr(0xDEADB000, 0x1000, buffer, vm->mem)) {
+                            memcpy(&number, buffer+0xEEF, sizeof(uint64_t));
+                            printf("0xDEADBEEF val: %" PRIu64 "\n", number);
+                        }
+
                         return;
+                    }
                     case 1:
                     {
                         char buffer[regs.rdx];
