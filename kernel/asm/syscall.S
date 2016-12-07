@@ -37,7 +37,6 @@ syscall_entry:
     movq %rsp, %gs:CPU_TMP_RSP
     movq $kernel_stack, %rsp
     movq (%rsp), %rsp
-    pushq %rcx
     pushq %rbp
     pushq %rcx
 
@@ -58,7 +57,6 @@ syscall_entry:
 syscall_entry_bail:
     popq %rcx
     popq %rbp
-    popq %rcx
 
     movq %gs:CPU_TMP_R15, %r15
     movq %gs:CPU_TMP_RSP, %rsp

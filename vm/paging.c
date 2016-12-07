@@ -84,7 +84,7 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
 
         uint64_t phy_addr = allocate_page(mem_offset, false);
 
-        memset(mem_offset + phy_addr, 0x0, size_left_mem < 0x1000 ? mem_size : 0x1000);
+        memset(mem_offset + phy_addr, 0x0, 0x1000);
         memcpy(mem_offset + phy_addr, elf_seg_start+i, size_left_elf < 0x1000 ? size_left_elf : 0x1000);
 
         printf("Loaded page: %p %p, %#04hhx\n", (void*) p, (void*) phy_addr, mem_offset[phy_addr+0xc0a]);

@@ -33,4 +33,6 @@ void free(void *ap);
 
 static Header *morecore(size_t nu);
 
+void *set_version(uint64_t version, uint64_t *pointer);
+
 #endif

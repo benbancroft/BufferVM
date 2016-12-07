@@ -27,6 +27,14 @@ idt_debug_handler:
 .idt_debug_continue:
     popq %rax
     subl $0x1, step_counter
+
+    /*pushq %rax
+    pushq %rdi
+    movq step_counter, %rdi
+    call host_regs
+    popq %rdi
+    popq %rax*/
+
     iretq
 .idt_debug_exit:
     movq 8(%rsp), %rax
@@ -36,6 +44,7 @@ idt_debug_handler:
     popq %rdi
     popq %rax
     movq idt_stack, %rsp
+    movq $0x200, 16(%rsp)
     movq $(USER_CS | 3), 8(%rsp)
 
     iretq

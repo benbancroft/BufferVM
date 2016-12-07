@@ -2,34 +2,42 @@
 
 void *__curbrk = NULL;
 
-int brk(void *addr) {
+/*int brk(void *addr) {
     void *newbrk = _brk(addr);
 
     __curbrk = newbrk;
 
     if (newbrk < addr) {
         return -1;
-        printf("F:\n");
     }
 
     return 0;
-}
+}*/
 
 void *sbrk(intptr_t increment) {
-    void *oldbrk;
+    char *end;
+    char *new_brk;
+    char *old_brk;
 
-    if (__curbrk == NULL)
-        if (brk(0) < 0)        /* Initialize the break.  */
-            return (void *) -1;
+    if (__curbrk == NULL){
+        __curbrk = _brk(0);
+    }
 
     if (increment == 0)
         return __curbrk;
 
-    oldbrk = __curbrk;
-    if ((increment > 0 ? ((size_t) oldbrk + (size_t) increment < (size_t) oldbrk) : ((size_t) oldbrk <
-                                                                                              (size_t) -increment)) ||
-        brk(oldbrk + increment) < 0)
-        return (void *) -1;
+    old_brk = __curbrk;
+    end = __curbrk + increment;
 
-    return oldbrk;
+    new_brk = (char *) _brk(end);
+
+    if (new_brk == (void *)-1)
+        return new_brk;
+    else if (new_brk < end)
+    {
+        return (void *)-1;
+    }
+
+    __curbrk = new_brk;
+    return old_brk;
 }

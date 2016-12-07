@@ -15,7 +15,7 @@ read:
     syscall                 # call kernel.
 
 	# return already in rax
-	ret
+	retq
 
 write:
     # third argument: message length.
@@ -25,7 +25,7 @@ write:
     syscall                 # call kernel.
 
 	# return already in rax
-	ret
+	retq
 
 _brk:
 	push    %rbp            # create stack frame
@@ -36,4 +36,4 @@ _brk:
     syscall                 # call kernel.*/
 
 	pop     %rbp            # restore the base pointer
-	ret
+	retq

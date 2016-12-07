@@ -349,6 +349,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                     case 4:
                         map_physical_page(regs.rdi, regs.rsi, regs.rdx, regs.rcx, vm->mem);
                         break;
+                    case 5:
+                        printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
+                        break;
                     default:
                         printf("Unsupported syscall %" PRIu64 "\n", (uint64_t) regs.rax);
                         return;

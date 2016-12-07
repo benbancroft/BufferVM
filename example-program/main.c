@@ -3,16 +3,6 @@
 
 static int numbers[] = {5, 7, 11, 13, 6};
 
-const int ver_num_bits = 4;
-
-void *set_version(uint64_t version, uint64_t *pointer) {
-    return (void *)((uint64_t) pointer | ((version & 0xF) << (48 - ver_num_bits)));
-}
-
-uint64_t get_version(uint64_t *pointer) {
-    return (uint64_t)pointer >> (48 - ver_num_bits);
-}
-
 int sum_array(int a[], int num_elements) {
     int sum = 0;
     for (int i = 0; i < num_elements; i++) {
@@ -50,8 +40,9 @@ void main() {
 
     //heap test
 
-    void *mem = malloc(10);
+    char *mem = malloc(10);
     printf("Heap: %p\n", mem);
+    //mem[16] = 42;
 
     //read test case
 
@@ -62,5 +53,6 @@ void main() {
     char *name = getline();
     printf("My name is: %s", name);
 
+    printf("yey\n");
     return;
 }

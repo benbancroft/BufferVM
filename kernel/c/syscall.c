@@ -8,6 +8,8 @@
 #include "../h/host.h"
 #include "../../common/paging.h"
 
+uint64_t curr_brk;
+
 /* Syscall table and parameter info */
 void *syscall_table[SYSCALL_MAX];
 
@@ -41,16 +43,16 @@ void syscall_exit(){
     host_exit();
 }
 
-uint64_t curr_brk = 0;
-
 uint64_t syscall_brk(uint64_t brk){
     uint64_t new_brk;
 
-    if (brk == 0 && curr_brk == 0)
+    if (brk == 0 && curr_brk == 0){
         curr_brk = USER_HEAP_START;
+    }
     else {
-        if (brk < curr_brk)
+        if (brk < curr_brk){
             return -1;
+        }
 
         new_brk = PAGE_ALIGN(brk);
 
@@ -59,6 +61,7 @@ uint64_t syscall_brk(uint64_t brk){
 
         curr_brk = new_brk;
     }
+
     return curr_brk;
 }
 
@@ -75,4 +78,6 @@ void syscall_init()
     syscall_register(1, (uintptr_t) &syscall_write);
     syscall_register(12, (uintptr_t) &syscall_brk);
     syscall_register(60, (uintptr_t) &syscall_exit);
+
+    curr_brk = 0;
 }

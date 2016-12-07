@@ -2,6 +2,7 @@
 .globl host_exit
 .globl host_write
 .globl host_read
+.globl host_regs
 .globl allocate_page
 .globl map_physical_page
 
@@ -26,5 +27,10 @@ allocate_page:
 
 map_physical_page:
     movq $0x4, %rax
+    hlt
+    ret
+
+host_regs:
+    movq $0x5, %rax
     hlt
     ret

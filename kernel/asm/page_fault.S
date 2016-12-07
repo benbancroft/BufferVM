@@ -35,14 +35,25 @@ idt_page_fault_handler:
     //restore register
     popq %rcx
 
-    movl $1, step_counter
+    #TODO - change to movl?
+    movq $1, step_counter
     movq %rsp, idt_stack
     addq $8, (idt_stack)
+
+    /*pushq %rax
+    pushq %rdi
+    pushq %rsi
+    movq step_counter, %rdi
+    movq 24(%esp), %rsi
+    call host_regs
+    popq %rsi
+    popq %rdi
+    popq %rax*/
 
     pushf
     movl (%esp), %ecx
     orl $0x0100, %ecx
-    movl %esi, (%esp)
+    movl %ecx, (%esp)
     popf
 
     #allows us to jump without clobbering register

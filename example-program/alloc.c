@@ -64,8 +64,9 @@ void *malloc(size_t nbytes) {
         }
         if (p ==
             freep)        /* Falls die Liste keinen Block ausreichender Groesse enthaelt, wird morecore() aufgrufen */
-            if ((p = morecore(nunits)) == NULL)
+            if ((p = morecore(nunits)) == NULL){
                 return NULL;
+            }
     }
 }
 
@@ -104,6 +105,7 @@ static Header *morecore(size_t nu) {
     if (nu < NALLOC)
         nu = NALLOC;
     cp = sbrk(nu * sizeof(Header));
+
     if (cp == (char *) -1)        /* sbrk liefert -1 im Fehlerfall */
         return NULL;
     up = (Header *) cp;
