@@ -2,7 +2,6 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/kernel/h/version.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/syscall.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/tss.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/idt.S" isTestSource="false" />
@@ -28,6 +27,7 @@
       <sourceFolder url="file://$MODULE_DIR$/example-program/sbrk.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/stdlib_inc.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/version.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/stdlib_inc.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/CMakeLists.txt" isTestSource="false" />

@@ -48,4 +48,7 @@ char *convert(uint64_t num, size_t base);
 void printf(char* format,...);
 char *getline(void);
 
+void *set_version_ptr(uint64_t version, uint64_t *pointer);
+uint64_t get_version_ptr(uint64_t *pointer);
+
 #endif

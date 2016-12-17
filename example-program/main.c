@@ -33,10 +33,10 @@ void main() {
 
     //version test case
 
-    /**my_string = "epic string";
-    printf("String: %s, Ver: %d\n", my_string, (int)get_version(my_string));
-    ver_string = set_version(5, my_string);
-    printf("Versioned string: %s Ver: %d\n", ver_string, (int)get_version(ver_string));*/
+    my_string = "epic string";
+    printf("String: %s, Ver: %d\n", my_string, (int)get_version_ptr(my_string));
+    ver_string = set_version_ptr(5, my_string);
+    printf("Versioned string: %s Ver: %d\n", ver_string, (int)get_version_ptr(ver_string));
 
     //heap test
 

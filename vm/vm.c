@@ -210,8 +210,8 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
-    void *entry_point_kernel;
-    void *entry_point_user;
+    elf_info_t kernel_elf_info;
+    elf_info_t user_elf_info;
 
     int ret;
 
@@ -229,11 +229,11 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
         exit(1);
     }
 
-    entry_point_kernel = image_load(kernel_binary_fd, false, vm);
-    printf("Entry point kernel: %p\n", entry_point_kernel);
+    kernel_elf_info = image_load(kernel_binary_fd, false, vm);
+    printf("Entry point kernel: %p\n", kernel_elf_info.entry_addr);
 
-    entry_point_user = image_load(prog_binary_fd, true, vm);
-    printf("Entry point user: %p\n", entry_point_user);
+    user_elf_info = image_load(prog_binary_fd, true, vm);
+    printf("Entry point user: %p\n", user_elf_info.entry_addr);
 
     //allocate 50 stack pages for user stack
     for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
@@ -258,14 +258,16 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     //bootstrap entry
     regs.rip = 0;
     //kernel entry
-    regs.rdi = (uint64_t) entry_point_kernel;
+    regs.rdi = (uint64_t) kernel_elf_info.entry_addr;
     //user entry
-    regs.rsi = (uint64_t) entry_point_user;
+    regs.rsi = (uint64_t) user_elf_info.entry_addr;
     //kernel stack
     regs.rdx = 0xc0032000;
     regs.rsp = 0xc0032000;
     //user stack
     regs.rcx = 0xc000000;
+    //user heap
+    regs.r8 = user_elf_info.max_page_addr;
 
     if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
         perror("KVM_SET_REGS");

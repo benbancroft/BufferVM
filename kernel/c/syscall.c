@@ -3,7 +3,7 @@
 //
 
 #include "../../libc/stdlib.h"
-#include "../h/kernel_as.h"
+#include "../h/kernel.h"
 #include "../h/syscall.h"
 #include "../h/host.h"
 #include "../../common/paging.h"
@@ -47,7 +47,7 @@ uint64_t syscall_brk(uint64_t brk){
     uint64_t new_brk;
 
     if (brk == 0 && curr_brk == 0){
-        curr_brk = USER_HEAP_START;
+        curr_brk = user_heap_start;
     }
     else {
         if (brk < curr_brk){

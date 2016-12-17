@@ -47,12 +47,12 @@ void *find_sym(const char *name, Elf32_Shdr *shdr, const char *strings, const ch
     return NULL;
 }
 
-void *image_load(int fd, bool user, struct vm_t *vm) {
+elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
     Elf *e;
     size_t n;
     GElf_Ehdr ehdr;
 
-    void *entry = NULL;
+    elf_info_t elf_info = { NULL, 0 };
 
     if (elf_version(EV_CURRENT) == EV_NONE)
         errx(EX_SOFTWARE, "ELF library initialization failed: %s", elf_errmsg(-1));
@@ -66,7 +66,7 @@ void *image_load(int fd, bool user, struct vm_t *vm) {
     if (gelf_getehdr(e, &ehdr) == NULL)
         errx(EX_SOFTWARE, "getehdr () failed: %s.", elf_errmsg(-1));
 
-    entry = (void *) ehdr.e_entry;
+    elf_info.entry_addr = (void *) ehdr.e_entry;
 
     if (elf_getphdrnum(e, &n) != 0)
         errx(EX_DATAERR, "elf_getphdrnum () failed: %s.", elf_errmsg(-1));
@@ -74,6 +74,8 @@ void *image_load(int fd, bool user, struct vm_t *vm) {
     GElf_Phdr phdr;
     uint64_t start;
     uint64_t taddr;
+    uint64_t max_addr = 0;
+    uint64_t section_max_addr;
 
     for (size_t i = 0; i < n; i++) {
 
@@ -87,7 +89,7 @@ void *image_load(int fd, bool user, struct vm_t *vm) {
             fprintf(stderr, "image_load:: p_filesz > p_memsz\n");
             //TODO
             //munmap(exec, size);
-            return 0;
+            return elf_info;
         }
         if (!phdr.p_filesz) {
             continue;
@@ -110,8 +112,18 @@ void *image_load(int fd, bool user, struct vm_t *vm) {
 
         load_address_space(taddr, phdr.p_memsz, (char *) start, phdr.p_filesz, flags | user ? PDE64_USER : 0, vm->mem);
 
+        section_max_addr = taddr + phdr.p_memsz;
+
+        if (section_max_addr > max_addr)
+            max_addr = section_max_addr;
+
         printf("Loaded header at %p of size: %" PRIu64 "\n", (void *) taddr, (uint64_t) phdr.p_memsz);
     }
+
+    // Align to page size
+    elf_info.max_page_addr = (uint64_t) P2ROUNDUP(max_addr, PAGE_SIZE);
+
+    printf("max addr %p\n", (void *) elf_info.max_page_addr);
 
     /*GElf_Shdr shdr;
     size_t shstrndx, sz;
@@ -173,7 +185,7 @@ void *image_load(int fd, bool user, struct vm_t *vm) {
 
     elf_end(e);
 
-    return entry;
+    return elf_info;
 
 }
 

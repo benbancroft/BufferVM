@@ -16,8 +16,6 @@
 #define CPU_TMP_R15       0x0
 #define CPU_TMP_RSP       0x8
 
-#define USER_HEAP_START 0x604000
-
 #define TSS_START 0xfffbd000
 
 /* AMD64 MSR values */

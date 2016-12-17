@@ -13,16 +13,16 @@ tss_entry_t *tss = (tss_entry_t*) TSS_START;
 
 uint64_t kernel_stack;
 uint64_t user_stack;
-uint64_t user_max = 0;
+uint64_t user_heap_start;
 
 uint32_t step_counter = 0;
 uint64_t idt_stack = 0;
 
-void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t _user_stack, uint64_t _user_max) {
+void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t _user_stack, uint64_t _user_heap) {
 
     kernel_stack = _kernel_stack;
     user_stack = _user_stack;
-    user_max = _user_max;
+    user_heap_start = _user_heap;
 
     cpu_init();
     tss_init(kernel_stack);
