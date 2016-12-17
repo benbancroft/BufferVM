@@ -121,9 +121,7 @@ elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
     }
 
     // Align to page size
-    elf_info.max_page_addr = (uint64_t) P2ROUNDUP(max_addr, PAGE_SIZE);
-
-    printf("max addr %p\n", (void *) elf_info.max_page_addr);
+    elf_info.max_page_addr = un_sign_extend((uint64_t) P2ROUNDUP(max_addr, PAGE_SIZE));
 
     /*GElf_Shdr shdr;
     size_t shstrndx, sz;

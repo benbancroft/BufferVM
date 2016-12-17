@@ -243,9 +243,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
         map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
     }
 
-    //allocate 4 stack pages for kernel stack
-    //TODO - make this use secton in elf binary?
-    for (uint32_t i = 0xc0032000; i > 0xc0032000 - 0x20000; i -= 0x1000) {
+    //lets allocate 25 pages for kernel stack
+    uint64_t ksp = kernel_elf_info.max_page_addr + 25*PAGE_SIZE;
+    for (uint64_t i = kernel_elf_info.max_page_addr; i < ksp; i += PAGE_SIZE) {
 
         uint64_t phy_addr = allocate_page(vm->mem, false);
 
@@ -262,8 +262,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     //user entry
     regs.rsi = (uint64_t) user_elf_info.entry_addr;
     //kernel stack
-    regs.rdx = 0xc0032000;
-    regs.rsp = 0xc0032000;
+    regs.rdx = regs.rsp = ksp;
     //user stack
     regs.rcx = 0xc000000;
     //user heap

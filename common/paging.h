@@ -46,6 +46,7 @@ extern uint64_t page_counter;
 extern uint64_t pml4_addr;
 
 int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, char *mem_offset);
+uint64_t un_sign_extend(uint64_t addr);
 virt_addr_info_t get_virt_addr_info(uint64_t addr);
 
 int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, char *mem_offset);

@@ -10,6 +10,22 @@ uint32_t pt_start_addr = 0xFFB00000;
 uint64_t page_counter = 5;
 uint64_t pml4_addr;
 
+uint64_t kbit(uint64_t addr, size_t  k){
+    return (addr >> k) & 1;
+}
+
+uint64_t un_sign_extend(uint64_t addr){
+    if (kbit(addr, 63) == 0) return addr;
+
+    size_t extension_bits = 1;
+    for (int32_t i = 62; i >= 0; i--){
+        if (kbit(addr, i) == 1) extension_bits++;
+        else break;
+    }
+
+    return (addr & (0xFFFFFFFFFFFFFFFF >> extension_bits));
+}
+
 virt_addr_info_t get_virt_addr_info(uint64_t addr){
     virt_addr_info_t pginf;
 
