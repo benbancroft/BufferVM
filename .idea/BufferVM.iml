@@ -27,7 +27,6 @@
       <sourceFolder url="file://$MODULE_DIR$/example-program/sbrk.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/stdlib_inc.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/common/version.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/stdlib_inc.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libc/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/CMakeLists.txt" isTestSource="false" />
@@ -39,8 +38,12 @@
       <sourceFolder url="file://$MODULE_DIR$/vm/paging.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/gdt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/intelxed/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/bootstrap/bootstrap.s" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/bootstrap/CMakeLists.txt" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/intelxed/kit" />
+      <excludeFolder url="file://$MODULE_DIR$/intelxed/mbuild" />
+      <excludeFolder url="file://$MODULE_DIR$/intelxed/xed" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

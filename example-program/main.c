@@ -46,7 +46,7 @@ void main() {
 
     mem = set_version(mem, 10, 5);
     printf("Versioned mem - Ver: %d prt: %p\n", (int)get_version_ptr(mem), mem);
-    mem[0] = 42;
+    mem[10] = 42;
 
     //read test case
 

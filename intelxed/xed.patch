@@ -1,0 +1,12 @@
+--- kit/include/xed-types.h	2016-12-18 17:16:10.826670490 +0000
++++ kit/include/xed-types.h	2016-12-18 20:03:46.507697019 +0000
+@@ -27,7 +27,9 @@
+ #include "xed-common-hdrs.h"
+ 
+ #if defined(__GNUC__) || defined(__ICC)
++#if !defined(NOSTDLIB_BUILD)
+ #  include <stdint.h>
++#endif
+ #  define xed_uint8_t   uint8_t 
+ #  define xed_uint16_t  uint16_t
+ #  define xed_uint32_t  uint32_t

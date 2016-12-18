@@ -6,6 +6,7 @@
 #include "../h/kernel.h"
 #include "../../common/paging.h"
 #include "../h/host.h"
+#include "../../intelxed/kit/include/xed-interface.h"
 
 bool on_same_page(void *addr1, void *addr2) {
     return P2ALIGN((uint64_t) addr1, PAGE_SIZE) == P2ALIGN((uint64_t) addr2, PAGE_SIZE);
@@ -25,6 +26,7 @@ uint8_t get_version(uint64_t *addr) {
 }
 
 bool check_version(void *addr, uint64_t *rip) {
+
     //printf("Checking version of VA %p at RIP: %p\n", addr, rip);
     uint64_t ptr_ver = get_version_ptr(addr);
     void *norm_addr = normalise_version_ptr(addr);
@@ -36,9 +38,25 @@ bool check_version(void *addr, uint64_t *rip) {
             return (true);
         }
         else if (get_version(addr+i) != ptr_ver){
-            host_print_var((uint64_t )addr);
-            host_print_var((uint64_t )normalise_version_ptr(addr));
+            xed_error_enum_t xed_error;
+            xed_bool_t ok;
+            xed_decoded_inst_t xedd;
+            uint64_t inst_len;
+
+            xed_decoded_inst_zero(&xedd);
+
+            xed_decoded_inst_set_mode(&xedd, XED_MACHINE_MODE_LONG_64, XED_ADDRESS_WIDTH_64b);
+            xed_error = xed_decode(&xedd,
+                                   XED_REINTERPRET_CAST(const xed_uint8_t*, rip),
+                                   15);
+
+            if (xed_error == XED_ERROR_NONE) {
+                inst_len = xed_decoded_inst_get_operand_width(&xedd) / 8;
+                if (inst_len <= i)
+                    return (true);
+            }
             printf ("VADDR: %p, RIP: %p PVer: %d byte: %d\n", addr, rip, ptr_ver, i);
+
             return (false);
         }
     }

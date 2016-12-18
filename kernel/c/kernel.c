@@ -10,12 +10,19 @@
 #include "../../common/paging.h"
 #include "../h/host.h"
 
+#include "../../intelxed/kit/include/xed-interface.h"
+
 tss_entry_t *tss = (tss_entry_t*) TSS_START;
 
 uint64_t kernel_stack;
 uint64_t user_stack;
 uint64_t user_heap_start;
 uint64_t user_version_start;
+
+void xed_user_abort_function(const char *msg, const char *file, int line, void *other){
+    printf("abort thing needs writing!\n");
+    host_exit();
+}
 
 void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t _user_stack, uint64_t _user_heap) {
 
@@ -37,6 +44,9 @@ void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, u
     printf("Signed sizes: %d %d %d %d\n", sizeof (int8_t), sizeof (int16_t), sizeof (int32_t), sizeof (int64_t));
 
     syscall_init();
+
+    xed_register_abort_function(&xed_user_abort_function, 0);
+    xed_tables_init();
 
     switch_usermode(user_entry);
 

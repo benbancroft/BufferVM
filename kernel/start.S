@@ -5,6 +5,7 @@
         .global switch_usermode
         .global test
 _start:
+    movl $0xDEADBEEF, %eax
 	call kernel_main
 
 	call host_exit
