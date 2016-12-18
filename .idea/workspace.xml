@@ -24,24 +24,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="64521e75-0ecf-4157-ba79-ec1d2cd9b44d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/intelxed/mbuild" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/intelxed/xed" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitmodules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/intelxed/CMakeLists.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/BufferVM.iml" afterPath="$PROJECT_DIR$/.idea/BufferVM.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example-program/main.c" afterPath="$PROJECT_DIR$/example-program/main.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/CMakeLists.txt" afterPath="$PROJECT_DIR$/kernel/CMakeLists.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/cstubs.c" afterPath="$PROJECT_DIR$/kernel/c/cstubs.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/kernel.c" afterPath="$PROJECT_DIR$/kernel/c/kernel.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/version.c" afterPath="$PROJECT_DIR$/kernel/c/version.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/kernel.ld" afterPath="$PROJECT_DIR$/kernel/kernel.ld" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/start.S" afterPath="$PROJECT_DIR$/kernel/start.S" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libc/stdlib.h" afterPath="$PROJECT_DIR$/libc/stdlib.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libc/stdlib_inc.c" afterPath="$PROJECT_DIR$/libc/stdlib_inc.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vm/CMakeLists.txt" afterPath="$PROJECT_DIR$/vm/CMakeLists.txt" />
     </list>
     <ignored path="BufferVM.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -61,11 +47,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="kernel.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/kernel/c/kernel.c">
+      <file leaf-file-name="syscall.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="53" />
+            <state relative-caret-position="347">
+              <caret line="59" column="40" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -74,8 +60,8 @@
       <file leaf-file-name="version.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kernel/c/version.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="807">
-              <caret line="57" column="31" selection-start-line="57" selection-start-column="31" selection-end-line="57" selection-end-column="31" />
+            <state relative-caret-position="681">
+              <caret line="63" column="44" selection-start-line="63" selection-start-column="44" selection-end-line="63" selection-end-column="44" />
               <folding>
                 <element signature="e#38#71#0" expanded="true" />
               </folding>
@@ -83,11 +69,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.c" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/example-program/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="48" column="10" selection-start-line="48" selection-start-column="10" selection-end-line="48" selection-end-column="10" />
+            <state relative-caret-position="519">
+              <caret line="48" column="9" selection-start-line="48" selection-start-column="9" selection-end-line="48" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -111,8 +97,18 @@
               <folding>
                 <element signature="e#864#885#0" expanded="true" />
                 <element signature="e#1762#1794#0" expanded="true" />
-                <marker date="1482093488845" expanded="true" signature="612:638" ph="//..." />
+                <marker date="1482098963748" expanded="true" signature="612:638" ph="//..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="kernel.ld" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kernel/kernel.ld">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="234">
+              <caret line="13" column="21" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -130,8 +126,8 @@
       <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kernel/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="51" selection-start-line="11" selection-start-column="51" selection-end-line="11" selection-end-column="51" />
+            <state relative-caret-position="108">
+              <caret line="6" column="36" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -147,21 +143,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="xed.patch" pinned="false" current-in-tab="true">
+      <file leaf-file-name="xed.patch" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/intelxed/xed.patch">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vm/CMakeLists.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="7" column="79" selection-start-line="7" selection-start-column="79" selection-end-line="7" selection-end-column="79" />
               <folding />
             </state>
           </provider>
@@ -206,14 +192,12 @@
         <option value="$PROJECT_DIR$/common/paging.h" />
         <option value="$PROJECT_DIR$/example-program/alloc.c" />
         <option value="$PROJECT_DIR$/kernel/h/syscall_as.h" />
-        <option value="$PROJECT_DIR$/kernel/c/syscall.c" />
         <option value="$PROJECT_DIR$/example-program/alloc.h" />
         <option value="$PROJECT_DIR$/example-program/cstubs.s" />
         <option value="$PROJECT_DIR$/kernel/asm/syscall.S" />
         <option value="$PROJECT_DIR$/example-program/cstubs.S" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/kernel/start.S" />
-        <option value="$PROJECT_DIR$/kernel/kernel.ld" />
         <option value="$PROJECT_DIR$/libc/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/kernel/c/cstubs.c" />
         <option value="$PROJECT_DIR$/libc/stdlib_inc.c" />
@@ -221,11 +205,13 @@
         <option value="$PROJECT_DIR$/vm/vm.c" />
         <option value="$PROJECT_DIR$/kernel/c/kernel.c" />
         <option value="$PROJECT_DIR$/vm/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/kernel/c/version.c" />
-        <option value="$PROJECT_DIR$/example-program/main.c" />
-        <option value="$PROJECT_DIR$/kernel/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/intelxed/kit/include/xed-types.h" />
         <option value="$PROJECT_DIR$/intelxed/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/kernel/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/kernel/kernel.ld" />
+        <option value="$PROJECT_DIR$/kernel/c/syscall.c" />
+        <option value="$PROJECT_DIR$/kernel/c/version.c" />
+        <option value="$PROJECT_DIR$/example-program/main.c" />
       </list>
     </option>
   </component>
@@ -720,24 +706,24 @@
       <workItem from="1481149784632" duration="2942000" />
       <workItem from="1481225375532" duration="1494000" />
       <workItem from="1481986692145" duration="50394000" />
-      <workItem from="1482074651020" duration="15382000" />
+      <workItem from="1482074651020" duration="18672000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="359087000" />
+    <option name="totallyTimeSpent" value="362377000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="27" width="1920" height="1053" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32711306" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32711306" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930845" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930845" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32711306" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32711306" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930845" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -1008,16 +994,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
-          <folding>
-            <element signature="e#38#68#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bootstrap/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -1081,14 +1057,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/kernel.ld">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-198">
-          <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libc/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
@@ -1137,16 +1105,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/version.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="807">
-          <caret line="57" column="31" selection-start-line="57" selection-start-column="31" selection-end-line="57" selection-end-column="31" />
-          <folding>
-            <element signature="e#38#71#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/kernel/c/cstubs.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="365">
@@ -1163,14 +1121,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="51" selection-start-line="11" selection-start-column="51" selection-end-line="11" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/intelxed/kit/include/xed-types.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="409">
@@ -1178,16 +1128,8 @@
           <folding>
             <element signature="e#864#885#0" expanded="true" />
             <element signature="e#1762#1794#0" expanded="true" />
-            <marker date="1482093488845" expanded="true" signature="612:638" ph="//..." />
+            <marker date="1482098963748" expanded="true" signature="612:638" ph="//..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/example-program/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="48" column="10" selection-start-line="48" selection-start-column="10" selection-end-line="48" selection-end-column="10" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1203,6 +1145,48 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="36" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/kernel.ld">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="13" column="21" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="347">
+          <caret line="59" column="40" selection-start-line="59" selection-start-column="40" selection-end-line="59" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/version.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="681">
+          <caret line="63" column="44" selection-start-line="63" selection-start-column="44" selection-end-line="63" selection-end-column="44" />
+          <folding>
+            <element signature="e#38#71#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example-program/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="519">
+          <caret line="48" column="9" selection-start-line="48" selection-start-column="9" selection-end-line="48" selection-end-column="9" />
           <folding />
         </state>
       </provider>
