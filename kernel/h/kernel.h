@@ -8,6 +8,7 @@
 #define PROJECT_KERNEL_H
 
 extern uint64_t user_heap_start;
+extern uint64_t user_version_start;
 
 void switch_usermode(void *entry);
 void test();

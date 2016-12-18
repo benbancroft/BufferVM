@@ -6,19 +6,20 @@
 idt_page_fault_handler:
     cli
 
-    pushq %rcx
+    swapgs
+    movq %rcx, %gs:CPU_TMP_R15
 
-    movq 8(%rsp), %rcx
+    movq (%rsp), %rcx
     btq $2, %rcx
     jc .page_fault_user
 
-    popq %rcx
+    swapgs
 
     movabs $LC0, %rdi
     movq %cr2, %rsi
-    movq 8(%rsp), %rdx
+    movq (%rsp), %rdx
     movq (%rsp), %rcx
-    movq 32(%rsp), %r8
+    movq 24(%rsp), %r8
     clr %rax       # needed for printf
     call printf
 
@@ -29,33 +30,61 @@ idt_page_fault_handler:
     //if OK, set single step mode and store current pc - clear flag on page entry
     //jump to pc
 
+    //this is god awful - likely will rewrite this c into assembly
+    pushq %rax
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %r8
+    pushq %r9
+    pushq %r10
+    pushq %r11
+
+    movq %cr2, %rdi
+    movq 16(%rsp), %rsi
+    call check_version
+    testq %rax, %rax
+    je .version_error
+
+    popq %r11
+    popq %r10
+    popq %r9
+    popq %r8
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    popq %rax
+
     //clone return address on stack for retq
     //we replace error value currently on stack
-    movq 16(%rsp), %rcx
-    movq %rcx, 8(%rsp)
-
-    swapgs
+    movq 8(%rsp), %rcx
+    movq %rcx, (%rsp)
 
     movl $1, %gs:CPU_TMP_DCNTR
-    movq 40(%rsp), %rcx
+    movq 32(%rsp), %rcx
     movq %rcx, %gs:CPU_TMP_DSP
 
-    swapgs
-
-    //restore register
-    popq %rcx
-
     pushf
-    movl (%esp), %ecx
+    movl (%rsp), %ecx
     orl $0x0100, %ecx
-    movl %ecx, (%esp)
+    movl %ecx, (%rsp)
+    //restore register
+    movq %gs:CPU_TMP_R15, %rcx
+    swapgs
     popf
 
     #allows us to jump without clobbering register
     retq
 
+.version_error:
+    movabs $LC1, %rdi
+    clr %rax       # needed for printf
+    call printf
+
+    call host_exit
+
 .section .data
 LC0:
         .ascii "Page fault - VA: %p PC: %p Error: %d SP: %p\n\0"
-LC2:
-    .ascii "Stack pointer: %p\n\0"
+LC1:
+    .ascii "Version error\n\0"

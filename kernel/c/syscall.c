@@ -60,7 +60,7 @@ uint64_t syscall_brk(uint64_t brk){
             //Actual memory page
             map_physical_page(p, allocate_page(NULL, false), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
             //Version page
-
+            map_physical_page(user_version_start + p, allocate_page(NULL, true), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
         }
 
         curr_brk = new_brk;
