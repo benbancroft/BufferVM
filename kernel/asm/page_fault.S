@@ -41,7 +41,7 @@ idt_page_fault_handler:
     pushq %r11
 
     movq %cr2, %rdi
-    movq 16(%rsp), %rsi
+    movq 72(%rsp), %rsi
     call check_version
     testq %rax, %rax
     je .version_error

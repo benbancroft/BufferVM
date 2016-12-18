@@ -5,6 +5,7 @@
 .globl host_regs
 .globl allocate_page
 .globl map_physical_page
+.globl is_vpage_present
 .globl host_print_var
 
 host_exit:
@@ -31,12 +32,17 @@ map_physical_page:
     hlt
     ret
 
-host_regs:
+is_vpage_present:
     movq $0x5, %rax
     hlt
     ret
 
-host_print_var:
+host_regs:
     movq $0x6, %rax
+    hlt
+    ret
+
+host_print_var:
+    movq $0x7, %rax
     hlt
     ret

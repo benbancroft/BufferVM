@@ -7,6 +7,7 @@
 #include "../h/syscall.h"
 #include "../h/host.h"
 #include "../../common/paging.h"
+#include "../../common/version.h"
 
 uint64_t curr_brk;
 
@@ -16,7 +17,7 @@ void *syscall_table[SYSCALL_MAX];
 /* Register a syscall */
 void syscall_register(int num, void *fn)
 {
-    if (num >= 0 && num < SYSCALL_MAX)
+    if (num >= 0 && num <= SYSCALL_MAX)
     {
         syscall_table[num] = fn;
     }
@@ -25,7 +26,7 @@ void syscall_register(int num, void *fn)
 /* Unregister a syscall */
 void syscall_unregister(int num)
 {
-    if (num >= 0 && num < SYSCALL_MAX)
+    if (num >= 0 && num <= SYSCALL_MAX)
     {
         syscall_table[num] = NULL;
     }
@@ -56,7 +57,7 @@ uint64_t syscall_brk(uint64_t brk){
 
         new_brk = PAGE_ALIGN(brk);
 
-        for (uint64_t p = curr_brk; p < new_brk; p += PAGE_SIZE){
+        for (uint64_t p = curr_brk; p <= new_brk; p += PAGE_SIZE){
             //Actual memory page
             map_physical_page(p, allocate_page(NULL, false), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
             //Version page
@@ -82,6 +83,9 @@ void syscall_init()
     syscall_register(1, (uintptr_t) &syscall_write);
     syscall_register(12, (uintptr_t) &syscall_brk);
     syscall_register(60, (uintptr_t) &syscall_exit);
+
+    syscall_register(SYSCALL_MAX, (uintptr_t) &get_version);
+    syscall_register(SYSCALL_MAX-1, (uintptr_t) &set_version);
 
     curr_brk = 0;
 }

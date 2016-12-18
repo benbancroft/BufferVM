@@ -2,7 +2,7 @@
 // Created by ben on 18/10/16.
 //
 
-#include "syscall_as.h"
+#include "../../common/syscall_as.h"
 
 #ifndef PROJECT_SYSCALL_H
 #define PROJECT_SYSCALL_H

@@ -63,6 +63,10 @@ int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, char *me
     return 1;
 }
 
+int is_vpage_present(uint64_t virtual_addr, char *mem_offset){
+    return get_phys_addr(virtual_addr, NULL, mem_offset);
+}
+
 int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, char *mem_offset)
 {
     uint64_t page_addr;
@@ -86,7 +90,8 @@ int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, char *mem_offset)
     if (!get_page_entry(pd2, info.pg_tbl_offset, &page_addr))
         return 0;
 
-    *phys_addr = page_addr + info.phys_offset;
+    if (phys_addr != NULL)
+        *phys_addr = page_addr + info.phys_offset;
 
     return 1;
 }

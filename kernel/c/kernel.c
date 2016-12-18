@@ -23,8 +23,9 @@ void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, u
     user_stack = _user_stack;
     user_heap_start = _user_heap;
 
-    user_version_start = user_heap_start + USER_VERSION_REDZONE;
+    user_version_start = kernel_stack + USER_VERSION_REDZONE;
     //TODO - add some assert mechanism to see if enough space (will this be needed?)
+    printf("version store start %p\n", user_version_start);
 
     cpu_init();
     tss_init(kernel_stack);

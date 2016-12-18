@@ -1,5 +1,5 @@
 #include "../h/kernel_as.h"
-#include "../h/syscall_as.h"
+#include "../../common/syscall_as.h"
 
     .section .text
     .global syscall_entry

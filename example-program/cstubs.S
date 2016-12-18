@@ -1,10 +1,16 @@
+#include "../common/syscall_as.h"
+
 .text
 .globl read
 .globl write
 .globl _brk
+.globl get_version
+.globl set_version
 .type read, @function
 .type write, @function
 .type _brk, @function
+.type get_version, @function
+.type set_version, @function
 
 
 read:
@@ -36,4 +42,16 @@ _brk:
     syscall                 # call kernel.*/
 
 	pop     %rbp            # restore the base pointer
+	retq
+
+get_version:
+    movq    $(SYSCALL_MAX), %rax
+    syscall                 # call kernel.
+
+	retq
+
+set_version:
+    movq    $(SYSCALL_MAX-1), %rax
+    syscall                 # call kernel.
+
 	retq

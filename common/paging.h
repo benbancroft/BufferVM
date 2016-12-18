@@ -49,6 +49,7 @@ int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, char *me
 uint64_t un_sign_extend(uint64_t addr);
 virt_addr_info_t get_virt_addr_info(uint64_t addr);
 
+int is_vpage_present(uint64_t virtual_addr, char *mem_offset);
 int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, char *mem_offset);
 int get_page_entry(uint64_t *table, size_t index, uint64_t *page);
 

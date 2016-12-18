@@ -352,9 +352,12 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         map_physical_page(regs.rdi, regs.rsi, regs.rdx, regs.rcx, vm->mem);
                         break;
                     case 5:
-                        printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
+                        regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);
                         break;
                     case 6:
+                        printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
+                        break;
+                    case 7:
                         printf("Host var: %llu\n", regs.rdi);
                         break;
                     default:

@@ -159,12 +159,17 @@ char *getline(void) {
 
 //version stuff
 
-const int ver_num_bits = 4;
+#define VER_NUM_BITS 8
+#define VER_NUM_BITMASK (1 << VER_NUM_BITS) - 1
 
-void *set_version_ptr(uint64_t version, uint64_t *pointer) {
-    return (void *)((uint64_t) pointer | ((version & 0xF) << (48 - ver_num_bits)));
+void *set_version_ptr(uint64_t version, void *pointer) {
+    return (void *)((uint64_t) pointer | ((version & 0xFF) << (48 - VER_NUM_BITS)));
 }
 
 uint64_t get_version_ptr(uint64_t *pointer) {
-    return (uint64_t)pointer >> (48 - ver_num_bits);
+    return (uint64_t)pointer >> (48 - VER_NUM_BITS);
+}
+
+void *normalise_version_ptr(void *addr) {
+    return (void *)((uint64_t)addr & ~((uint64_t)VER_NUM_BITMASK << (48 - VER_NUM_BITS)));
 }

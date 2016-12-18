@@ -1,5 +1,6 @@
 #include "../libc/stdlib.h"
 #include "alloc.h"
+#include "../common/version.h"
 
 static int numbers[] = {5, 7, 11, 13, 6};
 
@@ -42,7 +43,10 @@ void main() {
 
     char *mem = malloc(10);
     printf("Heap: %p\n", mem);
-    //mem[16] = 42;
+
+    mem = set_version(mem, 10, 5);
+    printf("Versioned mem - Ver: %d prt: %p\n", (int)get_version_ptr(mem), mem);
+    mem[0] = 42;
 
     //read test case
 
