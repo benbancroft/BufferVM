@@ -104,11 +104,11 @@ elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
 
         //Writeable.
         if (phdr.p_flags & PF_W)
-            flags = PDE64_WRITEABLE;
+            flags |= PDE64_WRITEABLE;
 
         // Executable.
-        if (phdr.p_flags & PF_X)
-            flags = PDE64_NO_EXE;
+        if (!(phdr.p_flags & PF_X))
+            flags |= PDE64_NO_EXE;
 
         load_address_space(taddr, phdr.p_memsz, (char *) start, phdr.p_filesz, flags | user ? PDE64_USER : 0, vm->mem);
 
@@ -121,7 +121,7 @@ elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
     }
 
     // Align to page size
-    elf_info.max_page_addr = un_sign_extend((uint64_t) P2ROUNDUP(max_addr, PAGE_SIZE));
+    elf_info.max_page_addr = (uint64_t) P2ROUNDUP(max_addr, PAGE_SIZE);
 
     /*GElf_Shdr shdr;
     size_t shstrndx, sz;

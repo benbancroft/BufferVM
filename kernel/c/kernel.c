@@ -8,15 +8,13 @@
 #include "../h/kernel.h"
 #include "../h/syscall.h"
 #include "../../common/paging.h"
+#include "../h/host.h"
 
 tss_entry_t *tss = (tss_entry_t*) TSS_START;
 
 uint64_t kernel_stack;
 uint64_t user_stack;
 uint64_t user_heap_start;
-
-uint32_t step_counter = 0;
-uint64_t idt_stack = 0;
 
 void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t _user_stack, uint64_t _user_heap) {
 
@@ -26,6 +24,9 @@ void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, u
 
     cpu_init();
     tss_init(kernel_stack);
+
+    printf("kernel stack %p\n", _kernel_stack);
+    host_print_var(_kernel_stack);
 
     idt_init(true);
     printf("Unsigned sizes: %d %d %d %d\n", sizeof (uint8_t), sizeof (uint16_t), sizeof (uint32_t), sizeof (uint64_t));

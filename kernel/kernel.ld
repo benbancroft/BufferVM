@@ -1,6 +1,6 @@
 ENTRY(_start)
 
-KERNEL_VMA = 0xffffffffc0000000;
+KERNEL_VMA = 0xc0000000;
 
 SECTIONS
 {
@@ -8,7 +8,7 @@ SECTIONS
 
     .text : AT(ADDR(.text) - KERNEL_VMA)
     {
-        *(.text)
+        *(.text*)
         *(.rodata*)
         . = ALIGN(4096);
     }

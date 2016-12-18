@@ -1,5 +1,6 @@
 #include "../h/kernel_as.h"
 
+.section .text
 .global idt_page_fault_handler
 .type idt_page_fault_handler, @function
 idt_page_fault_handler:
@@ -13,10 +14,11 @@ idt_page_fault_handler:
 
     popq %rcx
 
-    movq $LC0, %rdi
+    movabs $LC0, %rdi
     movq %cr2, %rsi
     movq 8(%rsp), %rdx
     movq (%rsp), %rcx
+    movq 32(%rsp), %r8
     clr %rax       # needed for printf
     call printf
 
@@ -32,23 +34,16 @@ idt_page_fault_handler:
     movq 16(%rsp), %rcx
     movq %rcx, 8(%rsp)
 
+    swapgs
+
+    movl $1, %gs:CPU_TMP_DCNTR
+    movq 40(%rsp), %rcx
+    movq %rcx, %gs:CPU_TMP_DSP
+
+    swapgs
+
     //restore register
     popq %rcx
-
-    #TODO - change to movl?
-    movq $1, step_counter
-    movq %rsp, idt_stack
-    addq $8, (idt_stack)
-
-    /*pushq %rax
-    pushq %rdi
-    pushq %rsi
-    movq step_counter, %rdi
-    movq 24(%esp), %rsi
-    call host_regs
-    popq %rsi
-    popq %rdi
-    popq %rax*/
 
     pushf
     movl (%esp), %ecx
@@ -61,6 +56,6 @@ idt_page_fault_handler:
 
 .section .data
 LC0:
-        .ascii "Page fault - VA: %p PC: %p Error: %d\n\0"
+        .ascii "Page fault - VA: %p PC: %p Error: %d SP: %p\n\0"
 LC2:
     .ascii "Stack pointer: %p\n\0"

@@ -15,4 +15,6 @@ int host_read(uint32_t fd, const char* buf, size_t count);
 
 int host_regs();
 
+int host_print_var(uint64_t var);
+
 #endif //KERNEL_HOST_H

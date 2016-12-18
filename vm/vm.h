@@ -75,6 +75,8 @@ tss_entry_t;
 typedef struct cpu_t {
     uint64_t rtmp_r15;
     uint64_t rtmp_rsp;
+    uint64_t rtmp_dsp;
+    uint64_t rtmp_dcntr;
 } __attribute__
 ((packed))cpu_t;
 

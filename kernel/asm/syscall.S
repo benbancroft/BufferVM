@@ -16,7 +16,7 @@ syscall_setup:
     movl $(AMD64_MSR_STAR), %ecx
     wrmsr
     # Set the kernel 64-bit entry point
-    movq $syscall_entry, %rcx
+    movabs $syscall_entry, %rcx
     movl %ecx, %eax
     shrq $32, %rcx
     movl %ecx, %edx
@@ -35,10 +35,13 @@ syscall_entry:
     #we cannot trash %rcx and %r11 as they are ret pointer and RFLAGs
     movq %r15, %gs:CPU_TMP_R15
     movq %rsp, %gs:CPU_TMP_RSP
-    movq $kernel_stack, %rsp
+
+    movabs $kernel_stack, %rsp
     movq (%rsp), %rsp
+
     pushq %rbp
     pushq %rcx
+    pushq %r11
 
     #bounds check
     cmpq $0, %rax
@@ -49,12 +52,14 @@ syscall_entry:
     #swap to match C amd64 abi
     movq %r10, %rcx
 
-    movq syscall_table(, %rax, 8), %r15
+    movabs $syscall_table, %r15
+    movq (%r15,%rax,8), %r15
     call *%r15
 
     movq %rcx, %r10
 
 syscall_entry_bail:
+    popq %r11
     popq %rcx
     popq %rbp
 
@@ -64,7 +69,7 @@ syscall_entry_bail:
     swapgs
     sysretq
 syscall_null_handler:
-    movq $LC0, %rdi
+    movabs $LC0, %rdi
     movq %rax, %rsi
     clr %rax       # needed for printf
     call printf

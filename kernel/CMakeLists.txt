@@ -5,7 +5,7 @@ project(kernel C ASM)
 include(../common/CMakeLists.txt)
 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -no-pie -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-variable -Wno-return-type" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffreestanding -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -nostdlib -lgcc -fdata-sections -ffunction-sections" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffreestanding -fPIC -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -nostdlib -lgcc -fdata-sections -ffunction-sections" )
 
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--build-id=none -T ${PROJECT_SOURCE_DIR}/kernel.ld" )
 

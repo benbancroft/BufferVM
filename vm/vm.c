@@ -236,7 +236,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     printf("Entry point user: %p\n", user_elf_info.entry_addr);
 
     //allocate 50 stack pages for user stack
-    for (uint32_t i = 0xc0000000; i > 0xc0000000 - 0x50000; i -= 0x1000) {
+    for (uint32_t i = 0xc0000000 - PAGE_SIZE; i > 0xc0000000 - 0x50000; i -= 0x1000) {
 
         uint64_t phy_addr = allocate_page(vm->mem, false);
 
@@ -263,6 +263,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     regs.rsi = (uint64_t) user_elf_info.entry_addr;
     //kernel stack
     regs.rdx = regs.rsp = ksp;
+    printf("stack var: %p\n", (void *) ksp);
     //user stack
     regs.rcx = 0xc000000;
     //user heap
@@ -352,6 +353,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         break;
                     case 5:
                         printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
+                        break;
+                    case 6:
+                        printf("Host var: %llu\n", regs.rdi);
                         break;
                     default:
                         printf("Unsupported syscall %" PRIu64 "\n", (uint64_t) regs.rax);

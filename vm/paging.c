@@ -17,11 +17,14 @@ uint64_t kbit(uint64_t addr, size_t  k){
 uint64_t un_sign_extend(uint64_t addr){
     if (kbit(addr, 63) == 0) return addr;
 
-    size_t extension_bits = 1;
+    size_t extension_bits = 0;
     for (int32_t i = 62; i >= 0; i--){
         if (kbit(addr, i) == 1) extension_bits++;
         else break;
     }
+    //handle exception for how 32/16-bit pointers are zero extended
+    if (extension_bits > 32)
+        extension_bits = 32;
 
     return (addr & (0xFFFFFFFFFFFFFFFF >> extension_bits));
 }
@@ -106,6 +109,9 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
         printf("Loaded page: %p %p, %#04hhx\n", (void*) p, (void*) phy_addr, mem_offset[phy_addr+0xc0a]);
         map_physical_page(p, phy_addr, flags, 1, mem_offset);
 
+        if (start_addr == 0xc0000000)
+            map_physical_page(0xffffffffc0000000, phy_addr, flags, 1, mem_offset);
+
         size_left_mem -= 0x1000;
         size_left_elf -= 0x1000;
     }
@@ -164,7 +170,7 @@ void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, 
     uint64_t *pml4 = (void *)(mem_offset + pml4_addr);
 
     uint64_t pdpt_addr = map_page_entry(pml4, 0, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, mem_offset);
-    uint64_t *pdpt = (void *)(mem_offset+ pdpt_addr);
+    uint64_t *pdpt = (void *)(mem_offset + pdpt_addr);
 
     uint64_t pd_addr = map_page_entry(pdpt, info.pg_dir_ptr_offset, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, mem_offset);
     uint64_t *pd = (void *)(mem_offset + pd_addr);
