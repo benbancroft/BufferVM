@@ -20,4 +20,6 @@ void fill_segment_descriptor(uint64_t *dt, struct kvm_segment *seg)
                 | (uint64_t)seg->db << 54 /* 16/32-bit segment */
                 | (uint64_t)seg->g << 55 /* 4KB granularity */
                 | ((seg->base & 0xff000000ULL) >> 24) << 56; /* Base bits 24:31 */
+
+    dt[index+1] = (seg->base & 0xffffffff00000000ULL) >> 32;
 }

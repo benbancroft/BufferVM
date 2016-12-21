@@ -52,7 +52,7 @@ elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
     size_t n;
     GElf_Ehdr ehdr;
 
-    elf_info_t elf_info = { NULL, 0 };
+    elf_info_t elf_info = { NULL, 0, 0 };
 
     if (elf_version(EV_CURRENT) == EV_NONE)
         errx(EX_SOFTWARE, "ELF library initialization failed: %s", elf_errmsg(-1));
@@ -74,6 +74,7 @@ elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
     GElf_Phdr phdr;
     uint64_t start;
     uint64_t taddr;
+    uint64_t min_addr = UINT64_MAX;
     uint64_t max_addr = 0;
     uint64_t section_max_addr;
 
@@ -114,6 +115,9 @@ elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
 
         section_max_addr = taddr + phdr.p_memsz;
 
+        if (taddr < min_addr)
+            min_addr = taddr;
+
         if (section_max_addr > max_addr)
             max_addr = section_max_addr;
 
@@ -121,6 +125,7 @@ elf_info_t image_load(int fd, bool user, struct vm_t *vm) {
     }
 
     // Align to page size
+    elf_info.min_page_addr = (uint64_t) P2ALIGN(min_addr, PAGE_SIZE);
     elf_info.max_page_addr = (uint64_t) P2ROUNDUP(max_addr, PAGE_SIZE);
 
     /*GElf_Shdr shdr;

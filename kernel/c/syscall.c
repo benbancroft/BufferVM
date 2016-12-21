@@ -49,6 +49,7 @@ uint64_t syscall_brk(uint64_t brk){
 
     if (brk == 0 && curr_brk == 0){
         curr_brk = user_heap_start;
+        printf("starting heap at: %p\n", user_heap_start);
     }
     else {
         if (brk < curr_brk){
@@ -56,6 +57,8 @@ uint64_t syscall_brk(uint64_t brk){
         }
 
         new_brk = PAGE_ALIGN(brk);
+
+        printf("new heap at: %p\n", new_brk);
 
         for (uint64_t p = curr_brk; p <= new_brk; p += PAGE_SIZE){
             //Actual memory page

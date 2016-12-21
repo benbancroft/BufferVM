@@ -12,6 +12,7 @@
 
 typedef struct elf_info {
     void *entry_addr;
+    uint64_t min_page_addr;
     uint64_t max_page_addr;
 } elf_info_t;
 

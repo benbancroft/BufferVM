@@ -24,14 +24,16 @@ void xed_user_abort_function(const char *msg, const char *file, int line, void *
     host_exit();
 }
 
-void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t _user_stack, uint64_t _user_heap) {
+void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t user_split, uint64_t _user_heap, uint64_t _tss_start) {
 
     kernel_stack = _kernel_stack;
-    user_stack = _user_stack;
+    user_stack = user_version_start = user_split;
     user_heap_start = _user_heap;
 
-    user_version_start = kernel_stack + USER_VERSION_REDZONE;
+    tss = (tss_entry_t*)_tss_start;
+
     //TODO - add some assert mechanism to see if enough space (will this be needed?)
+
     printf("version store start %p\n", user_version_start);
 
     cpu_init();

@@ -80,7 +80,7 @@ void vcpu_init(struct vm_t *vm, struct vcpu_t *vcpu)
         exit(1);
     }
 
-    if (ioctl(vm->fd, KVM_SET_TSS_ADDR, TSS_START) < 0) {
+    if (ioctl(vm->fd, KVM_SET_TSS_ADDR, TSS_KVM) < 0) {
         perror("KVM_SET_TSS_ADDR");
         exit(1);
     }
@@ -99,8 +99,7 @@ void vcpu_init(struct vm_t *vm, struct vcpu_t *vcpu)
     }
 }
 
-static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
-{
+static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     struct kvm_segment seg = {
             .base = 0,
             .limit = 0xffffffff,
@@ -120,11 +119,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     //Page for gdt
     map_physical_page(0x1000, 0x1000, PDE64_WRITEABLE, 1, vm->mem);
 
-    //map 3 pages required for TSS
-    for (uint64_t p = TSS_START; p < TSS_START+3*PAGE_SIZE; p += PAGE_SIZE)
-        map_physical_page(p, 0x2000+(p-TSS_START), PDE64_WRITEABLE, 1, vm->mem);
-
-    map_physical_page(0xDEADB000, allocate_page(vm->mem, false),  PDE64_WRITEABLE, 1, vm->mem);
+    map_physical_page(0xDEADB000, allocate_page(vm->mem, false), PDE64_WRITEABLE, 1, vm->mem);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = 0x1000;
@@ -133,7 +128,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
     sregs->efer = EFER_LME | EFER_NXE;
 
-    gdt = (void *)(vm->mem + sregs->gdt.base);
+    gdt = (void *) (vm->mem + sregs->gdt.base);
     /* gdt[0] is the null segment */
 
     //32-bit code segment - needed for bootstrap
@@ -173,22 +168,6 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     seg.selector = 0x28;
     fill_segment_descriptor(gdt, &seg);
 
-    //TSS segment
-
-    seg.selector = 0x30;
-    seg.limit = sizeof (tss_entry_t)-1;
-    seg.base = TSS_START;
-    seg.type = 9;
-    seg.s = 0;
-    seg.dpl = 3;
-    seg.present = 1;
-    seg.avl = 0;
-    seg.l = 1;
-    seg.db = 0;
-    seg.g = 0;
-    fill_segment_descriptor(gdt, &seg);
-
-
     //64-bit cpu kernel data segment
     seg.selector = 0x40;
     seg.type = 19; /* Data: read/write, accessed */
@@ -203,6 +182,41 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs)
     seg.db = 0;
     seg.g = 0;
     fill_segment_descriptor(gdt, &seg);
+
+}
+
+static uint64_t setup_kernel_tss(struct vm_t *vm, struct kvm_sregs *sregs, uint64_t kernel_min_addr){
+
+    struct kvm_segment seg;
+    uint64_t *gdt;
+    uint64_t tss_start;
+
+    gdt = (void *) (vm->mem + sregs->gdt.base);
+    tss_start = kernel_min_addr - 3*PAGE_SIZE;
+
+    //TSS segment
+
+    seg.selector = 0x30;
+    seg.limit = TSS_SIZE-1;
+    seg.base = tss_start;
+    seg.type = 9;
+    seg.s = 0;
+    seg.dpl = 3;
+    seg.present = 1;
+    seg.avl = 0;
+    seg.l = 1;
+    seg.db = 0;
+    seg.g = 0;
+    fill_segment_descriptor(gdt, &seg);
+
+    //map 3 pages required for TSS
+
+    size_t i = 0;
+    for (uint64_t p = tss_start; i < 3; p += PAGE_SIZE, i++) {
+        map_physical_page(p, allocate_page(vm->mem, false), PDE64_WRITEABLE, 1, vm->mem);
+    }
+
+    return (tss_start);
 }
 
 void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_binary_fd)
@@ -212,6 +226,13 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
     elf_info_t kernel_elf_info;
     elf_info_t user_elf_info;
+
+    uint64_t ksp;
+    uint64_t tss_start;
+    uint64_t user_split_addr;
+
+    size_t i;
+    uint64_t p;
 
     int ret;
 
@@ -224,32 +245,37 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
     setup_long_mode(vm, &sregs);
 
-    if (ioctl(vcpu->fd, KVM_SET_SREGS, &sregs) < 0) {
-        perror("KVM_SET_SREGS");
-        exit(1);
-    }
-
     kernel_elf_info = image_load(kernel_binary_fd, false, vm);
     printf("Entry point kernel: %p\n", kernel_elf_info.entry_addr);
 
     user_elf_info = image_load(prog_binary_fd, true, vm);
     printf("Entry point user: %p\n", user_elf_info.entry_addr);
 
-    //allocate 50 stack pages for user stack
-    for (uint32_t i = 0xc0000000 - PAGE_SIZE; i > 0xc0000000 - 0x50000; i -= 0x1000) {
+    //allocate 20 stack pages for kernel stack
+    ksp = kernel_elf_info.min_page_addr;
+    for (p = ksp - PAGE_SIZE; i < 20; p -= PAGE_SIZE, i++) {
 
         uint64_t phy_addr = allocate_page(vm->mem, false);
 
-        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
+        map_physical_page(p, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
     }
 
-    //lets allocate 25 pages for kernel stack
-    uint64_t ksp = kernel_elf_info.max_page_addr + 25*PAGE_SIZE;
-    for (uint64_t i = kernel_elf_info.max_page_addr; i < ksp; i += PAGE_SIZE) {
+    tss_start = setup_kernel_tss(vm, &sregs, p);
+
+    user_split_addr = P2ALIGN(tss_start, 2*PAGE_SIZE) / 2;
+
+    //allocate 50 stack pages for user stack
+    i = 0;
+    for (p = user_split_addr - PAGE_SIZE; i < 50; p -= PAGE_SIZE, i++) {
 
         uint64_t phy_addr = allocate_page(vm->mem, false);
 
-        map_physical_page(i, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE, 1, vm->mem);
+        map_physical_page(p, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
+    }
+
+    if (ioctl(vcpu->fd, KVM_SET_SREGS, &sregs) < 0) {
+        perror("KVM_SET_SREGS");
+        exit(1);
     }
 
     memset(&regs, 0, sizeof(regs));
@@ -262,12 +288,13 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     //user entry
     regs.rsi = (uint64_t) user_elf_info.entry_addr;
     //kernel stack
-    regs.rdx = regs.rsp = ksp;
-    printf("stack var: %p\n", (void *) ksp);
-    //user stack
-    regs.rcx = 0xc000000;
+    regs.rdx = ksp;
+    //user split - for stack (down) and version storage (up) start point
+    regs.rcx = user_split_addr;
     //user heap
     regs.r8 = user_elf_info.max_page_addr;
+    //tss start
+    regs.r9 = tss_start;
 
     if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
         perror("KVM_SET_REGS");

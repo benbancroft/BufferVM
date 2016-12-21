@@ -7,7 +7,7 @@
 uint32_t pd_addr = 0xFFEFF000;
 uint32_t pt_start_addr = 0xFFB00000;
 //reserve first few pages for bootstrap
-uint64_t page_counter = 5;
+uint64_t page_counter = 10;
 uint64_t pml4_addr;
 
 uint64_t kbit(uint64_t addr, size_t  k){
@@ -111,7 +111,7 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
         memset(mem_offset + phy_addr, 0x0, 0x1000);
         memcpy(mem_offset + phy_addr, elf_seg_start+i, size_left_elf < 0x1000 ? size_left_elf : 0x1000);
 
-        printf("Loaded page: %p %p, %#04hhx\n", (void*) p, (void*) phy_addr, mem_offset[phy_addr+0xc0a]);
+        //printf("Loaded page: %p %p, %#04hhx\n", (void*) p, (void*) phy_addr, mem_offset[phy_addr+0xc0a]);
         map_physical_page(p, phy_addr, flags, 1, mem_offset);
 
         if (start_addr == 0xc0000000)

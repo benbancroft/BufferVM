@@ -18,9 +18,6 @@
 #define CPU_TMP_DSP       0x16
 #define CPU_TMP_DCNTR       0x24
 
-#define TSS_START 0xfffbd000
-#define USER_VERSION_REDZONE PAGE_SIZE*10
-
 /* AMD64 MSR values */
 #define AMD64_MSR_EFER			0xC0000080
 #define AMD64_MSR_STAR			0xC0000081

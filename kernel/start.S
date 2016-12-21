@@ -5,7 +5,7 @@
         .global switch_usermode
         .global test
 _start:
-    movl $0xDEADBEEF, %eax
+    movq %rdx, %rsp
 	call kernel_main
 
 	call host_exit
@@ -18,7 +18,8 @@ test:
     hlt
 switch_usermode:
     push $(USER_DS | 3)
-    movq $0xc0000000, %rax
+    movabs $user_stack, %rax
+    movq (%rax), %rax
     push %rax
     push $0x200 #EFLAGS (enable ints)
     push $(USER_CS | 3) #(yes that is the correct GDT entry for DPL = 3 long mode)
