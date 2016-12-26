@@ -3,11 +3,15 @@
 .text
 .globl read
 .globl write
+.globl open
+.globl close
 .globl _brk
 .globl get_version
 .globl set_version
 .type read, @function
 .type write, @function
+.type open, @function
+.type close, @function
 .type _brk, @function
 .type get_version, @function
 .type set_version, @function
@@ -32,6 +36,24 @@ write:
 
 	# return already in rax
 	retq
+
+open:
+    # third argument: mode
+    # second argument: flags
+    # first argument: file name.
+    movq    $2,%rax	        # system call number (sys_write).
+    syscall                 # call kernel.
+
+    # return already in rax
+    retq
+
+close:
+    # first argument: file handle.
+    movq    $3,%rax	        # system call number (sys_write).
+    syscall                 # call kernel.
+
+    # return already in rax
+    retq
 
 _brk:
 	push    %rbp            # create stack frame

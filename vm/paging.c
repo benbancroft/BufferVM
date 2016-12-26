@@ -2,6 +2,7 @@
 // Created by ben on 09/10/16.
 //
 
+#include <stdlib.h>
 #include "../common/paging.h"
 
 uint32_t pd_addr = 0xFFEFF000;
@@ -39,6 +40,27 @@ virt_addr_info_t get_virt_addr_info(uint64_t addr){
     pginf.version = (addr & 0x0000ff8000000000) >> 39;
 
     return pginf;
+}
+
+int read_virtual_cstr(uint64_t virtual_addr, char **buffer, char *mem_offset){
+
+    uint64_t phys_addr;
+    size_t page_bytes;
+    size_t bytes_read = 0;
+
+    while (true){
+        if (!get_phys_addr(virtual_addr + bytes_read, &phys_addr, mem_offset)) return 0;
+
+        page_bytes = PAGE_SIZE - ((virtual_addr + bytes_read) % PAGE_SIZE);
+
+        for (size_t i = 0; i < page_bytes; i++){
+            if ((mem_offset+phys_addr)[bytes_read++] == 0){
+                bytes_read++;
+                *buffer = malloc(bytes_read);
+                return read_virtual_addr(virtual_addr, bytes_read, *buffer, mem_offset);
+            }
+        }
+    }
 }
 
 int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, char *mem_offset){

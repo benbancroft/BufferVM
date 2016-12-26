@@ -373,19 +373,32 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         }
                         break;
                     case 3:
-                        regs.rax = allocate_page(vm->mem, regs.rsi == 1);
+                        {
+                            char *buffer;
+                            if (read_virtual_cstr(regs.rdi, &buffer, vm->mem)){
+                                regs.rax = open(buffer, (int32_t)regs.rsi, (uint16_t)regs.rdx);
+                            }else{
+                                printf("Failed to write - Un-paged buffer?\n");
+                            }
+                        }
                         break;
                     case 4:
-                        map_physical_page(regs.rdi, regs.rsi, regs.rdx, regs.rcx, vm->mem);
+                        regs.rax = close((int)regs.rdi);
                         break;
                     case 5:
-                        regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);
+                        regs.rax = allocate_page(vm->mem, regs.rsi == 1);
                         break;
                     case 6:
-                        printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
+                        map_physical_page(regs.rdi, regs.rsi, regs.rdx, regs.rcx, vm->mem);
                         break;
                     case 7:
-                        printf("Host var: %llu\n", regs.rdi);
+                        regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);
+                        break;
+                    case 8:
+                        printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
+                        break;
+                    case 9:
+                        printf("Host var: %" PRId64 "\n", (int64_t)regs.rdi);
                         break;
                     default:
                         printf("Unsupported syscall %" PRIu64 "\n", (uint64_t) regs.rax);

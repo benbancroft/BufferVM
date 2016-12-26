@@ -37,6 +37,8 @@ typedef __builtin_va_list __isoc_va_list; /* wchar.h */
 
 extern ssize_t write(int file, const void *buffer, size_t count);
 extern ssize_t read(int fd, void *buffer, size_t length);
+extern int open(const char *filename, int32_t flags, uint16_t mode);
+extern int close(int32_t handle);
 
 int fgetc(int fd);
 void memcpy(void *dest, void *src, size_t n);
@@ -47,7 +49,7 @@ size_t strlen(const char *str);
 char *strncat(char *s1, char *s2, int n);
 int puts(const char *string);
 void putchar(char c);
-char *convert(uint64_t num, size_t base);
+char *convert(int64_t num, size_t base);
 void printf(char* format,...);
 char *getline(void);
 

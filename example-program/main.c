@@ -48,6 +48,11 @@ void main() {
     printf("Versioned mem - Ver: %d prt: %p\n", (int)get_version_ptr(mem), mem);
     mem[9] = 42;
 
+    //file stuff
+    int32_t file_handle = open("test.txt", 0, 0);
+    printf("open file %d\n", file_handle);
+    printf("open file %d\n", close(file_handle));
+
     //read test case
 
     /*printf("\nPlease enter a character: \n");

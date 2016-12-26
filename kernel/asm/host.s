@@ -2,6 +2,8 @@
 .globl host_exit
 .globl host_write
 .globl host_read
+.globl host_open
+.globl host_close
 .globl host_regs
 .globl allocate_page
 .globl map_physical_page
@@ -22,27 +24,37 @@ host_read:
     hlt
     ret
 
-allocate_page:
+host_open:
     movq $0x3, %rax
     hlt
-    ret
+    retq
 
-map_physical_page:
+host_close:
     movq $0x4, %rax
     hlt
     ret
 
-is_vpage_present:
+allocate_page:
     movq $0x5, %rax
     hlt
     ret
 
-host_regs:
+map_physical_page:
     movq $0x6, %rax
     hlt
     ret
 
-host_print_var:
+is_vpage_present:
     movq $0x7, %rax
+    hlt
+    ret
+
+host_regs:
+    movq $0x8, %rax
+    hlt
+    ret
+
+host_print_var:
+    movq $0x9, %rax
     hlt
     ret

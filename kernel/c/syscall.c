@@ -40,6 +40,14 @@ void syscall_write(uint32_t fd, const char* buf, size_t count){
     host_write(fd, buf, count);
 }
 
+int syscall_open(const char *filename, int32_t flags, uint16_t mode){
+    return host_open(filename, flags, mode);
+}
+
+int syscall_close(int32_t fd){
+    return host_close(fd);
+}
+
 void syscall_exit(){
     host_exit();
 }
@@ -84,6 +92,8 @@ void syscall_init()
 
     syscall_register(0, (uintptr_t) &syscall_read);
     syscall_register(1, (uintptr_t) &syscall_write);
+    syscall_register(2, (uintptr_t) &syscall_open);
+    syscall_register(3, (uintptr_t) &syscall_close);
     syscall_register(12, (uintptr_t) &syscall_brk);
     syscall_register(60, (uintptr_t) &syscall_exit);
 

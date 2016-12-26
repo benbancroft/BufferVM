@@ -98,7 +98,7 @@ void putchar(char c) {
     (void) write(1, &c, 1);
 }
 
-char *convert(uint64_t num, size_t base) {
+char *convert(int64_t num, size_t base) {
     static const char num_chars[] = "0123456789ABCDEF";
     static char buffer[50];
     char *ptr;
@@ -117,7 +117,7 @@ char *convert(uint64_t num, size_t base) {
 
 void printf(char *format, ...) {
     char *traverse, *start;
-    unsigned int i = 0;
+    int i = 0;
     char *s;
 
     va_list arg;
