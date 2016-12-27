@@ -377,6 +377,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                             char *buffer;
                             if (read_virtual_cstr(regs.rdi, &buffer, vm->mem)){
                                 regs.rax = open(buffer, (int32_t)regs.rsi, (uint16_t)regs.rdx);
+                                free(buffer);
                             }else{
                                 printf("Failed to write - Un-paged buffer?\n");
                             }

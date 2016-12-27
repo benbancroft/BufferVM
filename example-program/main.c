@@ -51,7 +51,10 @@ void main() {
     //file stuff
     int32_t file_handle = open("test.txt", 0, 0);
     printf("open file %d\n", file_handle);
-    printf("open file %d\n", close(file_handle));
+    char file_contents[50];
+    read(file_handle, file_contents, 50);
+    printf("File: %s\n", file_contents);
+    printf("close file %d\n", close(file_handle));
 
     //read test case
 
