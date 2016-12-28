@@ -7,11 +7,11 @@
 
 #define KERNEL_CS	0x10
 #define KERNEL_DS	0x18
-#define USER_CS	    0x20
+#define USER_CS	    0x30
 #define USER_DS	    0x28
 
-#define TSS_S	    0x30
-#define CPU_S       0x40
+#define TSS_S	    0x40
+#define CPU_S       0x50
 
 #define CPU_TMP_R15       0x0
 #define CPU_TMP_RSP       0x8

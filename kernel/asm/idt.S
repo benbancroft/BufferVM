@@ -49,6 +49,9 @@ idt_gpf_handler:
     movl (%rsp), %edx
     clr %rax       # needed for printf
     call printf
+    movq 8(%rsp), %rdi
+    movq $5, %rsi
+    call disassemble_address
     call host_exit
 
 .data

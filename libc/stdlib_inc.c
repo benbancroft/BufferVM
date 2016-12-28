@@ -99,7 +99,7 @@ void putchar(char c) {
 }
 
 char *convert(int64_t num, size_t base) {
-    static const char num_chars[] = "0123456789ABCDEF";
+    static const char num_chars[] = "0123456789abcdef";
     static char buffer[50];
     char *ptr;
 
@@ -117,7 +117,7 @@ char *convert(int64_t num, size_t base) {
 
 void printf(char *format, ...) {
     char *traverse, *start;
-    int i = 0;
+    int64_t i = 0;
     char *s;
 
     va_list arg;
@@ -132,12 +132,12 @@ void printf(char *format, ...) {
 
             switch (*traverse) {
                 case 'c' :
-                    i = va_arg(arg, int);     //char argument
+                    i = va_arg(arg, int64_t);     //char argument
                     putchar(i);
                     break;
 
                 case 'd' :
-                    i = va_arg(arg, int);         //decimal argument
+                    i = va_arg(arg, int64_t);         //decimal argument
                     if (i < 0) {
                         i = -i;
                         putchar('-');
@@ -146,7 +146,7 @@ void printf(char *format, ...) {
                     break;
 
                 case 'o':
-                    i = va_arg(arg, unsigned int); //octal
+                    i = va_arg(arg, int64_t); //octal
                     puts(convert(i, 8));
                     break;
                 case 's':
@@ -154,7 +154,7 @@ void printf(char *format, ...) {
                     puts(s);
                     break;
                 case 'x':
-                    i = va_arg(arg, uint64_t); //hexadecimal
+                    i = va_arg(arg, int64_t); //hexadecimal
                     puts(convert(i, 16));
                     break;
                 case 'p':

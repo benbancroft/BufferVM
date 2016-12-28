@@ -12,7 +12,7 @@ syscall_setup:
 	movl $(AMD64_MSR_SFMASK), %ecx
 	wrmsr
     # Set the kernel segment registers
-    movl $(KERNEL_CS | (USER_CS << 16)), %edx
+    movl $(KERNEL_CS | ((USER_DS - 8) << 16)), %edx
     movl $(AMD64_MSR_STAR), %ecx
     wrmsr
     # Set the kernel 64-bit entry point

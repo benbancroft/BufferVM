@@ -70,7 +70,7 @@ uint64_t syscall_brk(uint64_t brk){
 
         for (uint64_t p = curr_brk; p <= new_brk; p += PAGE_SIZE){
             //Actual memory page
-            map_physical_page(p, allocate_page(NULL, false), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
+            map_physical_page(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
             //Version page
             map_physical_page(user_version_start + p, allocate_page(NULL, true), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
         }

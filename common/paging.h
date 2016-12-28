@@ -62,6 +62,6 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
 
 void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags, char *mem_offset);
 
-void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, uint64_t flags, size_t num_pages, char *mem_offset);
+void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, char *mem_offset);
 
 #endif //BUFFERVM_PAGING_H

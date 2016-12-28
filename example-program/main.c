@@ -12,13 +12,21 @@ int sum_array(int a[], int num_elements) {
     return sum;
 }
 
+uint64_t recurse(uint64_t n){
+    //printf("no\n");
+    if (n == 0) return 1;
+    uint64_t acc = recurse(n - 1);
+    return n * acc;
+}
+
 void main() {
-    char *my_string, *ver_string;
 
     //printf/std test cases
 
     int ret = sum_array(numbers, sizeof(numbers) / sizeof(int));
     printf("Hello world from C! - Number is: %d\n", ret);
+
+    char *my_string, *ver_string;
 
     write(1, "hi write\n", 9);
 
@@ -38,6 +46,13 @@ void main() {
     printf("String: %s, Ver: %d\n", my_string, (int)get_version_ptr(my_string));
     ver_string = set_version_ptr(5, my_string);
     printf("Versioned string: %s Ver: %d\n", ver_string, (int)get_version_ptr(ver_string));
+
+    //stack test
+
+    recurse(1000);
+
+    char mystack[50000];
+    mystack[50000-1] = 1;
 
     //heap test
 

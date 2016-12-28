@@ -18,7 +18,7 @@ test:
     hlt
 switch_usermode:
     push $(USER_DS | 3)
-    movabs $user_stack, %rax
+    movabs $user_stack_start, %rax
     movq (%rax), %rax
     push %rax
     push $0x200 #EFLAGS (enable ints)

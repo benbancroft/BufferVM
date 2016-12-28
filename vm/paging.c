@@ -188,9 +188,11 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
     return table[index] & 0xFFFFFFFFFFF000;
 }
 
-void map_physical_page(uint64_t virtual_page_addr, uint64_t physical_page_addr, uint64_t flags, size_t num_pages, char *mem_offset) {
+void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, char *mem_offset) {
 
     //TODO - num_pages: painful algorithm needed. Could also look at option to use bigger pages for large allocation?
+
+    if (physical_page_addr == -1) physical_page_addr = allocate_page(mem_offset, false);
 
     virt_addr_info_t info = get_virt_addr_info(virtual_page_addr);
 

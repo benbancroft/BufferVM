@@ -140,7 +140,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     sregs->cs = seg;
 
     //64-bit stuff
-    sregs->gdt.limit = 9 * 8 - 1;
+    sregs->gdt.limit = 18 * 8 - 1;
     seg.l = 1;
 
     //64-bit kernel code segment
@@ -156,20 +156,22 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
 
     sregs->ds = sregs->es = sregs->fs = sregs->ss = seg;
 
-    //64-bit user code segment
+
     seg.dpl = 3;
-    seg.type = 11; /* Code: execute, read, accessed */
-    seg.selector = 0x20;
     seg.db = 0;
-    fill_segment_descriptor(gdt, &seg);
 
     //64-bit user data segment
     seg.type = 3; /* Data: read/write, accessed */
     seg.selector = 0x28;
     fill_segment_descriptor(gdt, &seg);
 
+    //64-bit user code segment
+    seg.type = 11; /* Code: execute, read, accessed */
+    seg.selector = 0x30;
+    fill_segment_descriptor(gdt, &seg);
+
     //64-bit cpu kernel data segment
-    seg.selector = 0x40;
+    seg.selector = 0x50;
     seg.type = 19; /* Data: read/write, accessed */
     //one for each cpu in future!
     seg.limit = sizeof(cpu_t) - 1;
@@ -196,7 +198,7 @@ static uint64_t setup_kernel_tss(struct vm_t *vm, struct kvm_sregs *sregs, uint6
 
     //TSS segment
 
-    seg.selector = 0x30;
+    seg.selector = 0x40;
     seg.limit = TSS_SIZE-1;
     seg.base = tss_start;
     seg.type = 9;
@@ -264,14 +266,17 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
     user_split_addr = P2ALIGN(tss_start, 2*PAGE_SIZE) / 2;
 
-    //allocate 50 stack pages for user stack
+    //allocate 1 stack pages for user stack
+    //we will have a hard limit down to RLIMIT_STACK, but not all of these pages will be paged in
+    //This will be handled by a page fault
     i = 0;
-    for (p = user_split_addr - PAGE_SIZE; i < 50; p -= PAGE_SIZE, i++) {
+    /*for (p = user_split_addr - PAGE_SIZE; i < 50; p -= PAGE_SIZE, i++) {
 
         uint64_t phy_addr = allocate_page(vm->mem, false);
 
         map_physical_page(p, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
-    }
+    }*/
+    printf("userstack %p\n", (void*)user_split_addr);
 
     if (ioctl(vcpu->fd, KVM_SET_SREGS, &sregs) < 0) {
         perror("KVM_SET_SREGS");
@@ -399,7 +404,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
                         break;
                     case 9:
-                        printf("Host var: %" PRId64 "\n", (int64_t)regs.rdi);
+                        printf("Host var: %" PRIx64 "\n", (int64_t)regs.rdi);
                         break;
                     default:
                         printf("Unsupported syscall %" PRIu64 "\n", (uint64_t) regs.rax);
