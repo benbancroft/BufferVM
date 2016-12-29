@@ -12,6 +12,9 @@
 
 #include "../../intelxed/kit/include/xed-interface.h"
 #include "../h/stack.h"
+#include "../h/vma.h"
+
+int64_t kernel_min_address;
 
 tss_entry_t *tss = (tss_entry_t*) TSS_START;
 
@@ -24,10 +27,11 @@ void xed_user_abort_function(const char *msg, const char *file, int line, void *
     host_exit();
 }
 
-void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t user_split, uint64_t _user_heap, uint64_t _tss_start) {
+void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, uint64_t _user_heap, uint64_t _tss_start) {
+
+    kernel_min_address = _tss_start;
 
     kernel_stack = _kernel_stack;
-    user_version_start = user_split;
     user_heap_start = _user_heap;
 
     tss = (tss_entry_t*)_tss_start;
@@ -40,7 +44,11 @@ void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, u
     idt_init(true);
     syscall_init();
 
-    user_stack_init(user_split, 16000);
+    vma_init(1000);
+
+    user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
+
+    user_stack_init(user_version_start, 16000);
 
     printf("\n-------------------\nKERNEL START\n-------------------\n\n");
 

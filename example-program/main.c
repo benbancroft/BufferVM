@@ -13,7 +13,6 @@ int sum_array(int a[], int num_elements) {
 }
 
 uint64_t recurse(uint64_t n){
-    //printf("no\n");
     if (n == 0) return 1;
     uint64_t acc = recurse(n - 1);
     return n * acc;
@@ -66,10 +65,20 @@ void main() {
     //file stuff
     int32_t file_handle = open("test.txt", 0, 0);
     printf("open file %d\n", file_handle);
+
     char file_contents[50];
     read(file_handle, file_contents, 50);
     printf("File: %s\n", file_contents);
     printf("close file %d\n", close(file_handle));
+
+    //mmap test case
+
+    void *addr = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
+                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (addr == MAP_FAILED)
+        printf("mmap failed\n");
+
+    printf("mmap address: %p\n", addr);
 
     //read test case
 

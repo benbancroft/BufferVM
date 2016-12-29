@@ -7,6 +7,8 @@
 #ifndef PROJECT_KERNEL_H
 #define PROJECT_KERNEL_H
 
+extern int64_t kernel_min_address;
+
 extern uint64_t user_heap_start;
 extern uint64_t user_version_start;
 

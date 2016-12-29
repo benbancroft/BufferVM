@@ -2,6 +2,7 @@
 #define ALLOC_D
 
 #include "../libc/stdlib.h"
+#include "../common/syscall.h"
 #include "sbrk.h"
 
 /* titel: malloc()/free()-Paar nach K&R 2, p.185ff */
@@ -32,5 +33,7 @@ void* malloc(size_t nbytes);
 void free(void *ap);
 
 static Header *morecore(size_t nu);
+
+void *mmap(void *addr, size_t length, int prot, int flags, int fd, uint64_t offset);
 
 #endif

@@ -231,7 +231,6 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
     uint64_t ksp;
     uint64_t tss_start;
-    uint64_t user_split_addr;
 
     size_t i;
     uint64_t p;
@@ -264,20 +263,6 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
     tss_start = setup_kernel_tss(vm, &sregs, p);
 
-    user_split_addr = P2ALIGN(tss_start, 2*PAGE_SIZE) / 2;
-
-    //allocate 1 stack pages for user stack
-    //we will have a hard limit down to RLIMIT_STACK, but not all of these pages will be paged in
-    //This will be handled by a page fault
-    i = 0;
-    /*for (p = user_split_addr - PAGE_SIZE; i < 50; p -= PAGE_SIZE, i++) {
-
-        uint64_t phy_addr = allocate_page(vm->mem, false);
-
-        map_physical_page(p, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
-    }*/
-    printf("userstack %p\n", (void*)user_split_addr);
-
     if (ioctl(vcpu->fd, KVM_SET_SREGS, &sregs) < 0) {
         perror("KVM_SET_SREGS");
         exit(1);
@@ -294,12 +279,10 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     regs.rsi = (uint64_t) user_elf_info.entry_addr;
     //kernel stack
     regs.rdx = ksp;
-    //user split - for stack (down) and version storage (up) start point
-    regs.rcx = user_split_addr;
     //user heap
-    regs.r8 = user_elf_info.max_page_addr;
+    regs.rcx = user_elf_info.max_page_addr;
     //tss start
-    regs.r9 = tss_start;
+    regs.r8 = tss_start;
 
     if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
         perror("KVM_SET_REGS");

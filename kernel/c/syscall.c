@@ -94,6 +94,7 @@ void syscall_init()
     syscall_register(1, (uintptr_t) &syscall_write);
     syscall_register(2, (uintptr_t) &syscall_open);
     syscall_register(3, (uintptr_t) &syscall_close);
+    syscall_register(9, (uintptr_t) &syscall_mmap);
     syscall_register(12, (uintptr_t) &syscall_brk);
     syscall_register(60, (uintptr_t) &syscall_exit);
 
