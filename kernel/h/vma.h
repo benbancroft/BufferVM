@@ -69,6 +69,7 @@ struct vma_node {
 
 void vma_init(size_t max_entries);
 vm_area_t *vma_alloc();
+vm_area_t *vma_zalloc();
 void vma_free(vm_area_t *addr);
 
 #endif //PROJECT_VMA_H

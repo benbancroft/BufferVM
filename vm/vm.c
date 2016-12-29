@@ -330,7 +330,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                 switch (regs.rax) {
                     //Exit
                     case 0: {
-                        printf("Exit syscall\n");
+                        printf("Exit hostcall\n");
 
                         char buffer[0x1000];
                         uint64_t number;
@@ -390,7 +390,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         printf("Host var: %" PRIx64 "\n", (int64_t)regs.rdi);
                         break;
                     default:
-                        printf("Unsupported syscall %" PRIu64 "\n", (uint64_t) regs.rax);
+                        printf("Unsupported hostcall %" PRIu64 "\n", (uint64_t) regs.rax);
                         return;
 
                 }

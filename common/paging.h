@@ -31,6 +31,7 @@
 #define P2ROUNDUP(x, align) (-(-(x) & -(align)))
 
 #define PAGE_ALIGN(addr) P2ROUNDUP(addr, PAGE_SIZE)
+#define PAGE_ALIGN_DOWN(addr) P2ALIGN(addr, PAGE_SIZE)
 
 typedef struct {
     uint64_t version;

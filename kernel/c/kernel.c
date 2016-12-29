@@ -16,7 +16,7 @@
 
 int64_t kernel_min_address;
 
-tss_entry_t *tss = (tss_entry_t*) TSS_START;
+tss_entry_t *tss;
 
 uint64_t kernel_stack;
 uint64_t user_heap_start;
@@ -44,7 +44,7 @@ void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, u
     idt_init(true);
     syscall_init();
 
-    vma_init(1000);
+    vma_init(39);
 
     user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
 
