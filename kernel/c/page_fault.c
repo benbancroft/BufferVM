@@ -5,6 +5,8 @@
 #include "../../libc/stdlib.h"
 #include "../h/stack.h"
 #include "../h/utils.h"
+#include "../h/vma.h"
+#include "../h/host.h"
 
 #define PF_PROT         (1<<0)
 #define PF_WRITE        (1<<1)
@@ -12,7 +14,17 @@
 #define PF_RSVD         (1<<3)
 #define PF_INSTR        (1<<4)
 
+void handle_segfault(uint64_t addr){
+
+    vma_print();
+
+    printf("\nSEGFAULT ERROR at addr: %p\n", addr);
+    host_exit();
+}
+
 int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
+
+    vm_area_t *vma;
 
     /*bool p, w, u, r, i;
 
@@ -28,12 +40,31 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
     printf("P: %d W: %d U: %d R: %d I: %d\n", p, w, u, r ,i);*/
 
     if (!(error_code & PF_PROT)){
-        //TODO - switch to VMA code when ready
-        if (addr > user_stack_min && addr <= user_stack_start)
-            return grow_stack(addr);
-        else
-            printf("here\n");
+
+        vma = vma_find(addr);
+
+        if (!vma){
+            goto seg_fault;
+        }
+
+        if (vma->vm_start <= addr){
+            goto handle_paging;
+        }
+
+        if (!(vma->vm_flags & VM_GROWSDOWN)){
+            goto seg_fault;
+        }
+
+        if (grow_stack(vma, addr)){
+            goto seg_fault;
+        }
+
+    handle_paging:
+        printf("loading page at addr: %p\n", addr);
+        return 1;
     }
 
+seg_fault:
+    handle_segfault(addr);
     return 0;
 }

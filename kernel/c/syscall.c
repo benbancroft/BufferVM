@@ -8,6 +8,7 @@
 #include "../h/host.h"
 #include "../../common/paging.h"
 #include "../../common/version.h"
+#include "../h/vma.h"
 
 uint64_t curr_brk;
 
@@ -49,6 +50,9 @@ int syscall_close(int32_t fd){
 }
 
 void syscall_exit(){
+
+    vma_print();
+
     host_exit();
 }
 
@@ -70,9 +74,9 @@ uint64_t syscall_brk(uint64_t brk){
 
         for (uint64_t p = curr_brk; p <= new_brk; p += PAGE_SIZE){
             //Actual memory page
-            map_physical_page(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
+            map_physical_page(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, false, 0);
             //Version page
-            map_physical_page(user_version_start + p, allocate_page(NULL, true), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0);
+            map_physical_page(user_version_start + p, allocate_page(NULL, true), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, false, 0);
         }
 
         curr_brk = new_brk;
@@ -95,6 +99,7 @@ void syscall_init()
     syscall_register(2, (uintptr_t) &syscall_open);
     syscall_register(3, (uintptr_t) &syscall_close);
     syscall_register(9, (uintptr_t) &syscall_mmap);
+    syscall_register(11, (uintptr_t) &syscall_munmap);
     syscall_register(12, (uintptr_t) &syscall_brk);
     syscall_register(60, (uintptr_t) &syscall_exit);
 

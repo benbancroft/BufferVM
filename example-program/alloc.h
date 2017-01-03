@@ -34,6 +34,7 @@ void free(void *ap);
 
 static Header *morecore(size_t nu);
 
-void *mmap(void *addr, size_t length, int prot, int flags, int fd, uint64_t offset);
+void *mmap(void *addr, size_t length, uint64_t prot, uint64_t flags, int fd, uint64_t offset);
+int munmap(uint64_t addr, size_t length);
 
 #endif

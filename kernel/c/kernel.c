@@ -12,9 +12,8 @@
 
 #include "../../intelxed/kit/include/xed-interface.h"
 #include "../h/stack.h"
-#include "../h/vma.h"
 
-int64_t kernel_min_address;
+uint64_t kernel_min_address;
 
 tss_entry_t *tss;
 
@@ -44,9 +43,9 @@ void kernel_main(void *kernel_entry, void *user_entry, uint64_t _kernel_stack, u
     idt_init(true);
     syscall_init();
 
-    vma_init(39);
+    vma_init(1000);
 
-    user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
+    kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
 
     user_stack_init(user_version_start, 16000);
 

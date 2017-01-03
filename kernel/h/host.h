@@ -6,6 +6,7 @@
 #define KERNEL_HOST_H
 
 #include "../../libc/stdlib.h"
+#include "../../common/syscall.h"
 
 void host_exit();
 
@@ -16,6 +17,10 @@ int host_read(uint32_t fd, const char* buf, size_t count);
 int host_open(const char *filename, int32_t flags, uint16_t mode);
 
 int host_close(uint32_t fd);
+
+int host_dup(uint32_t fd);
+
+int host_fstat(uint32_t fd, stat_t *stats);
 
 int host_regs();
 

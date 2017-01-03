@@ -6,6 +6,7 @@
 .globl open
 .globl close
 .globl mmap
+.globl munmap
 .globl _brk
 .globl get_version
 .globl set_version
@@ -13,6 +14,7 @@
 .type write, @function
 .type open, @function
 .type close, @function
+.type munmap, @function
 .type mmap, @function
 .type _brk, @function
 .type get_version, @function
@@ -60,6 +62,15 @@ close:
 mmap:
     # first argument: file handle.
     movq    $9,%rax	        # system call number (sys_mmap).
+    movq %rcx, %r10         # swap to match syscall abi
+    syscall                 # call kernel.
+
+    # return already in rax
+    retq
+
+munmap:
+    # first argument: file handle.
+    movq    $11,%rax	        # system call number (sys_mmap).
     syscall                 # call kernel.
 
     # return already in rax

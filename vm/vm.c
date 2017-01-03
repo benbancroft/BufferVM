@@ -115,11 +115,11 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     build_page_tables(vm->mem);
 
     //Page for bootstrap
-    map_physical_page(0x0000, 0x0000, PDE64_WRITEABLE, 1, vm->mem);
+    map_physical_page(0x0000, 0x0000, PDE64_WRITEABLE, 1, false, vm->mem);
     //Page for gdt
-    map_physical_page(0x1000, 0x1000, PDE64_WRITEABLE, 1, vm->mem);
+    map_physical_page(0x1000, 0x1000, PDE64_WRITEABLE, 1, false, vm->mem);
 
-    map_physical_page(0xDEADB000, allocate_page(vm->mem, false), PDE64_WRITEABLE, 1, vm->mem);
+    map_physical_page(0xDEADB000, allocate_page(vm->mem, false), PDE64_WRITEABLE, 1, false, vm->mem);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = 0x1000;
@@ -215,7 +215,7 @@ static uint64_t setup_kernel_tss(struct vm_t *vm, struct kvm_sregs *sregs, uint6
 
     size_t i = 0;
     for (uint64_t p = tss_start; i < 3; p += PAGE_SIZE, i++) {
-        map_physical_page(p, allocate_page(vm->mem, false), PDE64_WRITEABLE, 1, vm->mem);
+        map_physical_page(p, -1, PDE64_WRITEABLE, 1, false, vm->mem);
     }
 
     return (tss_start);
@@ -255,10 +255,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     //allocate 20 stack pages for kernel stack
     ksp = kernel_elf_info.min_page_addr;
     for (p = ksp - PAGE_SIZE; i < 20; p -= PAGE_SIZE, i++) {
-
-        uint64_t phy_addr = allocate_page(vm->mem, false);
-
-        map_physical_page(p, phy_addr, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, vm->mem);
+        map_physical_page(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, false, vm->mem);
     }
 
     tss_start = setup_kernel_tss(vm, &sregs, p);
@@ -325,8 +322,6 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                 //add page table mapping in future
                 //check for interupt
 
-                uint64_t syscall_arg_phys;
-
                 switch (regs.rax) {
                     //Exit
                     case 0: {
@@ -354,10 +349,11 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                     }
                         break;
                     case 2:
-                        if (get_phys_addr(regs.rsi, &syscall_arg_phys, vm->mem)){
-                            //printf("Read - buffer: %p, phys: %d, sp: %p\n", regs.rsi, syscall_arg_phys, vm, regs.rsp);
-                            //Handle page boundary!
-                            regs.rax = read(regs.rdi, vm->mem + syscall_arg_phys, regs.rdx);
+                        {
+                            char buffer[regs.rdx];
+                            regs.rax = read(regs.rdi, buffer, regs.rdx);
+                            if (!write_virtual_addr(regs.rsi, buffer, regs.rdx, vm->mem))
+                                regs.rax = -1;
                         }
                         break;
                     case 3:
@@ -374,11 +370,22 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                     case 4:
                         regs.rax = close((int)regs.rdi);
                         break;
+                    case 10:
+                        regs.rax = dup((int)regs.rdi);
+                        break;
+                    case 11:
+                        {
+                            struct stat stats;
+                            regs.rax = fstat((int)regs.rdi, &stats);
+                            if (!write_virtual_addr(regs.rsi, (char *)&stats, sizeof (stats), vm->mem))
+                                regs.rax = -1;
+                        }
+                        break;
                     case 5:
                         regs.rax = allocate_page(vm->mem, regs.rsi == 1);
                         break;
                     case 6:
-                        map_physical_page(regs.rdi, regs.rsi, regs.rdx, regs.rcx, vm->mem);
+                        regs.rax = map_physical_page(regs.rdi, regs.rsi, regs.rdx, regs.rcx, regs.r8, vm->mem);
                         break;
                     case 7:
                         regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);

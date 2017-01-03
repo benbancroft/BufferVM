@@ -25,13 +25,18 @@
 
 #define PAGE_CREATE -1
 
-#define PAGE_SIZE 0x1000UL
+#define PAGE_SHIFT      12
+#define PAGE_SIZE       (1UL << PAGE_SHIFT)
+//#define PAGE_SIZE 0x1000UL
+#define PAGE_MASK (~(PAGE_SIZE-1))
 
 #define P2ALIGN(x, align)    ((x) & -(align))
 #define P2ROUNDUP(x, align) (-(-(x) & -(align)))
 
 #define PAGE_ALIGN(addr) P2ROUNDUP(addr, PAGE_SIZE)
 #define PAGE_ALIGN_DOWN(addr) P2ALIGN(addr, PAGE_SIZE)
+
+#define PAGE_DIFFERENCE(left, right) ((left - right) >> PAGE_SHIFT)
 
 typedef struct {
     uint64_t version;
@@ -47,6 +52,7 @@ extern uint64_t page_counter;
 extern uint64_t pml4_addr;
 
 int read_virtual_cstr(uint64_t virtual_addr, char **buffer, char *mem_offset);
+int write_virtual_addr(uint64_t virtual_addr, char *source, size_t length, char *mem_offset);
 int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, char *mem_offset);
 uint64_t un_sign_extend(uint64_t addr);
 virt_addr_info_t get_virt_addr_info(uint64_t addr);
@@ -63,6 +69,6 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
 
 void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags, char *mem_offset);
 
-void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, char *mem_offset);
+int64_t map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, bool continuous, char *mem_offset);
 
 #endif //BUFFERVM_PAGING_H

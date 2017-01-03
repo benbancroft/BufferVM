@@ -75,10 +75,29 @@ void main() {
 
     void *addr = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
                       MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    if (addr == MAP_FAILED)
-        printf("mmap failed\n");
 
     printf("mmap address: %p\n", addr);
+
+    addr = mmap(NULL, 0x3000, PROT_READ | PROT_WRITE,
+                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+    printf("mmap address: %p\n", addr);
+
+    addr = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
+                MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+    printf("mmap address: %p\n", addr);
+
+    //mmap file test thing
+
+    file_handle = open("test.txt", 0, 0);
+
+    addr = mmap(NULL, sizeof(int), PROT_READ,
+                MAP_PRIVATE, file_handle, 0);
+
+    printf("File map addr %p\n", addr);
+
+    //munmap(0x3ffc043000, 0x1000);
 
     //read test case
 

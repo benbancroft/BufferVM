@@ -4,6 +4,8 @@
 .globl host_read
 .globl host_open
 .globl host_close
+.globl host_dup
+.globl host_fstat
 .globl host_regs
 .globl allocate_page
 .globl map_physical_page
@@ -31,6 +33,16 @@ host_open:
 
 host_close:
     movq $0x4, %rax
+    hlt
+    ret
+
+host_dup:
+    movq $0xA, %rax
+    hlt
+    ret
+
+host_fstat:
+    movq $0xB, %rax
     hlt
     ret
 

@@ -63,6 +63,28 @@ int read_virtual_cstr(uint64_t virtual_addr, char **buffer, char *mem_offset){
     }
 }
 
+int write_virtual_addr(uint64_t virtual_addr, char *source, size_t length, char *mem_offset){
+
+    uint64_t phys_addr;
+    size_t page_bytes;
+    size_t bytes_written = 0;
+    size_t bytes_left = length;
+
+    while (bytes_left > 0){
+        if (!get_phys_addr(virtual_addr + bytes_written, &phys_addr, mem_offset)) return 0;
+
+        page_bytes = PAGE_SIZE - ((virtual_addr + bytes_written) % PAGE_SIZE);
+        if (page_bytes > bytes_left) page_bytes = bytes_left;
+
+        memcpy(mem_offset + phys_addr, source + bytes_written, page_bytes);
+
+        bytes_written += page_bytes;
+        bytes_left -= page_bytes;
+    }
+
+    return 1;
+}
+
 int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, char *mem_offset){
 
     uint64_t phys_addr;
@@ -134,10 +156,7 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
         memcpy(mem_offset + phy_addr, elf_seg_start+i, size_left_elf < 0x1000 ? size_left_elf : 0x1000);
 
         //printf("Loaded page: %p %p, %#04hhx\n", (void*) p, (void*) phy_addr, mem_offset[phy_addr+0xc0a]);
-        map_physical_page(p, phy_addr, flags, 1, mem_offset);
-
-        if (start_addr == 0xc0000000)
-            map_physical_page(0xffffffffc0000000, phy_addr, flags, 1, mem_offset);
+        map_physical_page(p, phy_addr, flags, 1, false, mem_offset);
 
         size_left_mem -= 0x1000;
         size_left_elf -= 0x1000;
@@ -188,7 +207,7 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
     return table[index] & 0xFFFFFFFFFFF000;
 }
 
-void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, char *mem_offset) {
+int64_t map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, bool continuous, char *mem_offset) {
 
     //TODO - num_pages: painful algorithm needed. Could also look at option to use bigger pages for large allocation?
 
@@ -208,4 +227,6 @@ void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, u
     uint64_t *pd2 = (void *)(mem_offset + pd2_addr);
 
     map_page_entry(pd2, info.pg_tbl_offset, flags | PDE64_WRITEABLE, physical_page_addr, mem_offset);
+
+    return physical_page_addr;
 }
