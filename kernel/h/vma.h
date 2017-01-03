@@ -80,7 +80,8 @@ void vma_free(vm_area_t *addr);
 void vma_print();
 void vma_gap_update(vm_area_t *vma);
 vm_area_t *vma_find(uint64_t addr);
+uint64_t vma_prot_to_pg(uint64_t prot);
 
-uint64_t mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flags, uint64_t offset);
+uint64_t mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flags, uint64_t vma_prot, uint64_t offset, vm_area_t **vma_out);
 
 #endif //PROJECT_VMA_H

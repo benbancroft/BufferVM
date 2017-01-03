@@ -150,13 +150,13 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
 
     for (uint64_t p = start_addr, i = 0; p < start_addr + mem_size; p += 0x1000, i += 0x1000) {
 
-        uint64_t phy_addr = allocate_page(mem_offset, false);
+        uint64_t phy_addr = allocate_pages(1, mem_offset, false);
 
         memset(mem_offset + phy_addr, 0x0, 0x1000);
         memcpy(mem_offset + phy_addr, elf_seg_start+i, size_left_elf < 0x1000 ? size_left_elf : 0x1000);
 
         //printf("Loaded page: %p %p, %#04hhx\n", (void*) p, (void*) phy_addr, mem_offset[phy_addr+0xc0a]);
-        map_physical_page(p, phy_addr, flags, 1, false, mem_offset);
+        map_physical_pages(p, phy_addr, flags, 1, false, mem_offset);
 
         size_left_mem -= 0x1000;
         size_left_elf -= 0x1000;
@@ -164,21 +164,30 @@ void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_star
 }
 
 //TODO - make this better
-uint64_t allocate_page(char *mem_offset, bool zero_page){
-    uint64_t new_page = (page_counter++)*0x1000;
+int64_t allocate_pages(size_t num_pages, char *mem_offset, bool zero_page){
 
-    if (zero_page)
-        memset(mem_offset + new_page, 0x0, 0x1000);
+    uint64_t new_page_start;
+
+    if (num_pages == 0) return -1;
+
+    for (size_t i = 0; i < num_pages; i++){
+        uint64_t new_page = (page_counter++)*PAGE_SIZE;
+        if (i == 0)
+            new_page_start = new_page;
+
+        if (zero_page)
+            memset(mem_offset + new_page, 0x0, PAGE_SIZE);
+    }
 
 
-    return new_page;
+    return new_page_start;
 }
 
 void build_page_tables(char *mem_offset){
-    pml4_addr = allocate_page(mem_offset, true);
+    pml4_addr = allocate_pages(1, mem_offset, true);
     uint64_t *pml4 = (void *)(mem_offset + pml4_addr);
 
-    uint64_t pdpt_addr = allocate_page(mem_offset, true);
+    uint64_t pdpt_addr = allocate_pages(1, mem_offset, true);
 
     for (size_t i = 0; i < 512; i++)
         pml4[i] = pdpt_addr | PDE64_PRESENT | PDE64_USER | PDE64_WRITEABLE;
@@ -197,7 +206,7 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
 
     if (page == PAGE_CREATE) {
         if (!(table[index] & PDE64_PRESENT)) {
-            table[index] = PDE64_PRESENT | flags | allocate_page(mem_offset, true);
+            table[index] = PDE64_PRESENT | flags | allocate_pages(1, mem_offset, true);
         }else {
             table[index] |= flags;
         }
@@ -207,12 +216,7 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
     return table[index] & 0xFFFFFFFFFFF000;
 }
 
-int64_t map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, bool continuous, char *mem_offset) {
-
-    //TODO - num_pages: painful algorithm needed. Could also look at option to use bigger pages for large allocation?
-
-    if (physical_page_addr == -1) physical_page_addr = allocate_page(mem_offset, false);
-
+void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, char *mem_offset){
     virt_addr_info_t info = get_virt_addr_info(virtual_page_addr);
 
     uint64_t *pml4 = (void *)(mem_offset + pml4_addr);
@@ -227,6 +231,27 @@ int64_t map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr
     uint64_t *pd2 = (void *)(mem_offset + pd2_addr);
 
     map_page_entry(pd2, info.pg_tbl_offset, flags | PDE64_WRITEABLE, physical_page_addr, mem_offset);
+}
+
+int64_t map_physical_pages(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages,
+                           bool continuous, char *mem_offset) {
+
+    //TODO - num_pages: painful algorithm needed. Could also look at option to use bigger pages for large allocation?
+
+    if (continuous || physical_page_addr != -1){
+        if (physical_page_addr == -1) physical_page_addr = allocate_pages(num_pages, mem_offset, false);
+        if (physical_page_addr == -1) return -1;
+
+        for (size_t i = 0; i < num_pages; i++)
+            map_physical_page(virtual_page_addr + PAGE_SIZE*i, physical_page_addr + PAGE_SIZE*i, flags, mem_offset);
+    }else{
+        for (size_t i = 0; i < num_pages; i++){
+            physical_page_addr = allocate_pages(1, mem_offset, false);
+            if (physical_page_addr == -1) return -1;
+
+            map_physical_page(virtual_page_addr + PAGE_SIZE*i, physical_page_addr, flags, mem_offset);
+        }
+    }
 
     return physical_page_addr;
 }

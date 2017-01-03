@@ -73,7 +73,7 @@ void main() {
 
     //mmap test case
 
-    void *addr = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
+    char *addr = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
                       MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
     printf("mmap address: %p\n", addr);
@@ -86,6 +86,8 @@ void main() {
     addr = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
+    addr[0] = 1;
+
     printf("mmap address: %p\n", addr);
 
     //mmap file test thing
@@ -95,7 +97,7 @@ void main() {
     addr = mmap(NULL, sizeof(int), PROT_READ,
                 MAP_PRIVATE, file_handle, 0);
 
-    printf("File map addr %p\n", addr);
+    printf("File map addr %p contents: %s\n", addr, addr);
 
     //munmap(0x3ffc043000, 0x1000);
 

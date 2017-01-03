@@ -58,6 +58,7 @@ void syscall_exit(){
 
 uint64_t syscall_brk(uint64_t brk){
     uint64_t new_brk;
+    size_t num_pages;
 
     if (brk == 0 && curr_brk == 0){
         curr_brk = user_heap_start;
@@ -72,11 +73,16 @@ uint64_t syscall_brk(uint64_t brk){
 
         printf("new heap at: %p\n", new_brk);
 
+        num_pages = (new_brk - curr_brk) + 1;
+
+        //Actual memory page
+        map_physical_pages(curr_brk, -1, PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, num_pages, false, 0);
+
+        //we have to make multiple calls for version pages, due to zeroing pages.
         for (uint64_t p = curr_brk; p <= new_brk; p += PAGE_SIZE){
-            //Actual memory page
-            map_physical_page(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, false, 0);
             //Version page
-            map_physical_page(user_version_start + p, allocate_page(NULL, true), PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, false, 0);
+            map_physical_pages(user_version_start + p, allocate_pages(1, NULL, true),
+                               PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, false, 0);
         }
 
         curr_brk = new_brk;

@@ -7,6 +7,7 @@
 #include "../h/utils.h"
 #include "../h/vma.h"
 #include "../h/host.h"
+#include "../../common/paging.h"
 
 #define PF_PROT         (1<<0)
 #define PF_WRITE        (1<<1)
@@ -61,6 +62,7 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
 
     handle_paging:
         printf("loading page at addr: %p\n", addr);
+        map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->vm_page_prot) | PDE64_USER, 1, false, 0);
         return 1;
     }
 

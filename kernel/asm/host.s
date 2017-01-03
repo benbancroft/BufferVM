@@ -6,9 +6,10 @@
 .globl host_close
 .globl host_dup
 .globl host_fstat
+.globl host_mmap
 .globl host_regs
-.globl allocate_page
-.globl map_physical_page
+.globl allocate_pages
+.globl map_physical_pages
 .globl is_vpage_present
 .globl host_print_var
 
@@ -46,12 +47,17 @@ host_fstat:
     hlt
     ret
 
-allocate_page:
+host_mmap:
+    movq $0xC, %rax
+    hlt
+    ret
+
+allocate_pages:
     movq $0x5, %rax
     hlt
     ret
 
-map_physical_page:
+map_physical_pages:
     movq $0x6, %rax
     hlt
     ret

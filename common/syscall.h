@@ -32,6 +32,7 @@
 
 typedef struct file {
     int fd;
+    uint64_t dev;
     uint64_t inode;
 } file_t;
 

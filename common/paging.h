@@ -63,12 +63,13 @@ int get_page_entry(uint64_t *table, size_t index, uint64_t *page);
 
 void build_page_tables(char *mem_offset);
 
-uint64_t allocate_page(char *mem_offset, bool zero_page);
+int64_t allocate_pages(size_t num_pages, char *mem_offset, bool zero_page);
 
 uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t page, char *mem_offset);
 
 void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags, char *mem_offset);
 
-int64_t map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages, bool continuous, char *mem_offset);
+int64_t map_physical_pages(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages,
+                           bool continuous, char *mem_offset);
 
 #endif //BUFFERVM_PAGING_H

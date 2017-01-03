@@ -27,7 +27,7 @@ static uint64_t get_unmapped_area_topdown(uint64_t low_limit, uint64_t high_limi
         return -ENOMEM;
     low_limit = low_limit + length;
 
-    // Check highest gap, which does not precede any rbtree node
+    //search for gap, starting at highest address and working down
     gap_start = vma_highest_addr;
     if (gap_start <= high_limit)
         goto found_highest;
@@ -41,7 +41,6 @@ static uint64_t get_unmapped_area_topdown(uint64_t low_limit, uint64_t high_limi
         return -ENOMEM;
 
     while (true) {
-        /* Visit right subtree if it looks promising */
         gap_start = vma->vm_prev ? vma->vm_prev->vm_end : 0;
         if (gap_start <= high_limit && vma->vm_rb.rb_right) {
             vm_area_t *right =
@@ -53,14 +52,13 @@ static uint64_t get_unmapped_area_topdown(uint64_t low_limit, uint64_t high_limi
         }
 
         check_current:
-        /* Check if current node has a suitable gap */
+        //is there a gap at the current node?
         gap_end = vma->vm_start;
         if (gap_end < low_limit)
             return -ENOMEM;
         if (gap_start <= high_limit && gap_end - gap_start >= length)
             goto found;
 
-        /* Visit left subtree if it looks promising */
         if (vma->vm_rb.rb_left) {
             vm_area_t *left =
                     container_of(vma->vm_rb.rb_left, vm_area_t, vm_rb);
@@ -70,7 +68,7 @@ static uint64_t get_unmapped_area_topdown(uint64_t low_limit, uint64_t high_limi
             }
         }
 
-        /* Go back up the rbtree to find next candidate node */
+        //find next node back up rbtree
         while (true) {
             rb_node_t *prev = &vma->vm_rb;
             if (!rb_parent(prev))
@@ -86,7 +84,6 @@ static uint64_t get_unmapped_area_topdown(uint64_t low_limit, uint64_t high_limi
     }
 
     found:
-    /* We found a suitable gap. Clip it with the original high_limit. */
     if (gap_end > org_high_limit)
         gap_end = org_high_limit;
 
@@ -582,7 +579,6 @@ int vma_adjust(vm_area_t *vma, uint64_t start,
     vm_area_t *next = vma->vm_next;
     struct address_space *mapping = NULL;
     struct rb_root *root = NULL;
-    struct anon_vma *anon_vma = NULL;
     int fd = vma->vm_file_info.fd;
     bool start_changed = false, end_changed = false;
     long adjust_next = 0;
@@ -613,28 +609,6 @@ int vma_adjust(vm_area_t *vma, uint64_t start,
         }
     }
     again:
-
-#if 0
-    if (file) {
-        mapping = file->f_mapping;
-        root = &mapping->i_mmap;
-        uprobe_munmap(vma, vma->vm_start, vma->vm_end);
-
-        if (adjust_next)
-            uprobe_munmap(next, next->vm_start, next->vm_end);
-
-        i_mmap_lock_write(mapping);
-        if (insert) {
-            /*
-             * Put into interval tree now, so instantiated pages
-             * are visible to arm/parisc __flush_dcache_page
-             * throughout; but we cannot insert into address
-             * space until vma start or end is updated.
-             */
-            __vma_link_file(insert);
-        }
-    }
-#endif
 
     if (start != vma->vm_start) {
         vma->vm_start = start;
@@ -676,19 +650,9 @@ int vma_adjust(vm_area_t *vma, uint64_t start,
         }
     }
 
-    /*if (root) {
-        uprobe_mmap(vma);
-
-        if (adjust_next)
-            uprobe_mmap(next);
-    }*/
-
     if (remove_next) {
-        /*if (file) {
-            uprobe_munmap(next, next->vm_start, next->vm_end);
-            fput(file);
-        }*/
-        //mm->map_count--;
+        if (vma->vm_file_info.fd != -1)
+            host_close(vma->vm_file_info.fd);
         vma_free(next);
         /*
          * In mprotect's case 6 (see comments on vma_merge),
@@ -705,15 +669,14 @@ int vma_adjust(vm_area_t *vma, uint64_t start,
         else
             vma_highest_addr = end;
     }
-    /*if (insert && file)
-        uprobe_mmap(insert);*/
 
     return 0;
 }
 
 static inline int vma_can_merge(vm_area_t *vma, file_t *file_info, uint64_t vm_flags) {
     //TODO - check this covers everything
-    if (vma->vm_file_info.inode != file_info->inode)
+    // will need to add a check with fcntl F_GETFL to heuristically test if open flags are the same for the fd
+    if (vma->vm_file_info.dev != file_info->dev || vma->vm_file_info.inode != file_info->inode)
         return 0;
     return 1;
 }
@@ -799,7 +762,7 @@ static int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
     if (!new)
         return -ENOMEM;
 
-    /* most fields are the same, copy all, and then fixup */
+    //copy contents
     *new = *vma;
 
     if (new_below)
@@ -809,26 +772,19 @@ static int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
         new->vm_pgoff += PAGE_DIFFERENCE(addr, vma->vm_start);
     }
 
-    /*if (new->vm_file)
-        get_file(new->vm_file);
-
-    if (new->vm_ops && new->vm_ops->open)
-        new->vm_ops->open(new);*/
+    //dup file descriptor
+    new->vm_file_info.fd = host_dup(new->vm_file_info.fd);
 
     if (new_below)
         err = vma_adjust(vma, addr, vma->vm_end, vma->vm_pgoff + PAGE_DIFFERENCE(addr, new->vm_start), new);
     else
         err = vma_adjust(vma, vma->vm_start, addr, vma->vm_pgoff, new);
 
-    /* Success. */
     if (!err)
         return 0;
 
-    /* Clean everything up if vma_adjust failed. */
-    /*if (new->vm_ops && new->vm_ops->close)
-        new->vm_ops->close(new);
-    if (new->vm_file)
-        fput(new->vm_file);*/
+    //on error, we need to clean up a few things - including the dup'd fd
+    host_close(new->vm_file_info.fd);
     vma_free(new);
     return err;
 }
@@ -891,15 +847,17 @@ int syscall_munmap(uint64_t addr, size_t length) {
 
 }
 
-uint64_t mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flags, uint64_t offset) {
+uint64_t mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flags, uint64_t vma_prot, uint64_t offset, vm_area_t **vma_out) {
 
     vm_area_t *vma, *prev, *next;
     rb_node_t **rb_link, *rb_parent;
 
     while (vma_find_links(addr, addr + length, &prev, &rb_link,
                           &rb_parent)) {
-        if (syscall_munmap(addr, length))
+        if (syscall_munmap(addr, length)){
+            *vma_out = NULL;
             return -ENOMEM;
+        }
     }
 
     //lets try and merge with an applicable region
@@ -913,19 +871,27 @@ uint64_t mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t
         vma->vm_end = addr + length;
         vma->vm_flags = vma_flags;
         vma->vm_pgoff = offset;
+        vma->vm_page_prot = vma_prot;
         vma->vm_file_info = *file_info;
 
         vma_link(vma, prev, rb_link, rb_parent);
     }
 
+    *vma_out = vma;
+
     return addr;
 }
 
-static inline uint64_t
-prot_to_vma(uint64_t prot) {
+static inline uint64_t prot_to_vma(uint64_t prot) {
     return TRANSFER_FLAG(prot, PROT_READ, VM_READ) |
            TRANSFER_FLAG(prot, PROT_WRITE, VM_WRITE) |
            TRANSFER_FLAG(prot, PROT_EXEC, VM_EXEC);
+}
+
+uint64_t vma_prot_to_pg(uint64_t prot) {
+    return TRANSFER_FLAG(prot, PROT_READ, PDE64_PRESENT) |
+           TRANSFER_FLAG(prot, PROT_WRITE, PDE64_WRITEABLE) |
+           TRANSFER_FLAG(prot, ~PROT_EXEC, PDE64_NO_EXE);
 }
 
 /*
@@ -946,8 +912,12 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     //else, force it past the end of the heap region for user (MAX_HEAP anyone?)
     //should force any hint to be bigger than brk (unless MAP_FIXED)
 
+    vm_area_t *vma;
+    int64_t phys_addr;
+    uint64_t host_mmap_ret;
     uint64_t vma_flags = 0;
-    file_t file_info = { -1, -1 };
+    uint64_t vma_prot = 0;
+    file_t file_info = { -1, -1, -1 };
 
     if (offset & ~PAGE_MASK)
         return -EINVAL;
@@ -963,7 +933,8 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
     addr = get_unmapped_area(addr, length, offset, flags);
 
-    vma_flags |= prot_to_vma(prot) | flag_to_vma(flags) | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+    vma_flags |= flag_to_vma(flags) | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+    vma_prot |= prot_to_vma(prot);
 
     if (fd != -1) {
 
@@ -976,6 +947,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
         //add extra stuff here as needed?
 
         file_info.fd = fd;
+        file_info.dev = stats.st_dev;
         file_info.inode = stats.st_ino;
 
         switch (flags & MAP_TYPE) {
@@ -1005,18 +977,22 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
         }
     }
 
-    addr = mmap_region(&file_info, addr, length, vma_flags, offset);
+    addr = mmap_region(&file_info, addr, length, vma_flags, vma_prot, offset, &vma);
 
     //MAP_POPULATE | MAP_NONBLOCK cannot be used together
-    if (file_info.fd != -1 || (flags & (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE){
+    if (vma != NULL && (file_info.fd != -1 || (flags & (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE)){
 
         //in the case of files, mappings need to be continuous
-
-        map_physical_page(addr, -1, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, false, 0);
+        phys_addr = map_physical_pages(addr, -1, vma_prot_to_pg(vma->vm_page_prot) | PDE64_USER, PAGE_DIFFERENCE(vma->vm_end, vma->vm_start), true, 0);
 
         //mmap physical pages that have been pre-allocated
         if (file_info.fd != -1){
             //mmap file into continuous physical pages
+            ASSERT(phys_addr != -1);
+            host_mmap_ret = (uint64_t)host_mmap((void *) phys_addr, length, prot, flags | MAP_FIXED, fd, offset);
+            ASSERT((int64_t)host_mmap_ret == phys_addr);
+
+            printf("host mmap %p %p\n", host_mmap_ret, phys_addr);
         }
     }
 
