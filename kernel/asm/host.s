@@ -7,6 +7,7 @@
 .globl host_dup
 .globl host_fstat
 .globl host_mmap
+.globl host_lseek
 .globl host_regs
 .globl allocate_pages
 .globl map_physical_pages
@@ -49,6 +50,11 @@ host_fstat:
 
 host_mmap:
     movq $0xC, %rax
+    hlt
+    ret
+
+host_lseek:
+    movq $0xD, %rax
     hlt
     ret
 

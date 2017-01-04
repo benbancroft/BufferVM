@@ -38,7 +38,7 @@ void user_stack_init(uint64_t _user_stack_start, const uint64_t stack_page_limit
 
     user_stack_page_limit = stack_page_limit;
 
-    addr = mmap_region(NULL, user_stack_page, PAGE_SIZE, VM_GROWSDOWN, PDE64_WRITEABLE | PDE64_NO_EXE, 0, &vma);
+    addr = mmap_region(NULL, user_stack_page, PAGE_SIZE, VMA_GROWS, PDE64_WRITEABLE | PDE64_NO_EXE, 0, &vma);
 
     ASSERT(addr == user_stack_page);
 }
@@ -50,7 +50,7 @@ int grow_stack(vm_area_t *vma, uint64_t addr){
     if (PAGE_DIFFERENCE(user_stack_start, new_start) > user_stack_page_limit)
         return 1;
 
-    vma->vm_start = new_start;
+    vma->start_addr = new_start;
     user_stack_page = new_start;
 
     vma_gap_update(vma);

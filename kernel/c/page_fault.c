@@ -48,11 +48,11 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
             goto seg_fault;
         }
 
-        if (vma->vm_start <= addr){
+        if (vma->start_addr <= addr){
             goto handle_paging;
         }
 
-        if (!(vma->vm_flags & VM_GROWSDOWN)){
+        if (!(vma->flags & VMA_GROWS)){
             goto seg_fault;
         }
 
@@ -61,8 +61,9 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
         }
 
     handle_paging:
+        ASSERT(!(vma->flags & VMA_IS_PREFAULTED));
         printf("loading page at addr: %p\n", addr);
-        map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->vm_page_prot) | PDE64_USER, 1, false, 0);
+        map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER, 1, false, 0);
         return 1;
     }
 

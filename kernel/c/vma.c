@@ -107,9 +107,9 @@ void vma_print_node(vm_area_t *vma)
 {
     if (vma == NULL) return;
 
-    printf("VMA addr: %p end: %p\n", vma->vm_start, vma->vm_end);
+    printf("VMA addr: %p end: %p\n", vma->start_addr, vma->end_addr);
 
-    vma_print_node(vma->vm_next);
+    vma_print_node(vma->next);
 }
 
 void vma_print(){
@@ -130,11 +130,11 @@ vm_area_t *vma_find(uint64_t addr)
     while (rb_node) {
         vm_area_t*tmp;
 
-        tmp = container_of(rb_node, vm_area_t, vm_rb);
+        tmp = container_of(rb_node, vm_area_t, rb_node);
 
-        if (tmp->vm_end > addr) {
+        if (tmp->end_addr > addr) {
             vma = tmp;
-            if (tmp->vm_start <= addr){
+            if (tmp->start_addr <= addr){
                 break;
             }
             rb_node = rb_node->rb_left;

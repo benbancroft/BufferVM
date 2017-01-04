@@ -36,6 +36,16 @@ typedef struct file {
     uint64_t inode;
 } file_t;
 
+#define O_RDONLY         00
+#define O_WRONLY         01
+#define O_RDWR           02
+
+#define SEEK_SET        0       /* seek relative to beginning of file */
+#define SEEK_CUR        1       /* seek relative to current file position */
+#define SEEK_END        2       /* seek relative to end of file */
+#define SEEK_DATA       3       /* seek to the next data */
+#define SEEK_HOLE       4       /* seek to the next hole */
+
 //stat
 
 typedef struct timespec

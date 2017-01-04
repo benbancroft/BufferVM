@@ -383,11 +383,13 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
                         break;
                     case 12:
                     {
-                        //mmap(void *addr, size_t length, uint64_t prot, uint64_t flags, int fd, uint64_t offset)
                         regs.rax =
                                 ((uint64_t)mmap(vm->mem + regs.rdi, regs.rsi, regs.rdx, regs.rcx, regs.r8, regs.r9)) -
                                         (uint64_t)vm->mem;
                     }
+                        break;
+                    case 13:
+                        regs.rax = lseek(regs.rdi, regs.rsi, regs.rdx);
                         break;
                     case 5:
                         regs.rax = allocate_pages(regs.rdi, vm->mem, regs.rdx == 1);

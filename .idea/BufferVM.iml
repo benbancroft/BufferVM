@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/utils.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/stack.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/vma.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/h/elf.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/syscall.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/tss.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/idt.S" isTestSource="false" />
@@ -20,6 +21,7 @@
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/idt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/utils.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/syscall.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/elf.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/stack.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/page_fault.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/vma.c" isTestSource="false" />
