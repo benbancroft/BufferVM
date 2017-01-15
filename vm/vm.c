@@ -18,6 +18,7 @@
 #include "../common/paging.h"
 #include "elf.h"
 #include "gdt.h"
+#include "../common/elf.h"
 
 extern const unsigned char bootstrap[], bootstrap_end[];
 
@@ -221,16 +222,17 @@ static uint64_t setup_kernel_tss(struct vm_t *vm, struct kvm_sregs *sregs, uint6
     return (tss_start);
 }
 
-void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_binary_fd)
+void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_binary_location)
 {
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
-    elf_info_t kernel_elf_info;
-    elf_info_t user_elf_info;
+    elf_info_t kernel_elf_info = { NULL, 0, 0 };
 
+    uint64_t ksp_max;
     uint64_t ksp;
     uint64_t tss_start;
+    uint64_t user_binary_location_addr;
 
     size_t i;
     uint64_t p;
@@ -246,17 +248,28 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
 
     setup_long_mode(vm, &sregs);
 
-    kernel_elf_info = image_load(kernel_binary_fd, false, vm);
+    load_elf_binary(kernel_binary_fd, &kernel_elf_info, vm->mem);
     printf("Entry point kernel: %p\n", kernel_elf_info.entry_addr);
 
-    user_elf_info = image_load(prog_binary_fd, true, vm);
-    printf("Entry point user: %p\n", user_elf_info.entry_addr);
+    /*load_elf_binary(prog_binary_fd, &user_elf_info, vm->mem);
+    printf("Entry point user: %p\n", user_elf_info.entry_addr);*/
 
     //allocate 20 stack pages for kernel stack
     ksp = kernel_elf_info.min_page_addr;
     for (p = ksp - PAGE_SIZE; i < 20; p -= PAGE_SIZE, i++) {
         map_physical_pages(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, false, vm->mem);
     }
+
+    //copy user binary location to top of stack
+    ksp_max = ksp;
+    size_t user_loc_size = strlen(user_binary_location) + 1;
+    if (!write_virtual_addr(ksp - user_loc_size, user_binary_location, user_loc_size, vm->mem))
+    {
+        perror("Error writing user binary location.");
+        exit(1);
+    }
+    user_binary_location_addr = ksp - user_loc_size;
+    ksp = P2ALIGN(user_binary_location_addr, MIN_ALIGN);
 
     tss_start = setup_kernel_tss(vm, &sregs, p);
 
@@ -272,14 +285,14 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int prog_bi
     regs.rip = 0;
     //kernel entry
     regs.rdi = (uint64_t) kernel_elf_info.entry_addr;
-    //user entry
-    regs.rsi = (uint64_t) user_elf_info.entry_addr;
-    //kernel stack
+    //kernel stack max
+    regs.rsi = ksp_max;
+    //kernel stack actual
     regs.rdx = ksp;
-    //user heap
-    regs.rcx = user_elf_info.max_page_addr;
     //tss start
-    regs.r8 = tss_start;
+    regs.rcx = tss_start;
+    //user_binary_location
+    regs.r8 = user_binary_location_addr;
 
     if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
         perror("KVM_SET_REGS");

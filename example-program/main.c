@@ -53,12 +53,10 @@ void main() {
     char mystack[50000];
     mystack[50000-1] = 1;
 
-    //heap test
-
     char *mem = malloc(10);
     printf("Heap: %p\n", mem);
 
-    mem = set_version(mem, 10, 5);
+    mem = set_version(mem, 10h, 5);
     printf("Versioned mem - Ver: %d prt: %p\n", (int)get_version_ptr(mem), mem);
     mem[9] = 42;
 

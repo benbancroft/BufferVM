@@ -904,7 +904,7 @@ static inline uint64_t prot_to_vma(uint64_t prot) {
 uint64_t vma_prot_to_pg(uint64_t prot) {
     return TRANSFER_FLAG(prot, PROT_READ, PDE64_PRESENT) |
            TRANSFER_FLAG(prot, PROT_WRITE, PDE64_WRITEABLE) |
-           TRANSFER_FLAG(prot, ~PROT_EXEC, PDE64_NO_EXE);
+           TRANSFER_INV_FLAG(prot, PROT_EXEC, PDE64_NO_EXE);
 }
 
 /*
@@ -931,6 +931,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     uint64_t vma_flags = 0;
     uint64_t vma_prot = 0;
     file_t file_info = {-1, -1, -1};
+    int64_t org_length = length;
 
     if (offset & ~PAGE_MASK)
         return -EINVAL;
@@ -999,13 +1000,15 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
         phys_addr = map_physical_pages(addr, -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER,
                                        PAGE_DIFFERENCE(vma->end_addr, vma->start_addr), true, 0);
 
+        printf("virtaddr %p %x %x\n", addr, org_length, offset);
+
         vma->flags |= VMA_IS_PREFAULTED;
 
         //mmap physical pages that have been pre-allocated
         if (file_info.fd != -1) {
             //mmap file into continuous physical pages
             ASSERT(phys_addr != -1);
-            host_mmap_ret = (uint64_t) host_mmap((void *) phys_addr, length, prot, flags | MAP_FIXED, fd, offset);
+            host_mmap_ret = (uint64_t) host_mmap((void *) phys_addr, org_length, prot, flags | MAP_FIXED, fd, offset);
             ASSERT((int64_t) host_mmap_ret == phys_addr);
 
             printf("host mmap %p %p\n", host_mmap_ret, phys_addr);

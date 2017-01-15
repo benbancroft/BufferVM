@@ -4,6 +4,7 @@
 #define NULL 0
 
 #define UINT64_C(c)	c ## UL
+#define UINT64_MAX  (__UINT64_C(18446744073709551615))
 
 #ifndef EOF
 # define EOF (-1)

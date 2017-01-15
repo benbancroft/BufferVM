@@ -6,7 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/utils.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/stack.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/vma.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/h/elf.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/elf.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/syscall.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/tss.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/idt.S" isTestSource="false" />

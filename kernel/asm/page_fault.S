@@ -26,6 +26,11 @@
 idt_page_fault_handler:
     cli
 
+    /*movq %cr2, %rdi
+    call host_print_var
+    movq 8(%rsp), %rdi
+    call host_print_var*/
+
     swapgs
     movq %rcx, %gs:CPU_TMP_R15
 

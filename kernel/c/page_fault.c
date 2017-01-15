@@ -15,11 +15,13 @@
 #define PF_RSVD         (1<<3)
 #define PF_INSTR        (1<<4)
 
-void handle_segfault(uint64_t addr){
+void handle_segfault(uint64_t addr, uint64_t rip){
 
     vma_print();
 
     printf("\nSEGFAULT ERROR at addr: %p\n", addr);
+    printf("RIP: %p\n", rip);
+    disassemble_address(rip, 5);
     host_exit();
 }
 
@@ -68,6 +70,7 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
     }
 
 seg_fault:
-    handle_segfault(addr);
+    handle_segfault(addr, rip);
+    handle_segfault(addr, rip);
     return 0;
 }
