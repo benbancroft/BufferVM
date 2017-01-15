@@ -6,7 +6,6 @@
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/utils.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/stack.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/vma.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/common/elf.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/syscall.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/tss.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/idt.S" isTestSource="false" />
@@ -15,14 +14,14 @@
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/page_fault.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/cstubs.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/c/kernel.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/utils.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/mmap.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/tss.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/idt.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/c/utils.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/stack.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/syscall.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/elf.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/c/stack.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/kernel.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/page_fault.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/vma.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/version.c" isTestSource="false" />
@@ -38,20 +37,22 @@
       <sourceFolder url="file://$MODULE_DIR$/example-program/sbrk.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/stdlib_inc.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/libc/stdlib_inc.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/libc/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/elf.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/main.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/vm/elf.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/elf.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/gdt.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/paging.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/gdt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/example-program-2/main.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/example-program-2/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/intelxed/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/bootstrap/bootstrap.s" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/bootstrap/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libc/stdlib_inc.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libc/CMakeLists.txt" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/intelxed/kit" />
       <excludeFolder url="file://$MODULE_DIR$/intelxed/mbuild" />
       <excludeFolder url="file://$MODULE_DIR$/intelxed/xed" />

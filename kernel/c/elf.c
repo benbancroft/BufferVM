@@ -82,13 +82,16 @@ int load_elf64(int fd, elf_info_t *elf_info){
         if (phdr.p_flags & PF_X)
             flags |= PROT_EXEC;
 
-        start_addr = syscall_mmap(phdr.p_vaddr,
-                                  phdr.p_filesz, flags | MAP_FIXED,
+        uint64_t size = phdr.p_filesz + PAGE_OFFSET(phdr.p_vaddr);
+        uint64_t file_offset =  phdr.p_offset - PAGE_OFFSET(phdr.p_vaddr);
+
+        start_addr = syscall_mmap(phdr.p_vaddr - PAGE_OFFSET(phdr.p_vaddr),
+                                  size, flags | MAP_FIXED,
                                   MAP_PRIVATE,
                                   fd,
-                                  phdr.p_offset);
+                                  file_offset);
         //Will handle error codes too - debugging point
-        ASSERT(start_addr == phdr.p_vaddr);
+        ASSERT(start_addr == phdr.p_vaddr - PAGE_OFFSET(phdr.p_vaddr));
 
         section_max_maddr = phdr.p_vaddr + phdr.p_memsz;
         section_max_faddr = phdr.p_vaddr + phdr.p_filesz;

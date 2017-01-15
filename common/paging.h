@@ -38,6 +38,7 @@
 #define PAGE_ALIGN(addr) P2ROUNDUP(addr, PAGE_SIZE)
 #define PAGE_ALIGN_DOWN(addr) P2ALIGN(addr, PAGE_SIZE)
 
+#define PAGE_OFFSET(addr) (addr & ~PAGE_MASK)
 #define PAGE_DIFFERENCE(left, right) ((left - right) >> PAGE_SHIFT)
 
 typedef struct {
