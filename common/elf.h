@@ -2,6 +2,8 @@
 // Created by ben on 03/01/17.
 //
 
+#include "stdlib_inc.h"
+
 #ifndef COMMON_ELF_H
 #define COMMON_ELF_H
 
@@ -26,6 +28,9 @@
 #define PF_R		(1 << 2)	/* Segment is readable */
 
 #define EI_NIDENT       16
+
+#define ET_EXEC 2
+#define ET_DYN  3
 
 #define EM_386          3
 #define EM_X86_64       62
@@ -84,7 +89,7 @@ typedef struct elf_info {
     uint64_t max_page_addr;
 } elf_info_t;
 
-int load_elf_binary(int fd, elf_info_t *elf_info, char *mem_offset);
+int load_elf_binary(int fd, elf_info_t *elf_info, bool load_only, char *mem_offset);
 int read_binary(char *name);
 
 #endif //COMMON_ELF_H

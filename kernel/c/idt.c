@@ -1,5 +1,6 @@
 #include "../h/idt.h"
 #include "../h/kernel_as.h"
+#include "../h/tss.h"
 
 void idt_set_gate(uint8_t num, uint64_t handler, uint8_t dpl)
 {

@@ -10,6 +10,7 @@
 tss_entry_t* tss;
 
 extern void tss_load(void);
+extern void gdt_load(uint64_t gdt);
 
 void tss_init(uint64_t kernel_stack);
 

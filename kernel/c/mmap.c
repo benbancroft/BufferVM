@@ -117,6 +117,9 @@ static uint64_t get_unmapped_area_unchecked(uint64_t addr, uint64_t length, uint
 
 static uint64_t get_unmapped_area(uint64_t addr, uint64_t length, uint64_t offset, uint64_t flags) {
 
+    if (flags & MAP_FIXED)
+        return addr;
+
     addr = get_unmapped_area_unchecked(addr, length, offset, flags);
 
     if (addr > kernel_min_address - length)

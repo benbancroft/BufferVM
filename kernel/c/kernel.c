@@ -14,6 +14,7 @@
 #include "../h/stack.h"
 #include "../../common/elf.h"
 #include "../h/utils.h"
+#include "../h/gdt.h"
 
 uint64_t kernel_min_address;
 
@@ -36,12 +37,26 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
 
     //TODO - add some assert mechanism to see if enough space (will this be needed?)
 
+    uint64_t gdt_page = kernel_min_address - PAGE_SIZE;
+    map_physical_pages(gdt_page, 0x1000, PDE64_WRITEABLE, 1, true, 0);
+    kernel_min_address = gdt_page;
+
+    uint64_t *test = (uint64_t*)gdt_page;
+
+    printf("Here %p\n", *test);
+
+    gdt_init(gdt_page);
+
+    /*unmap_physical_page(0x0000, 0);
+    unmap_physical_page(0x1000, 0);*/
+
     cpu_init();
     tss_init(kernel_stack);
     idt_init(true);
     syscall_init();
 
     vma_init(1000);
+    //gdt_load(0xDEADB000);
 
     kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
 
@@ -60,7 +75,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
 
     elf_info_t user_elf_info;
     int user_bin_fd = read_binary(user_binary_location);
-    load_elf_binary(user_bin_fd, &user_elf_info, 0);
+    load_elf_binary(user_bin_fd, &user_elf_info, true, 0);
     host_close(user_bin_fd);
     user_heap_start = user_elf_info.max_page_addr;
     vma_print();
@@ -75,7 +90,9 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
 
     printf("\n-------------------\nENTERING USERLAND\n-------------------\n\n");
 
+    //*((char*)0x400938) = 0xF4;
     printf("User entry %p\n", user_elf_info.entry_addr);
+    disassemble_address((uint64_t)user_elf_info.entry_addr, 5);
 
     switch_usermode(user_elf_info.entry_addr);
 }

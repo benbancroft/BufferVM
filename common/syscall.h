@@ -73,6 +73,9 @@ typedef struct stat {
 
 //errno
 
+#define MAX_ERRNO	4095
+#define IS_ERR_VALUE(x) ((x) >= (unsigned long)-MAX_ERRNO)
+
 #define EPERM            1      /* Operation not permitted */
 #define ENOENT           2      /* No such file or directory */
 #define ESRCH            3      /* No such process */

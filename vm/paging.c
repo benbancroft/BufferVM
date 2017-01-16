@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <inttypes.h>
 #include "../common/paging.h"
 
 uint32_t pd_addr = 0xFFEFF000;
@@ -216,6 +217,10 @@ uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t p
     return table[index] & 0xFFFFFFFFFFF000;
 }
 
+void unmap_page_entry(uint64_t *table, size_t index, char *mem_offset){
+    table[index] = 0;
+}
+
 void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, char *mem_offset){
     virt_addr_info_t info = get_virt_addr_info(virtual_page_addr);
 
@@ -231,6 +236,25 @@ void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, u
     uint64_t *pd2 = (void *)(mem_offset + pd2_addr);
 
     map_page_entry(pd2, info.pg_tbl_offset, flags | PDE64_WRITEABLE, physical_page_addr, mem_offset);
+}
+
+void unmap_physical_page(uint64_t virtual_page_addr, char *mem_offset){
+    virt_addr_info_t info = get_virt_addr_info(virtual_page_addr);
+
+    uint64_t *pml4 = (void *)(mem_offset + pml4_addr);
+
+    //TODO - maybe bail at earlier page directory - don't need to create to unmap?
+
+    uint64_t pdpt_addr = map_page_entry(pml4, 0, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, mem_offset);
+    uint64_t *pdpt = (void *)(mem_offset + pdpt_addr);
+
+    uint64_t pd_addr = map_page_entry(pdpt, info.pg_dir_ptr_offset, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, mem_offset);
+    uint64_t *pd = (void *)(mem_offset + pd_addr);
+
+    uint64_t pd2_addr = map_page_entry(pd, info.pg_dir_offset, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, mem_offset);
+    uint64_t *pd2 = (void *)(mem_offset + pd2_addr);
+
+    unmap_page_entry(pd2, info.pg_tbl_offset, mem_offset);
 }
 
 int64_t map_physical_pages(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages,

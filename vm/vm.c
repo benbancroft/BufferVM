@@ -118,19 +118,22 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     //Page for bootstrap
     map_physical_pages(0x0000, 0x0000, PDE64_WRITEABLE, 1, false, vm->mem);
     //Page for gdt
-    map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE, 1, false, vm->mem);
+    int64_t gdt_page = map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE, 1, true, vm->mem);
+    printf("GDT page %" PRIx64 "\n", gdt_page);
 
-    map_physical_pages(0xDEADB000, allocate_pages(1, vm->mem, false), PDE64_WRITEABLE, 1, false, vm->mem);
+    //map_physical_pages(0xDEADB000, allocate_pages(1, vm->mem, false), PDE64_WRITEABLE, 1, false, vm->mem);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
-    sregs->gdt.base = 0x1000;
+    sregs->gdt.base = gdt_page;
     sregs->cr3 = pml4_addr;
     sregs->cr4 = CR4_PAE;
     sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
     sregs->efer = EFER_LME | EFER_NXE;
 
-    gdt = (void *) (vm->mem + sregs->gdt.base);
+    gdt = (void *) (vm->mem + gdt_page);
     /* gdt[0] is the null segment */
+
+    gdt[0] = 0xDEADBEEF;
 
     //32-bit code segment - needed for bootstrap
     sregs->gdt.limit = 3 * 8 - 1;
@@ -248,7 +251,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
 
     setup_long_mode(vm, &sregs);
 
-    load_elf_binary(kernel_binary_fd, &kernel_elf_info, vm->mem);
+    load_elf_binary(kernel_binary_fd, &kernel_elf_info, true, vm->mem);
     printf("Entry point kernel: %p\n", kernel_elf_info.entry_addr);
 
     /*load_elf_binary(prog_binary_fd, &user_elf_info, vm->mem);
@@ -409,6 +412,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
                         break;
                     case 6:
                         regs.rax = map_physical_pages(regs.rdi, regs.rsi, regs.rdx, regs.rcx, regs.r8, vm->mem);
+                        break;
+                    case 14:
+                        unmap_physical_page(regs.rdi, vm->mem);
                         break;
                     case 7:
                         regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);

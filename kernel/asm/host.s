@@ -11,6 +11,7 @@
 .globl host_regs
 .globl allocate_pages
 .globl map_physical_pages
+.globl unmap_physical_page
 .globl is_vpage_present
 .globl host_print_var
 
@@ -65,6 +66,11 @@ allocate_pages:
 
 map_physical_pages:
     movq $0x6, %rax
+    hlt
+    ret
+
+unmap_physical_page:
+    movq $0xE, %rax
     hlt
     ret
 
