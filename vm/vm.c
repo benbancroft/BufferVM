@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <signal.h>
 
 #include "vm.h"
 #include "../common/paging.h"
@@ -116,9 +117,9 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     build_page_tables(vm->mem);
 
     //Page for bootstrap
-    map_physical_pages(0x0000, 0x0000, PDE64_WRITEABLE, 1, false, vm->mem);
+    map_physical_pages(0x0000, 0x0000, PDE64_WRITEABLE | PDE64_USER, 1, false, vm->mem);
     //Page for gdt
-    int64_t gdt_page = map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE, 1, true, vm->mem);
+    int64_t gdt_page = map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE | PDE64_USER, 1, true, vm->mem);
     printf("GDT page %" PRIx64 "\n", gdt_page);
 
     //map_physical_pages(0xDEADB000, allocate_pages(1, vm->mem, false), PDE64_WRITEABLE, 1, false, vm->mem);
@@ -175,8 +176,8 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     fill_segment_descriptor(gdt, &seg);
 
     //64-bit cpu kernel data segment
-    seg.selector = 0x50;
-    seg.type = 19; /* Data: read/write, accessed */
+    /*seg.selector = 0x50;
+    seg.type = 19;
     //one for each cpu in future!
     seg.limit = sizeof(cpu_t) - 1;
     seg.base = CPU_START-0x1000;
@@ -187,7 +188,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     seg.l = 1;
     seg.db = 0;
     seg.g = 0;
-    fill_segment_descriptor(gdt, &seg);
+    fill_segment_descriptor(gdt, &seg);*/
 
 }
 
@@ -225,8 +226,14 @@ static uint64_t setup_kernel_tss(struct vm_t *vm, struct kvm_sregs *sregs, uint6
     return (tss_start);
 }
 
+void intHandler(int signal) {
+    //Here to be interrupted
+}
+
 void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_binary_location)
 {
+    signal(SIGINT, intHandler);
+
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
@@ -251,7 +258,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
 
     setup_long_mode(vm, &sregs);
 
-    load_elf_binary(kernel_binary_fd, &kernel_elf_info, true, vm->mem);
+    load_elf_binary(kernel_binary_fd, NULL, &kernel_elf_info, true, vm->mem);
     printf("Entry point kernel: %p\n", kernel_elf_info.entry_addr);
 
     /*load_elf_binary(prog_binary_fd, &user_elf_info, vm->mem);
@@ -308,8 +315,14 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     // Repeatedly run code and handle VM exits.
     while (1) {
         ret = ioctl(vcpu->fd, KVM_RUN, 0);
-        if (ret == -1)
-            err(1, "KVM_RUN");
+        if (ret == -1){
+            if (ioctl(vcpu->fd, KVM_GET_REGS, &regs) < 0) {
+                perror("KVM_GET_REGS");
+                exit(1);
+            }
+            printf("KVM_RUN exited with error: %d, PC: %p\n", ret, (void *)regs.rip);
+
+        }
         switch (vcpu->kvm_run->exit_reason) {
             case KVM_EXIT_IO:
                 if (vcpu->kvm_run->io.direction == KVM_EXIT_IO_OUT && vcpu->kvm_run->io.size == 1 &&

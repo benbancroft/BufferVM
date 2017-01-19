@@ -28,8 +28,24 @@ void xed_user_abort_function(const char *msg, const char *file, int line, void *
     printf("abort thing needs writing!\n");
     host_exit();
 }
+void *stack_alloc(uint64_t *sp, size_t  length){
+    *sp -= length;
+    //grow_stack(user_stack_vma, *sp);
+
+    return (void*)*sp;
+}
+
+void new_aux_entry(uint64_t *sp, uint64_t *entries, uint64_t id, uint64_t value){
+    uint64_t *entry = (uint64_t*)stack_alloc(sp, 2*sizeof (uint64_t));
+    entry[0] = id;
+    entry[1] = value;
+
+    *entries += 2;
+}
 
 void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kernel_stack, uint64_t _tss_start, char *user_binary_location) {
+
+    uint64_t usp;
 
     kernel_min_address = _tss_start;
     kernel_stack = _kernel_stack_max;
@@ -47,8 +63,8 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
 
     gdt_init(gdt_page);
 
-    /*unmap_physical_page(0x0000, 0);
-    unmap_physical_page(0x1000, 0);*/
+    unmap_physical_page(0x0000, 0);
+    unmap_physical_page(0x1000, 0);
 
     cpu_init();
     tss_init(kernel_stack);
@@ -61,6 +77,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
 
     user_stack_init(user_version_start, 16000);
+    usp = user_stack_start;
 
     printf("\n-------------------\nKERNEL START\n-------------------\n\n");
 
@@ -74,8 +91,9 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     printf("User binary location: %s\n", user_binary_location);
 
     elf_info_t user_elf_info;
+    void *elf_entry;
     int user_bin_fd = read_binary(user_binary_location);
-    load_elf_binary(user_bin_fd, &user_elf_info, true, 0);
+    load_elf_binary(user_bin_fd, &elf_entry, &user_elf_info, true, 0);
     host_close(user_bin_fd);
     user_heap_start = user_elf_info.max_page_addr;
     vma_print();
@@ -88,11 +106,37 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //load elf sections - this will be below version area so all should be good
     //load dynlibs etc
 
+    //user
+
+    //TODO - random bytes for userspace PRNG seeding.
+    stack_alloc(&usp, 16);
+
+    uint64_t num_entries = 0;
+
+    new_aux_entry(&usp, &num_entries, AT_NULL, 0);
+    new_aux_entry(&usp, &num_entries, AT_ENTRY, 0xDEADBEEF);
+    new_aux_entry(&usp, &num_entries, AT_PHDR, 0xDEADBEEF);
+    new_aux_entry(&usp, &num_entries, AT_PHENT, 0xDEADBEEF);
+    new_aux_entry(&usp, &num_entries, AT_PHNUM, 0xDEADBEEF);
+    new_aux_entry(&usp, &num_entries, AT_BASE, 0xDEADBEEF);
+    new_aux_entry(&usp, &num_entries, AT_PAGESZ, PAGE_SIZE);
+
+    //then working down stack
+    //envp 0..n
+    //envc
+    //argv 0..n
+    //argc
+
+    char *args = (char*)stack_alloc(&usp, 2);
+    args[0] = 0;
+    args[1] = 0;
+
+    printf("\n-------------------\nINITIALISED USERLAND\n-------------------\n\n");
+
+    printf("User entry %p, stack %p\n", elf_entry, usp);
+    disassemble_address((uint64_t)elf_entry, 5);
+
     printf("\n-------------------\nENTERING USERLAND\n-------------------\n\n");
 
-    //*((char*)0x400938) = 0xF4;
-    printf("User entry %p\n", user_elf_info.entry_addr);
-    disassemble_address((uint64_t)user_elf_info.entry_addr, 5);
-
-    switch_usermode(user_elf_info.entry_addr);
+    switch_usermode(elf_entry, usp);
 }

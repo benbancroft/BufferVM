@@ -1003,7 +1003,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
         phys_addr = map_physical_pages(addr, -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER,
                                        PAGE_DIFFERENCE(vma->end_addr, vma->start_addr), true, 0);
 
-        printf("virtaddr %p %x %x\n", addr, org_length, offset);
+        //printf("virtaddr %p %x %x\n", addr, org_length, offset);
 
         vma->flags |= VMA_IS_PREFAULTED;
 
@@ -1014,7 +1014,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
             host_mmap_ret = (uint64_t) host_mmap((void *) phys_addr, org_length, prot, flags | MAP_FIXED, fd, offset);
             ASSERT((int64_t) host_mmap_ret == phys_addr);
 
-            printf("host mmap %p %p\n", host_mmap_ret, phys_addr);
+            //printf("host mmap %p %p\n", host_mmap_ret, phys_addr);
         }
     }
 

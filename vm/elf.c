@@ -15,7 +15,7 @@
 #include "../common/elf.h"
 #include "../common/paging.h"
 
-int load_elf_binary(int fd, elf_info_t *elf_info, bool load_only, char *mem_offset) {
+int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only, char *mem_offset) {
     Elf *e;
     size_t n;
     GElf_Ehdr ehdr;

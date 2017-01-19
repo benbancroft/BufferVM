@@ -1,44 +1,31 @@
 #include "../h/kernel_as.h"
 
-#define pushRegs() \
-    pushq %rax; \
-    pushq %rdi; \
-    pushq %rsi; \
-    pushq %rdx; \
-    pushq %r8; \
-    pushq %r9; \
-    pushq %r10; \
-    pushq %r11;
-
-#define popRegs() \
-    popq %r11; \
-    popq %r10; \
-    popq %r9; \
-    popq %r8; \
-    popq %rdx; \
-    popq %rsi; \
-    popq %rdi; \
-    popq %rax;
-
 .section .text
 .global idt_page_fault_handler
 .type idt_page_fault_handler, @function
 idt_page_fault_handler:
     cli
 
-    /*movq %cr2, %rdi
-    call host_print_var
-    movq 8(%rsp), %rdi
+    btq $2, (%rsp)
+    jnc 1f
+
+    /*movq $2, %rdi
     call host_print_var*/
 
     swapgs
+1:
+    sets %gs:CPU_IN_KERN
     movq %rcx, %gs:CPU_TMP_R15
 
-    movq (%rsp), %rcx
-    btq $0, %rcx
-    jnc .handle_page_fault
-    btq $2, %rcx
-    jc .page_fault_user
+    jc .page_fault_user_check
+.page_fault_user_exit:
+
+    /*movq %cr2, %rdi
+    call host_print_var
+    movq %rdi, %rcx
+    movq 8(%rsp), %rdi
+    call host_print_var
+    movq %rcx, %rdi*/
 
     //enter c page fault handler
 
@@ -55,16 +42,15 @@ idt_page_fault_handler:
     popRegs()
 
     movq %gs:CPU_TMP_R15, %rcx
-    swapgs
 
+    btq $2, (%rsp)
+    jnc 2f
+    swapgs
+2:
     addq $8, %rsp
-    /*movq 32(%rsp), %rdi
-    call host_print_var
-    movq 8(%rsp), %rdi
-    call host_print_var*/
-    #movq $(USER_CS | 3), 8(%rsp)
     iretq
 .unhandled_page_fault:
+    //all bets are off here - clobber the fuck out of everything
 
     popRegs()
 
@@ -79,13 +65,17 @@ idt_page_fault_handler:
     movq $5, %rsi
     call disassemble_address
     call host_exit
-.page_fault_user:
+.page_fault_user_check:
+    movq (%rsp), %rcx
+    btq $0, %rcx
+    jc .page_fault_version_check
+    jmp .page_fault_user_exit
+.page_fault_version_check:
     //check if pointer same as last fault, and in single step mode - if so not version fault!
     //get pointer version - check against lookup
     //if OK, set single step mode and store current pc - clear flag on page entry
     //jump to pc
 
-    //this is god awful - likely will rewrite this c into assembly
     pushRegs()
 
     movq %cr2, %rdi
@@ -111,7 +101,6 @@ idt_page_fault_handler:
     movl %ecx, (%rsp)
     //restore register
     movq %gs:CPU_TMP_R15, %rcx
-    swapgs
     popf
 
     #allows us to jump without clobbering register

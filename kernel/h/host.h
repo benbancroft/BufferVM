@@ -28,6 +28,6 @@ int64_t host_lseek(int fd, int64_t offset, int whence);
 
 int host_regs();
 
-int host_print_var(int32_t var);
+int host_print_var(int64_t var);
 
 #endif //KERNEL_HOST_H

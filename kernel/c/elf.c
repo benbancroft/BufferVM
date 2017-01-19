@@ -37,7 +37,7 @@ int pad_zero(uint64_t elf_bss)
     return 0;
 }
 
-int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, elf_info_t *elf_info, bool load_only){
+int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_t *elf_info, bool load_only){
 
     uint64_t start_addr;
     uint64_t min_addr = UINT64_MAX;
@@ -61,47 +61,58 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, elf_info_t *elf_info, bool 
         v_addr = phdr.p_vaddr - PAGE_OFFSET(phdr.p_vaddr);
         uint64_t size = phdr.p_filesz + PAGE_OFFSET(phdr.p_vaddr);
         uint64_t file_offset =  phdr.p_offset - PAGE_OFFSET(phdr.p_vaddr);
+        v_addr = v_addr & PAGE_MASK;
+        size = PAGE_ALIGN(size);
 
-        if (load_only && phdr.p_type != PT_LOAD) {
+        //TODO - size > file_offset
+
+        if (/*load_only && */phdr.p_type != PT_LOAD) {
             continue;
         }
 
         uint64_t prot = 0, flags = 0;
 
-        //Readable.
-        if (phdr.p_flags & PF_R)
-            prot |= PROT_READ;
+        if (size) {
 
-        //Writeable.
-        if (phdr.p_flags & PF_W)
-            prot |= PROT_WRITE;
+            //Readable.
+            if (phdr.p_flags & PF_R)
+                prot |= PROT_READ;
 
-        // Executable.
-        if (phdr.p_flags & PF_X)
-            prot |= PROT_EXEC;
+            //Writeable.
+            if (phdr.p_flags & PF_W)
+                prot |= PROT_WRITE;
 
-        if (elf_hdr->e_type == ET_EXEC || found_entry)
-            flags |= MAP_FIXED;
-        else if (elf_hdr->e_type == ET_DYN){
-            v_addr = NULL;
+            // Executable.
+            if (phdr.p_flags & PF_X)
+                prot |= PROT_EXEC;
+
+            if (elf_hdr->e_type == ET_EXEC || found_entry)
+                flags |= MAP_FIXED;
+            else if (elf_hdr->e_type == ET_DYN) {
+                v_addr = NULL;
+            }
+
+            prot |= PROT_EXEC | PROT_WRITE | PROT_READ;
+
+            //if (phdr.p_vaddr == 0) continue;
+
+            start_addr = syscall_mmap(v_addr,
+                                      size, prot,
+                                      MAP_PRIVATE | flags,
+                                      fd,
+                                      file_offset);
+            //Will handle error codes too - debugging point
+            printf("Error %p\n", -(uint64_t) start_addr);
+            ASSERT(!IS_ERR_VALUE(start_addr));
+            ASSERT(!(flags & MAP_FIXED) || start_addr == v_addr);
+
+        } else {
+            start_addr = v_addr;
         }
 
-        prot |= PROT_EXEC | PROT_WRITE | PROT_READ;
-
-        //if (phdr.p_vaddr == 0) continue;
-
-        start_addr = syscall_mmap(v_addr,
-                                  size, prot,
-                                  MAP_PRIVATE | flags,
-                                  fd,
-                                  file_offset);
-        //Will handle error codes too - debugging point
-        printf("Error %p\n", -(uint64_t)start_addr);
-        ASSERT(!IS_ERR_VALUE(start_addr));
-        ASSERT(!(flags & MAP_FIXED) || start_addr == v_addr);
-
-        if (!found_entry && elf_hdr->e_type == ET_DYN) {
-            elf_info->entry_addr = (void*)start_addr - (v_addr & PAGE_MASK);
+        if (elf_start && !found_entry && elf_hdr->e_type == ET_DYN) {
+            *elf_start = (void*)start_addr - (v_addr & PAGE_MASK);
+            printf("Entry f: %p\n", *elf_start);
             found_entry = true;
         }
 
@@ -133,23 +144,26 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, elf_info_t *elf_info, bool 
     return 0;
 }
 
-void load_elf64_interpreter(int fd, char *path, elf_info_t *elf_info){
+void load_elf64_interpreter(int fd, char *path, void **elf_entry, elf_info_t *elf_info){
     printf("Interp: %s\n", path);
 
     elf_info_t interp_elf_info;
     int user_interp_fd = read_binary(path);
-    load_elf_binary(user_interp_fd, &interp_elf_info, false, 0);
+    load_elf_binary(user_interp_fd, elf_entry, &interp_elf_info, false, 0);
+    *elf_entry = *elf_entry + (uint64_t)interp_elf_info.entry_addr;
 }
 
-int load_elf64(int fd, elf_info_t *elf_info, bool load_only){
+int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only){
     elf64_hdr_t elf_hdr;
     int ret;
-    bool has_interpreter = false;
 
     host_read(fd, (char *)&elf_hdr, sizeof (elf64_hdr_t));
 
     printf("Entry point user: %p\n", elf_hdr.e_entry);
     printf("Num program headers: %d\n", elf_hdr.e_phnum);
+
+    elf_info->entry_addr = (void*)elf_hdr.e_entry;
+    if (elf_entry) *elf_entry = elf_info->entry_addr;
 
     host_lseek(fd, elf_hdr.e_phoff, SEEK_SET);
 
@@ -166,33 +180,27 @@ int load_elf64(int fd, elf_info_t *elf_info, bool load_only){
             host_read(fd, interp_path, phdr.p_filesz);
 
             //load base elf image before interpreter
-            if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, elf_info, true)))
+            if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, NULL, elf_info, true)))
                 return ret;
 
-            load_elf64_interpreter(fd, interp_path, elf_info);
+            load_elf64_interpreter(fd, interp_path, elf_entry, elf_info);
 
-            //elf_info->entry_addr = (void*)elf_hdr.e_entry;
-
-            has_interpreter = true;
-
-            break;
+            return 0;
         }
     }
 
-    if (!has_interpreter) {
-        elf_info->entry_addr = (void *) elf_hdr.e_entry;
-        if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, elf_info, load_only)))
-            return ret;
-    }
+    elf_info->entry_addr = (void *) elf_hdr.e_entry;
+    if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, elf_entry, elf_info, load_only)))
+        return ret;
 
     return 0;
 }
 
-int load_elf_binary(int fd, elf_info_t *elf_info, bool load_only, char *mem_offset){
+int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only, char *mem_offset){
     if (is_elf(fd)){
         if (is_binary_64bit(fd)){
             printf("64-bit bin\n");
-            return load_elf64(fd, elf_info, load_only);
+            return load_elf64(fd, elf_entry, elf_info, load_only);
         }else{
             printf("Un-supported binary? 32-bit not currently supported?\n");
 

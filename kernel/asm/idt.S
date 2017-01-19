@@ -12,11 +12,24 @@ idt_load:
 idt_null_handler:
     iretq
 idt_debug_handler:
-    cli
+    #cli
 
     pushq %rax
+    pushq %rcx
+    pushq %rdx
 
-    swapgs
+    //expensive check for userland - can probably have this optional if user step is disabled?
+    movl $MSR_GS_BASE,%ecx
+    rdmsr
+    movabs $cpu, %rcx
+    cmpl %eax, %ecx
+    jne .idt_debug_userland   /* not equal -> in userland */
+    shrq $32, %rcx
+    cmpl %edx, %ecx
+    jne .idt_debug_userland  /* not equal -> in userland */
+
+    popq %rdx
+    popq %rcx
 
     movl %gs:CPU_TMP_DCNTR, %eax
 
@@ -27,19 +40,34 @@ idt_debug_handler:
     subl $0x1, %gs:CPU_TMP_DCNTR
     popq %rax
 
-    swapgs
     iretq
 .idt_debug_exit:
     movq $(USER_DS | 3), 40(%rsp)
     movq %gs:CPU_TMP_DSP, %rax
     movq %rax, 32(%rsp)
-    movq $0x200, 24(%rsp)
+    movq $(0x200 | SINGLE_STEP_F), 24(%rsp)
     movq $(USER_CS | 3), 16(%rsp)
     //return pointer should already be on the stack
 
+    swapgs
     popq %rax
 
+    iretq
+.idt_debug_userland:
+
     swapgs
+    pushRegs()
+
+    movq 88(%rsp), %rdi
+    movq $1, %rsi
+    call disassemble_address
+
+    popRegs()
+    swapgs
+
+    popq %rdx
+    popq %rcx
+    popq %rax
 
     iretq
 idt_gpf_handler:

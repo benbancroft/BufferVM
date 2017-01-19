@@ -37,10 +37,14 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
     r = (bool)(error_code & PF_RSVD);
     i = (bool)(error_code & PF_INSTR);
 
-    printf("page fault at %p error: %d rip %p\n", addr, error_code, rip);
+
     disassemble_address(rip, 5);
 
     printf("P: %d W: %d U: %d R: %d I: %d\n", p, w, u, r ,i);*/
+
+    //disassemble_address(rip, 5);
+
+    printf("page fault at %p error: %d rip %p\n", addr, error_code, rip);
 
     if (!(error_code & PF_PROT)){
 

@@ -88,6 +88,8 @@ uint64_t syscall_brk(uint64_t brk){
         curr_brk = new_brk;
     }
 
+    printf("boo: %p\n", curr_brk);
+
     return curr_brk;
 }
 

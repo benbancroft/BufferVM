@@ -7,7 +7,7 @@
     .global syscall_null_handler
 syscall_setup:
     # Set the kernel EFLAGS mask value
-    movl $0x00, %eax
+    movl $(SINGLE_STEP_F), %eax
     movl $0x00, %edx
 	movl $(AMD64_MSR_SFMASK), %ecx
 	wrmsr

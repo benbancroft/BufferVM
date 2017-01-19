@@ -4,6 +4,13 @@
     .global cpu_init
 
 cpu_init:
-    movw $(CPU_S), %ax
+    movw $0, %ax
     movw	%ax, %gs
+    movl $(KERNEL_CS | ((USER_DS - 8) << 16)), %edx
+    movabs $cpu, %rcx
+    movl %ecx, %eax
+    shrq $32, %rcx
+    movl %ecx, %edx
+    movl $(MSR_GS_BASE), %ecx
+    wrmsr
     ret
