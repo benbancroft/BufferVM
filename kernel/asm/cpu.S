@@ -7,7 +7,7 @@ cpu_init:
     movw $0, %ax
     movw	%ax, %gs
     movl $(KERNEL_CS | ((USER_DS - 8) << 16)), %edx
-    movabs $cpu, %rcx
+    movabs $cpu_info, %rcx
     movl %ecx, %eax
     shrq $32, %rcx
     movl %ecx, %edx

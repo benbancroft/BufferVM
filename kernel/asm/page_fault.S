@@ -9,8 +9,12 @@ idt_page_fault_handler:
     btq $2, (%rsp)
     jnc 1f
 
-    /*movq $2, %rdi
-    call host_print_var*/
+    /*pushq %rdi
+    pushq %rax
+    movq $2, %rdi
+    call host_print_var
+    popq %rax
+    popq %rdi*/
 
     swapgs
 1:
@@ -30,7 +34,7 @@ idt_page_fault_handler:
     //enter c page fault handler
 
 .handle_page_fault:
-    pushRegs()
+    pushScratchRegs()
 
     movq %cr2, %rdi
     movq 64(%rsp), %rsi
@@ -39,7 +43,7 @@ idt_page_fault_handler:
     testq %rax, %rax
     je .unhandled_page_fault
 
-    popRegs()
+    popScratchRegs()
 
     movq %gs:CPU_TMP_R15, %rcx
 
@@ -52,7 +56,7 @@ idt_page_fault_handler:
 .unhandled_page_fault:
     //all bets are off here - clobber the fuck out of everything
 
-    popRegs()
+    popScratchRegs()
 
     movabs $LC0, %rdi
     movq %cr2, %rsi
@@ -76,7 +80,7 @@ idt_page_fault_handler:
     //if OK, set single step mode and store current pc - clear flag on page entry
     //jump to pc
 
-    pushRegs()
+    pushScratchRegs()
 
     movq %cr2, %rdi
     movq 72(%rsp), %rsi
@@ -84,7 +88,7 @@ idt_page_fault_handler:
     testq %rax, %rax
     je .version_error
 
-    popRegs()
+    popScratchRegs()
 
     //clone return address on stack for retq
     //we replace error value currently on stack

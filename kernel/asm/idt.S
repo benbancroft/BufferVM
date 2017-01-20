@@ -21,7 +21,7 @@ idt_debug_handler:
     //expensive check for userland - can probably have this optional if user step is disabled?
     movl $MSR_GS_BASE,%ecx
     rdmsr
-    movabs $cpu, %rcx
+    movabs $cpu_info, %rcx
     cmpl %eax, %ecx
     jne .idt_debug_userland   /* not equal -> in userland */
     shrq $32, %rcx
@@ -55,19 +55,19 @@ idt_debug_handler:
     iretq
 .idt_debug_userland:
 
-    swapgs
-    pushRegs()
-
-    movq 88(%rsp), %rdi
-    movq $1, %rsi
-    call disassemble_address
-
-    popRegs()
-    swapgs
-
     popq %rdx
     popq %rcx
     popq %rax
+
+    swapgs
+    pushAllRegs(24(%rsp))
+
+    movq (%rsp), %rdi
+    movabs $cpu_info+CPU_REG_BASE, %rsi
+    call disassemble_instr
+
+    popAllRegs()
+    swapgs
 
     iretq
 idt_gpf_handler:

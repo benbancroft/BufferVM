@@ -4,4 +4,4 @@
 
 #include "../h/cpu.h"
 
-cpu_t cpu;
+cpu_t cpu_info;

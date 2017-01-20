@@ -7,7 +7,7 @@ project(intelxed C)
 SET(INTELXED_LIB ${CMAKE_CURRENT_SOURCE_DIR}/kit/lib/libxed.a)
 
 add_custom_command(OUTPUT ${INTELXED_LIB}
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/xed/mfile.py install --install-dir ${CMAKE_CURRENT_SOURCE_DIR}/kit --extra-ccflags='-mcmodel=large -fno-stack-protector'
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/xed/mfile.py install --install-dir ${CMAKE_CURRENT_SOURCE_DIR}/kit --extra-ccflags='-mcmodel=large -fno-stack-protector -mno-red-zone'
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(intelxed
