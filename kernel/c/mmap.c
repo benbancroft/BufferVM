@@ -905,9 +905,9 @@ static inline uint64_t prot_to_vma(uint64_t prot) {
 }
 
 uint64_t vma_prot_to_pg(uint64_t prot) {
-    return TRANSFER_FLAG(prot, PROT_READ, PDE64_PRESENT) |
-           TRANSFER_FLAG(prot, PROT_WRITE, PDE64_WRITEABLE) |
-           TRANSFER_INV_FLAG(prot, PROT_EXEC, PDE64_NO_EXE);
+    return TRANSFER_FLAG(prot, VMA_READ, PDE64_PRESENT) |
+           TRANSFER_FLAG(prot, VMA_WRITE, PDE64_WRITEABLE) |
+           TRANSFER_INV_FLAG(prot, VMA_EXEC, PDE64_NO_EXE);
 }
 
 /*
