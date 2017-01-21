@@ -9,5 +9,3 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror" )
 
 set(SOURCE_FILES main.c)
 add_executable(example-program-2 ${SOURCE_FILES})
-
-target_link_libraries(example-program-2 c)

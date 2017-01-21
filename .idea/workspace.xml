@@ -25,9 +25,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="64521e75-0ecf-4157-ba79-ec1d2cd9b44d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/mmap.c" afterPath="$PROJECT_DIR$/kernel/c/mmap.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/stack.c" afterPath="$PROJECT_DIR$/kernel/c/stack.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example-program-2/CMakeLists.txt" afterPath="$PROJECT_DIR$/example-program-2/CMakeLists.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/h/kernel_as.h" afterPath="$PROJECT_DIR$/kernel/h/kernel_as.h" />
     </list>
     <ignored path="BufferVM.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,13 +46,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="vm.c" pinned="false" current-in-tab="true">
+      <file leaf-file-name="vm.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vm/vm.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="404">
               <caret line="403" column="93" selection-start-line="403" selection-start-column="93" selection-end-line="403" selection-end-column="93" />
               <folding>
                 <element signature="e#38#56#0" expanded="true" />
+                <marker date="1485015230073" expanded="true" signature="599:1827" ph="{...}" />
+                <marker date="1485015230073" expanded="true" signature="5166:5830" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -64,26 +65,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="193">
               <caret line="155" column="11" selection-start-line="155" selection-start-column="11" selection-end-line="155" selection-end-column="11" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="kvm.h" pinned="false" current-in-tab="false">
-        <entry file="file:///usr/include/linux/kvm.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="211">
-              <caret line="176" column="35" selection-start-line="176" selection-start-column="35" selection-end-line="177" selection-end-column="35" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="paging.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vm/paging.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="167" column="8" selection-start-line="167" selection-start-column="8" selection-end-line="167" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -114,7 +95,7 @@
       <file leaf-file-name="syscall.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="257">
+            <state relative-caret-position="419">
               <caret line="154" column="54" selection-start-line="154" selection-start-column="54" selection-end-line="154" selection-end-column="54" />
               <folding />
             </state>
@@ -139,6 +120,26 @@
               <folding>
                 <element signature="e#38#61#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="kernel_as.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kernel/h/kernel_as.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="60" column="13" selection-start-line="60" selection-start-column="13" selection-end-line="60" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/example-program-2/CMakeLists.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="10" column="49" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -174,7 +175,6 @@
         <option value="$PROJECT_DIR$/vm/elf.h" />
         <option value="$PROJECT_DIR$/kernel/h/elf.h" />
         <option value="$PROJECT_DIR$/vm/main.c" />
-        <option value="$PROJECT_DIR$/example-program-2/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/bootstrap/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/kernel/h/tss.h" />
@@ -215,10 +215,11 @@
         <option value="$PROJECT_DIR$/kernel/c/kernel.c" />
         <option value="$PROJECT_DIR$/kernel/h/syscall.h" />
         <option value="$PROJECT_DIR$/kernel/c/syscall.c" />
-        <option value="$PROJECT_DIR$/kernel/h/kernel_as.h" />
         <option value="$PROJECT_DIR$/kernel/c/mmap.c" />
         <option value="$PROJECT_DIR$/kernel/c/stack.c" />
         <option value="$PROJECT_DIR$/vm/vm.c" />
+        <option value="$PROJECT_DIR$/kernel/h/kernel_as.h" />
+        <option value="$PROJECT_DIR$/example-program-2/CMakeLists.txt" />
       </list>
     </option>
   </component>
@@ -752,12 +753,12 @@
       <workItem from="1484593048426" duration="18863000" />
       <workItem from="1484681726527" duration="10524000" />
       <workItem from="1484766365800" duration="45958000" />
-      <workItem from="1484954678349" duration="53856000" />
+      <workItem from="1484954678349" duration="55095000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="756057000" />
+    <option name="totallyTimeSpent" value="757296000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -842,13 +843,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/kernel/asm/tss.S">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" column="9" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/kernel/h/utils.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="378">
@@ -1162,22 +1156,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/h/kernel_as.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="46" column="2" selection-start-line="46" selection-start-column="2" selection-end-line="46" selection-end-column="2" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="154" column="54" selection-start-line="154" selection-start-column="54" selection-end-line="154" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/linux/kvm.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
@@ -1198,14 +1176,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="445">
           <caret line="84" column="42" selection-start-line="84" selection-start-column="29" selection-end-line="84" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/mmap.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="902" column="52" selection-start-line="902" selection-start-column="43" selection-end-line="902" selection-end-column="52" />
           <folding />
         </state>
       </provider>
@@ -1252,7 +1222,41 @@
           <caret line="403" column="93" selection-start-line="403" selection-start-column="93" selection-end-line="403" selection-end-column="93" />
           <folding>
             <element signature="e#38#56#0" expanded="true" />
+            <marker date="1485015230073" expanded="true" signature="599:1827" ph="{...}" />
+            <marker date="1485015230073" expanded="true" signature="5166:5830" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/mmap.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="902" column="52" selection-start-line="902" selection-start-column="43" selection-end-line="902" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="154" column="54" selection-start-line="154" selection-start-column="54" selection-end-line="154" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/h/kernel_as.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="60" column="13" selection-start-line="60" selection-start-column="13" selection-end-line="60" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example-program-2/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="49" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
+          <folding />
         </state>
       </provider>
     </entry>
