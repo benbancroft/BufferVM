@@ -35,20 +35,24 @@ void *stack_alloc(uint64_t *sp, size_t  length){
     return (void*)*sp;
 }
 
-#define STACK_ROUND(sp, items) \
-	(((uint64_t) (sp - items)) &~ 15UL)
+uint64_t stack_round(uint64_t *sp) {
+    return (*sp = (((uint64_t) (*sp)) & ~15UL));
+}
 
-void new_aux_entry(uint64_t *sp, uint64_t *entries, uint64_t id, uint64_t value){
-    uint64_t *entry = (uint64_t*)stack_alloc(sp, 2*sizeof (uint64_t));
-    entry[0] = id;
-    entry[1] = value;
+#define MAX_ENTRIES 10
 
-    *entries += 2;
+void new_aux_entry(uint64_t *entries, uint64_t *num_entries, uint64_t id, uint64_t value){
+    if (*num_entries+2 > MAX_ENTRIES*2){
+        printf("AUX entry table is full.\n");
+        return;
+    }
+    entries[(*num_entries)++] = id;
+    entries[(*num_entries)++] = value;
 }
 
 void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kernel_stack, uint64_t _tss_start, char *user_binary_location) {
 
-    uint64_t usp;
+    uint64_t esp;
 
     kernel_min_address = _tss_start;
     kernel_stack = _kernel_stack_max;
@@ -80,7 +84,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
 
     user_stack_init(user_version_start, 16000);
-    usp = user_stack_start;
+    esp = user_stack_start;
 
     printf("\n-------------------\nKERNEL START\n-------------------\n\n");
 
@@ -112,17 +116,23 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //user
 
     //TODO - random bytes for userspace PRNG seeding.
-    stack_alloc(&usp, 16);
+    char *str_tst = stack_alloc(&esp, 5);
 
     uint64_t num_entries = 0;
+    uint64_t entries[MAX_ENTRIES*2];
 
-    new_aux_entry(&usp, &num_entries, AT_NULL, 0);
-    new_aux_entry(&usp, &num_entries, AT_ENTRY, 0xDEADBEEF);
-    new_aux_entry(&usp, &num_entries, AT_PHDR, 0xDEADBEEF);
-    new_aux_entry(&usp, &num_entries, AT_PHENT, 0xDEADBEEF);
-    new_aux_entry(&usp, &num_entries, AT_PHNUM, 0xDEADBEEF);
-    new_aux_entry(&usp, &num_entries, AT_BASE, 0xDEADBEEF);
-    new_aux_entry(&usp, &num_entries, AT_PAGESZ, PAGE_SIZE);
+    new_aux_entry(entries, &num_entries, AT_ENTRY, (uint64_t)user_elf_info.entry_addr);
+    new_aux_entry(entries, &num_entries, AT_FLAGS, 0);
+    new_aux_entry(entries, &num_entries, AT_BASE, (uint64_t)elf_entry);
+    new_aux_entry(entries, &num_entries, AT_PHNUM, user_elf_info.phdr_num);
+    new_aux_entry(entries, &num_entries, AT_PHENT, sizeof(elf64_phdr_t));
+    new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t)user_elf_info.entry_addr + user_elf_info.phdr_off);
+    new_aux_entry(entries, &num_entries, AT_PAGESZ, PAGE_SIZE);
+    //new_aux_entry(entries, &num_entries, AT_HWCAP, 0);
+    //new_aux_entry(entries, &num_entries, AT_HWCAP2, 0);
+
+    printf("d %p %p %d\n", elf_entry, user_elf_info.entry_addr, user_elf_info.phdr_num);
+
 
     //then working down stack
     //envp 0..n
@@ -130,18 +140,64 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //argv 0..n
     //argc
 
-    char *args = (char*)stack_alloc(&usp, 4);
+    size_t argc = 0, envc = 0, items;
+    uint64_t *usp;
+
+    stack_alloc(&esp, (num_entries + 2) * sizeof (uint64_t));
+
+    items = ((argc + 1) + (envc + 1) + 1) * sizeof (uint64_t);
+    stack_alloc(&esp, items);
+    stack_round(&esp);
+
+    grow_stack(user_stack_vma, esp);
+
+    usp = (uint64_t *)esp;
+
+    //argc onto top of aligned stack
+    *(usp++) = argc;
+
+    //write argv
+    while (argc-- > 0) {
+        //pass pointer in here
+        *(usp++) = (uint64_t)str_tst;
+    }
+
+    //null 64-bit before envp
+    *(usp++) = 0;
+
+    //write envp
+    while (envc-- > 0) {
+        //pass pointer in here
+        *(usp++) = (uint64_t)str_tst;
+    }
+
+    //null 64-bit after envp
+    *(usp++) = 0;
+
+    for (size_t i = 0; i < num_entries; i++){
+        *(usp++) = entries[i];
+    }
+
+    //null aux entry
+    memset(usp, 0, 2 * sizeof (uint64_t));
+
+    /*char *yo = "yo";
+    printf("strtst %p %p %s\n", str_tst, esp, yo);
+    memcpy(str_tst, yo, strlen(yo)+1);*/
+
+
+    /*char *args = (char*)stack_alloc(&usp, 4);
     args[0] = 0;
     args[1] = 0;
     args[2] = 0;
-    args[3] = 0;
+    args[3] = 0;*/
 
     printf("\n-------------------\nINITIALISED USERLAND\n-------------------\n\n");
 
-    printf("User entry %p, stack %p\n", elf_entry, usp);
+    printf("User entry %p, stack %p\n", elf_entry, esp);
     disassemble_address((uint64_t)elf_entry, 5);
 
     printf("\n-------------------\nENTERING USERLAND\n-------------------\n\n");
 
-    switch_usermode(elf_entry, usp);
+    switch_usermode(elf_entry, esp);
 }

@@ -49,6 +49,16 @@ int syscall_close(int32_t fd){
     return host_close(fd);
 }
 
+ssize_t syscall_writev(uint64_t fd, const iovec_t *vec, uint64_t vlen, int flags){
+    printf("syscall_writev\n");
+    return host_writev(fd, vec, vlen, flags);
+}
+
+void syscall_exit_group(int status){
+    printf("Exit group status: %d\n", status);
+    host_exit();
+}
+
 void syscall_exit(){
 
     vma_print();
@@ -88,7 +98,7 @@ uint64_t syscall_brk(uint64_t brk){
         curr_brk = new_brk;
     }
 
-    printf("boo: %p\n", curr_brk);
+    printf("brk: %p\n", curr_brk);
 
     return curr_brk;
 }
@@ -109,7 +119,9 @@ void syscall_init()
     syscall_register(9, (uintptr_t) &syscall_mmap);
     syscall_register(11, (uintptr_t) &syscall_munmap);
     syscall_register(12, (uintptr_t) &syscall_brk);
+    syscall_register(20, (uintptr_t) &syscall_writev);
     syscall_register(60, (uintptr_t) &syscall_exit);
+    syscall_register(231, (uintptr_t) &syscall_exit_group);
 
     syscall_register(SYSCALL_MAX, (uintptr_t) &get_version);
     syscall_register(SYSCALL_MAX-1, (uintptr_t) &set_version);

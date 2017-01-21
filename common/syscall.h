@@ -5,6 +5,48 @@
 #ifndef COMMON_SYSCALL_H
 #define COMMON_SYSCALL_H
 
+#include "syscall_as.h"
+
+#define MAX_ERRNO	4095
+#define IS_ERR_VALUE(x) ((x) >= (unsigned long)-MAX_ERRNO)
+
+#ifndef VM
+
+typedef struct file {
+    int fd;
+    uint64_t dev;
+    uint64_t inode;
+} file_t;
+
+typedef struct iovec
+{
+    void *iov_base;	/* BSD uses caddr_t (1003.1g requires void *) */
+    size_t iov_len; /* Must be size_t (1003.1g) */
+} iovec_t;
+
+typedef struct timespec
+{
+    int64_t tv_sec;		/* Seconds.  */
+    int64_t tv_nsec;	/* Nanoseconds.  */
+} timespec_t;
+
+typedef struct stat {
+    uint64_t  st_dev;     /* ID of device containing file */
+    uint64_t  st_ino;     /* inode number */
+    uint64_t  st_nlink;   /* number of hard links */
+    uint32_t   st_mode;    /* protection */
+    uint32_t     st_uid;     /* user ID of owner */
+    uint32_t     st_gid;     /* group ID of owner */
+    unsigned int		__pad0;
+    uint64_t     st_rdev;    /* device ID (if special file) */
+    int64_t    st_size;    /* total size, in bytes */
+    int64_t st_blksize; /* blocksize for file system I/O */
+    int64_t  st_blocks;  /* number of 512B blocks allocated */
+    timespec_t    st_atime;   /* time of last access */
+    timespec_t    st_mtime;   /* time of last modification */
+    timespec_t    st_ctime;   /* time of last status change */
+} stat_t;
+
 //mmap
 
 #define PROT_READ       0x1             /* page can be read */
@@ -30,12 +72,6 @@
 
 //file
 
-typedef struct file {
-    int fd;
-    uint64_t dev;
-    uint64_t inode;
-} file_t;
-
 #define O_RDONLY         00
 #define O_WRONLY         01
 #define O_RDWR           02
@@ -45,36 +81,7 @@ typedef struct file {
 #define SEEK_END        2       /* seek relative to end of file */
 #define SEEK_DATA       3       /* seek to the next data */
 #define SEEK_HOLE       4       /* seek to the next hole */
-
-//stat
-
-typedef struct timespec
-{
-    int64_t tv_sec;		/* Seconds.  */
-    int64_t tv_nsec;	/* Nanoseconds.  */
-} timespec_t;
-
-typedef struct stat {
-    uint64_t  st_dev;     /* ID of device containing file */
-    uint64_t  st_ino;     /* inode number */
-    uint64_t  st_nlink;   /* number of hard links */
-    uint32_t   st_mode;    /* protection */
-    uint32_t     st_uid;     /* user ID of owner */
-    uint32_t     st_gid;     /* group ID of owner */
-    unsigned int		__pad0;
-    uint64_t     st_rdev;    /* device ID (if special file) */
-    int64_t    st_size;    /* total size, in bytes */
-    int64_t st_blksize; /* blocksize for file system I/O */
-    int64_t  st_blocks;  /* number of 512B blocks allocated */
-    timespec_t    st_atime;   /* time of last access */
-    timespec_t    st_mtime;   /* time of last modification */
-    timespec_t    st_ctime;   /* time of last status change */
-} stat_t;
-
 //errno
-
-#define MAX_ERRNO	4095
-#define IS_ERR_VALUE(x) ((x) >= (unsigned long)-MAX_ERRNO)
 
 #define EPERM            1      /* Operation not permitted */
 #define ENOENT           2      /* No such file or directory */
@@ -110,5 +117,7 @@ typedef struct stat {
 #define EPIPE           32      /* Broken pipe */
 #define EDOM            33      /* Math argument out of domain of func */
 #define ERANGE          34      /* Math result not representable */
+
+#endif
 
 #endif //COMMON_SYSCALL_H

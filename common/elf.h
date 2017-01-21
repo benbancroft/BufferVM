@@ -87,6 +87,8 @@ typedef struct elf_info {
     void *entry_addr;
     uint64_t min_page_addr;
     uint64_t max_page_addr;
+    uint64_t phdr_off;
+    uint64_t phdr_num;
 } elf_info_t;
 
 int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only, char *mem_offset);

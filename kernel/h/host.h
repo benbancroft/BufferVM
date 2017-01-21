@@ -26,6 +26,8 @@ void *host_mmap(void *addr, size_t length, uint64_t prot, uint64_t flags, int fd
 
 int64_t host_lseek(int fd, int64_t offset, int whence);
 
+ssize_t host_writev(uint64_t fd, const iovec_t *vec, uint64_t vlen, int flags);
+
 int host_regs();
 
 int host_print_var(int64_t var);

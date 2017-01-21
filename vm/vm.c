@@ -14,12 +14,15 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <errno.h>
+#include <sys/uio.h>
 
 #include "vm.h"
 #include "../common/paging.h"
 #include "elf.h"
 #include "gdt.h"
 #include "../common/elf.h"
+#include "../common/syscall.h"
 
 extern const unsigned char bootstrap[], bootstrap_end[];
 
@@ -127,7 +130,7 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = gdt_page;
     sregs->cr3 = pml4_addr;
-    sregs->cr4 = CR4_PAE;
+    sregs->cr4 = CR4_PAE | CR4_OSFXSR | CR4_OSXMMEXCPT;
     sregs->cr0 = CR0_PE | CR0_MP | CR0_ET | CR0_NE | CR0_WP | CR0_AM;
     sregs->efer = EFER_LME | EFER_NXE;
 
@@ -237,7 +240,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
-    elf_info_t kernel_elf_info = { NULL, 0, 0 };
+    elf_info_t kernel_elf_info = { NULL, 0, 0, 0, 0 };
 
     uint64_t ksp_max;
     uint64_t ksp;
@@ -429,6 +432,37 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
                     case 14:
                         unmap_physical_page(regs.rdi, vm->mem);
                         break;
+                    case 15:
+                    {
+                        struct iovec vectors[regs.rdx];
+                        struct iovec *vec;
+                        void *vecbuf;
+                        size_t ret = 0;
+
+                        if (read_virtual_addr(regs.rsi, regs.rdx * sizeof (struct iovec), vectors, vm->mem)){
+                            for (size_t i = 0; i < regs.rdx; i++){
+                                vec = &vectors[i];
+
+                                vecbuf = malloc(vec->iov_len);
+                                if (!read_virtual_addr((uint64_t)vec->iov_base, vec->iov_len, vecbuf, vm->mem)){
+                                    ret = -EFAULT;
+                                    break;
+                                }
+                                vec->iov_base = vecbuf;
+                            }
+                            if (!IS_ERR_VALUE(ret)){
+                                ret = writev(regs.rdi, vectors, regs.rdx);
+                                for (size_t i = 0; i < regs.rdx; i++){
+                                    vec = &vectors[i];
+                                    free(vec->iov_base);
+                                }
+                            }
+
+                        } else
+                            ret = -EFAULT;
+                        regs.rax = ret;
+                    }
+                    break;
                     case 7:
                         regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);
                         break;

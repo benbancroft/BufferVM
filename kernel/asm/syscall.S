@@ -73,6 +73,7 @@ syscall_null_handler:
     movq %rax, %rsi
     clr %rax       # needed for printf
     call printf
+    movq $-1, %rax #return -1
     ret
 .section .data
 LC0:

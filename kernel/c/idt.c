@@ -31,8 +31,8 @@ void idt_init(bool bsp)
     idt_set_gate(14, (uint64_t) &idt_page_fault_handler, 0x0);
     idt_set_gate(1, (uint64_t) &idt_debug_handler, 0x0);
     //idt_set_gate(0x06, (uint64_t) &idt_page_fault_handler, 0x0);
+    idt_set_gate(0x06, (uint64_t) &idt_invalid_opcode_handler, 0x0);
     idt_set_gate(0x0D, (uint64_t) &idt_gpf_handler, 0x0);
-    //idt_set_gate(&idt[13], (uintptr_t) &idt_fault_gp, 0x8, 0x0);
 
     /* Running on the bootstrap processor */
     if (bsp)

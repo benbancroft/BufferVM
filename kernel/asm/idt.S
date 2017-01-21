@@ -5,12 +5,26 @@
 .global idt_null_handler
 .global idt_gpf_handler
 .global idt_debug_handler
+.global idt_invalid_opcode_handler
 idt_load:
     cli
     lidt (%rdi)
     ret
+idt_invalid_opcode_handler:
+    cli
+    movabs $LC4, %rdi
+    movq (%rsp), %rsi
+    clr %rax       # needed for printf
+    call printf
+    call host_exit
 idt_null_handler:
-    iretq
+    cli
+    movabs $LC0, %rdi
+    movq 8(%rsp), %rsi
+    movl (%rsp), %edx
+    clr %rax       # needed for printf
+    call printf
+    call host_exit
 idt_debug_handler:
     #cli
 
@@ -91,5 +105,5 @@ idt_gpf_handler:
         .ascii "Debug exception: %p %d\n\0"
     LC3:
         .ascii "iretq: %p %p %p %p %p\n\0"
-
-
+    LC4:
+        .ascii "Invalid Opcode interrupt at PC: %p\n\0"

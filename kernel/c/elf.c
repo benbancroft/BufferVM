@@ -194,9 +194,12 @@ int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool is_interp){
         }
     }
 
-    elf_info->entry_addr = (void *) elf_hdr.e_entry;
     if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, elf_entry, elf_info, is_interp)))
         return ret;
+
+    elf_info->entry_addr = (void *) elf_hdr.e_entry;
+    elf_info->phdr_num = elf_hdr.e_phnum;
+    elf_info->phdr_off = elf_hdr.e_phoff;
 
     return 0;
 }

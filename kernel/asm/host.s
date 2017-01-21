@@ -8,6 +8,7 @@
 .globl host_fstat
 .globl host_mmap
 .globl host_lseek
+.globl host_writev
 .globl host_regs
 .globl allocate_pages
 .globl map_physical_pages
@@ -71,6 +72,11 @@ map_physical_pages:
 
 unmap_physical_page:
     movq $0xE, %rax
+    hlt
+    ret
+
+host_writev:
+    movq $0xF, %rax
     hlt
     ret
 

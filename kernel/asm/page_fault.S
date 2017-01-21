@@ -9,13 +9,6 @@ idt_page_fault_handler:
     btq $2, (%rsp)
     jnc 1f
 
-    /*pushq %rdi
-    pushq %rax
-    movq $2, %rdi
-    call host_print_var
-    popq %rax
-    popq %rdi*/
-
     swapgs
 1:
     sets %gs:CPU_IN_KERN
@@ -23,13 +16,6 @@ idt_page_fault_handler:
 
     jc .page_fault_user_check
 .page_fault_user_exit:
-
-    /*movq %cr2, %rdi
-    call host_print_var
-    movq %rdi, %rcx
-    movq 8(%rsp), %rdi
-    call host_print_var
-    movq %rcx, %rdi*/
 
     //enter c page fault handler
 
