@@ -576,8 +576,13 @@ vma_unlink(vm_area_t *vma, vm_area_t *prev) {
 }
 
 static vm_area_t *vma_remove(vm_area_t *vma) {
-    if (vma->file_info.fd != -1)
-        host_close(vma->file_info.fd);
+    /*if (vma->file_info.fd != -1)
+        host_close(vma->file_info.fd);*/
+    size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
+    printf("rem %p %p\n", vma->start_addr, vma->end_addr);
+    for (size_t i = 0; i < pages; i++){
+        unmap_physical_page(vma->start_addr+i*PAGE_SIZE, 0);
+    }
     vma_free(vma);
     return vma->next;
 }
@@ -661,8 +666,8 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
     }
 
     if (remove_next) {
-        if (vma->file_info.fd != -1)
-            host_close(vma->file_info.fd);
+        /*if (vma->file_info.fd != -1)
+            host_close(vma->file_info.fd);*/
         vma_free(next);
         /*
          * In mprotect's case 6 (see comments on vma_merge),
@@ -784,7 +789,7 @@ static int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
     }
 
     //dup file descriptor
-    new->file_info.fd = host_dup(new->file_info.fd);
+    //new->file_info.fd = host_dup(new->file_info.fd);
 
     if (new_below)
         err = vma_adjust(vma, addr, vma->end_addr, vma->page_offset + PAGE_DIFFERENCE(addr, new->start_addr), new);
@@ -795,14 +800,15 @@ static int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
         return 0;
 
     //on error, we need to clean up a few things - including the dup'd fd
-    if (vma->file_info.fd != -1)
-        host_close(new->file_info.fd);
+    /*if (vma->file_info.fd != -1)
+        host_close(new->file_info.fd);*/
     vma_free(new);
     return err;
 }
 
 int syscall_munmap(uint64_t addr, size_t length) {
 
+    printf("munmap\n");
     uint64_t end;
     vm_area_t *vma, *prev, *last;
 
@@ -958,7 +964,9 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
     if (fd != -1) {
 
-        fd = host_dup(fd);
+        //fd = host_dup(fd);
+
+        //ASSERT(!IS_ERR_VALUE(fd));
 
         stat_t stats;
         host_fstat(fd, &stats);
@@ -1012,9 +1020,10 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
         //mmap physical pages that have been pre-allocated
         if (file_info.fd != -1) {
+            ASSERT(file_info.fd < 1000);
             //mmap file into continuous physical pages
             ASSERT(phys_addr != -1);
-            host_mmap_ret = (uint64_t) host_mmap((void *) phys_addr, org_length, prot, flags | MAP_FIXED, fd, offset);
+            host_mmap_ret = (uint64_t) host_mmap((void *) phys_addr, length, prot, flags | MAP_FIXED, fd, offset);
             ASSERT((int64_t) host_mmap_ret == phys_addr);
 
             //printf("host mmap %p %p\n", host_mmap_ret, phys_addr);
@@ -1027,6 +1036,5 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 int syscall_mprotect(void *addr, size_t len, int prot){
     //TODO
     printf("mprotect %p of len %d with prot %x\n", addr, len, prot);
-    vma_print();
     return 0;
 }

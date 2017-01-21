@@ -72,8 +72,11 @@ map_physical_pages:
     ret
 
 unmap_physical_page:
+    pushq %rdi
     movq $0xE, %rax
     hlt
+    popq %rdi
+    invlpg	(%rdi)
     ret
 
 host_writev:

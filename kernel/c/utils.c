@@ -4,6 +4,7 @@
 #include "../h/utils.h"
 #include "../../intelxed/kit/include/xed-interface.h"
 #include "../h/cpu.h"
+#include "../h/vma.h"
 
 #define BUFLEN  100
 
@@ -69,7 +70,14 @@ void disassemble_instr(uint64_t addr, regs_t *regs){
     char buffer[BUFLEN];
     xed_decoded_inst_t xedd;
 
-    disassemble_instr_helper(addr, buffer, &xedd, regs);
+    //disassemble_instr_helper(addr, buffer, &xedd, regs);
+
+    if (addr == 0x3ffbc235e5){
+        vm_area_t *vma = vma_find(addr + 0x3a7d14);
+        if (vma != NULL)
+            printf("VMA addr: %p end: %p , flags: %d, fd %d\n", vma->start_addr, vma->end_addr, vma->flags, vma->file_info.fd);
+        //((char *)0x3ffbfc9000)[0] = 5;
+    }
 }
 
 void disassemble_address(uint64_t addr, size_t num_inst){

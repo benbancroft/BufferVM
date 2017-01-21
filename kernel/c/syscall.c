@@ -43,14 +43,19 @@ void syscall_write(uint32_t fd, const char* buf, size_t count){
 
 int syscall_open(const char *filename, int32_t flags, uint16_t mode){
     printf("Opening file: %s\n", filename);
-    return host_open(filename, flags, mode);
+    int fd = host_open(filename, flags, mode);
+    printf("open fd: %d\n", fd);
+
+    return fd;
 }
 
 int syscall_close(int32_t fd){
+    printf("closing fd: %d\n", fd);
     return host_close(fd);
 }
 
 int syscall_fstat(uint32_t fd, stat_t *stats){
+    printf("syscall_fstat fd: %d\n", fd);
     return host_fstat(fd, stats);
 }
 
