@@ -240,7 +240,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
-    elf_info_t kernel_elf_info = { NULL, 0, 0, 0, 0 };
+    elf_info_t kernel_elf_info = { NULL, 0, 0, 0, 0, 0 };
 
     uint64_t ksp_max;
     uint64_t ksp;
@@ -463,6 +463,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
                         regs.rax = ret;
                     }
                     break;
+                    case 16:
+                        regs.rax = access((char *)regs.rdi, regs.rsi);
+                        break;
                     case 7:
                         regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);
                         break;

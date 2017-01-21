@@ -117,6 +117,9 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
             load_addr = start_addr - (v_addr & PAGE_MASK);
             printf("Entry f: %p\n", *elf_start);
             found_entry = true;
+        } else if (!is_interp && !found_entry){
+            elf_info->load_addr = phdr.p_vaddr - phdr.p_offset;
+            found_entry = true;
         }
 
         section_max_maddr = load_addr + phdr.p_vaddr + phdr.p_memsz;
@@ -184,11 +187,15 @@ int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool is_interp){
             host_lseek(fd, phdr.p_offset, SEEK_SET);
             host_read(fd, interp_path, phdr.p_filesz);
 
-            //load base elf image before interpreter
+            load_elf64_interpreter(fd, interp_path, elf_entry, elf_info);
+
+            //load base elf image after interpreter
             if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, NULL, elf_info, false)))
                 return ret;
 
-            load_elf64_interpreter(fd, interp_path, elf_entry, elf_info);
+            elf_info->entry_addr = (void *) elf_hdr.e_entry;
+            elf_info->phdr_num = elf_hdr.e_phnum;
+            elf_info->phdr_off = elf_hdr.e_phoff;
 
             return 0;
         }

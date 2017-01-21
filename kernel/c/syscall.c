@@ -42,6 +42,7 @@ void syscall_write(uint32_t fd, const char* buf, size_t count){
 }
 
 int syscall_open(const char *filename, int32_t flags, uint16_t mode){
+    printf("Opening file: %s\n", filename);
     return host_open(filename, flags, mode);
 }
 
@@ -49,8 +50,15 @@ int syscall_close(int32_t fd){
     return host_close(fd);
 }
 
+int syscall_fstat(uint32_t fd, stat_t *stats){
+    return host_fstat(fd, stats);
+}
+
+int syscall_access(const char *pathname, int mode){
+    return host_access(pathname, mode);
+}
+
 ssize_t syscall_writev(uint64_t fd, const iovec_t *vec, uint64_t vlen, int flags){
-    printf("syscall_writev\n");
     return host_writev(fd, vec, vlen, flags);
 }
 
@@ -64,6 +72,32 @@ void syscall_exit(){
     vma_print();
 
     host_exit();
+}
+
+uint64_t syscall_arch_prctl(int code, uint64_t addr) {
+    uint64_t ret = 0;
+
+    printf("Setup thread local storage at %p?\n", addr);
+
+    //TODO - make this safe with interrupt handler etc
+    switch (code){
+        case ARCH_SET_GS:
+            ret = write_msr(MSR_KERNEL_GS_BASE, addr);
+            break;
+        case ARCH_SET_FS:
+            write_msr(MSR_FS_BASE, addr);
+            break;
+        case ARCH_GET_GS:
+            ret = read_msr(MSR_KERNEL_GS_BASE);
+            break;
+        case ARCH_GET_FS:
+            ret = read_msr(MSR_FS_BASE);
+            break;
+        default:
+            ret = -EINVAL;
+    }
+
+    return ret;
 }
 
 uint64_t syscall_brk(uint64_t brk){
@@ -116,11 +150,14 @@ void syscall_init()
     syscall_register(1, (uintptr_t) &syscall_write);
     syscall_register(2, (uintptr_t) &syscall_open);
     syscall_register(3, (uintptr_t) &syscall_close);
+    syscall_register(5, (uintptr_t) &syscall_fstat);
     syscall_register(9, (uintptr_t) &syscall_mmap);
     syscall_register(11, (uintptr_t) &syscall_munmap);
     syscall_register(12, (uintptr_t) &syscall_brk);
     syscall_register(20, (uintptr_t) &syscall_writev);
+    syscall_register(21, (uintptr_t) &syscall_access);
     syscall_register(60, (uintptr_t) &syscall_exit);
+    syscall_register(158, (uintptr_t) &syscall_arch_prctl);
     syscall_register(231, (uintptr_t) &syscall_exit_group);
 
     syscall_register(SYSCALL_MAX, (uintptr_t) &get_version);

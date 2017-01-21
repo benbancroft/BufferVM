@@ -126,7 +126,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     new_aux_entry(entries, &num_entries, AT_BASE, (uint64_t)elf_entry);
     new_aux_entry(entries, &num_entries, AT_PHNUM, user_elf_info.phdr_num);
     new_aux_entry(entries, &num_entries, AT_PHENT, sizeof(elf64_phdr_t));
-    new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t)user_elf_info.entry_addr + user_elf_info.phdr_off);
+    new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t)user_elf_info.load_addr + user_elf_info.phdr_off);
     new_aux_entry(entries, &num_entries, AT_PAGESZ, PAGE_SIZE);
     //new_aux_entry(entries, &num_entries, AT_HWCAP, 0);
     //new_aux_entry(entries, &num_entries, AT_HWCAP2, 0);

@@ -22,6 +22,8 @@ int host_dup(uint32_t fd);
 
 int host_fstat(uint32_t fd, stat_t *stats);
 
+int host_access(const char *pathname, int mode);
+
 void *host_mmap(void *addr, size_t length, uint64_t prot, uint64_t flags, int fd, uint64_t offset);
 
 int64_t host_lseek(int fd, int64_t offset, int whence);

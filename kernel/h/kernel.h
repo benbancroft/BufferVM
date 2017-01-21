@@ -42,4 +42,27 @@ extern uint64_t user_version_start;
 void switch_usermode(void *entry, uint64_t stack_entry);
 void test();
 
+static inline uint64_t read_msr(uint32_t msr)
+{
+    uint64_t low, high;
+
+    asm volatile("rdmsr":"=a"(low),"=d"(high):"c"(msr));
+
+    return ((low) | (high) << 32);
+}
+static inline uint64_t write_msr(uint32_t msr, uint64_t value)
+{
+
+    uint64_t low, high;
+
+    high = value >> 32;
+    low = value & 0xFFFFFFFF;
+
+    asm volatile ("wrmsr" \
+			  : /* no outputs */ \
+			  : "c" (msr), "a" (low), "d" (high));
+
+    return value;
+}
+
 #endif //PROJECT_KERNEL_H
