@@ -25,7 +25,7 @@ switch_usermode:
 .clear_regs:
     movw $0, %ax
     #movw %ax, %gs
-    movq $0xDEADBEEF, %rax
+    movq $0, %rax
     movq $0, %rbx
     movq $0, %rcx
     movq $0, %rdx

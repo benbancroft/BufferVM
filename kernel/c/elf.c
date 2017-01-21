@@ -37,7 +37,7 @@ int pad_zero(uint64_t elf_bss)
     return 0;
 }
 
-int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_t *elf_info, bool load_only){
+int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_t *elf_info, bool is_interp){
 
     uint64_t start_addr;
     uint64_t min_addr = UINT64_MAX;
@@ -48,13 +48,15 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
     uint64_t max_faddr = 0;
     uint64_t max_maddr = 0;
 
+    uint64_t load_addr = 0;
+
     bool found_entry = false;
 
     host_lseek(fd, elf_hdr->e_phoff, SEEK_SET);
 
     for(size_t i = 0; i < elf_hdr->e_phnum; i++) {
         elf64_phdr_t phdr;
-        uint64_t v_addr;
+        uint64_t v_addr, map_addr;
 
         host_read(fd, (char *)&phdr, sizeof (elf64_phdr_t));
 
@@ -63,6 +65,7 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
         uint64_t file_offset =  phdr.p_offset - PAGE_OFFSET(phdr.p_vaddr);
         v_addr = v_addr & PAGE_MASK;
         size = PAGE_ALIGN(size);
+        map_addr = load_addr + v_addr;
 
         //TODO - size > file_offset
 
@@ -88,15 +91,15 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
 
             if (elf_hdr->e_type == ET_EXEC || found_entry)
                 flags |= MAP_FIXED;
-            else if (elf_hdr->e_type == ET_DYN) {
+            /*else if (elf_hdr->e_type == ET_DYN) {
                 v_addr = NULL;
-            }
+            }*/
 
             prot |= PROT_EXEC | PROT_WRITE | PROT_READ;
 
             //if (phdr.p_vaddr == 0) continue;
 
-            start_addr = syscall_mmap(v_addr,
+            start_addr = syscall_mmap(map_addr,
                                       size, prot,
                                       MAP_PRIVATE | flags,
                                       fd,
@@ -104,20 +107,20 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
             //Will handle error codes too - debugging point
             printf("Error %p\n", -(uint64_t) start_addr);
             ASSERT(!IS_ERR_VALUE(start_addr));
-            ASSERT(!(flags & MAP_FIXED) || start_addr == v_addr);
+            ASSERT(!(flags & MAP_FIXED) || start_addr == map_addr);
 
         } else {
             start_addr = v_addr;
         }
 
-        if (elf_start && !found_entry && elf_hdr->e_type == ET_DYN) {
-            *elf_start = (void*)start_addr - (v_addr & PAGE_MASK);
+        if (is_interp && !found_entry && elf_hdr->e_type == ET_DYN) {
+            load_addr = start_addr - (v_addr & PAGE_MASK);
             printf("Entry f: %p\n", *elf_start);
             found_entry = true;
         }
 
-        section_max_maddr = phdr.p_vaddr + phdr.p_memsz;
-        section_max_faddr = phdr.p_vaddr + phdr.p_filesz;
+        section_max_maddr = load_addr + phdr.p_vaddr + phdr.p_memsz;
+        section_max_faddr = load_addr + phdr.p_vaddr + phdr.p_filesz;
 
         if (start_addr < min_addr)
             min_addr = start_addr;
@@ -141,6 +144,8 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
     elf_info->min_page_addr = (uint64_t) P2ALIGN(min_addr, PAGE_SIZE);
     elf_info->max_page_addr = (uint64_t) P2ROUNDUP(max_maddr, PAGE_SIZE);
 
+    if (is_interp && elf_start) *elf_start = (void*)load_addr;
+
     return 0;
 }
 
@@ -149,11 +154,11 @@ void load_elf64_interpreter(int fd, char *path, void **elf_entry, elf_info_t *el
 
     elf_info_t interp_elf_info;
     int user_interp_fd = read_binary(path);
-    load_elf_binary(user_interp_fd, elf_entry, &interp_elf_info, false, 0);
+    load_elf_binary(user_interp_fd, elf_entry, &interp_elf_info, true, 0);
     *elf_entry = *elf_entry + (uint64_t)interp_elf_info.entry_addr;
 }
 
-int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only){
+int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool is_interp){
     elf64_hdr_t elf_hdr;
     int ret;
 
@@ -180,7 +185,7 @@ int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only){
             host_read(fd, interp_path, phdr.p_filesz);
 
             //load base elf image before interpreter
-            if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, NULL, elf_info, true)))
+            if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, NULL, elf_info, false)))
                 return ret;
 
             load_elf64_interpreter(fd, interp_path, elf_entry, elf_info);
@@ -190,17 +195,17 @@ int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only){
     }
 
     elf_info->entry_addr = (void *) elf_hdr.e_entry;
-    if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, elf_entry, elf_info, load_only)))
+    if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, elf_entry, elf_info, is_interp)))
         return ret;
 
     return 0;
 }
 
-int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only, char *mem_offset){
+int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool is_interp, char *mem_offset){
     if (is_elf(fd)){
         if (is_binary_64bit(fd)){
             printf("64-bit bin\n");
-            return load_elf64(fd, elf_entry, elf_info, load_only);
+            return load_elf64(fd, elf_entry, elf_info, is_interp);
         }else{
             printf("Un-supported binary? 32-bit not currently supported?\n");
 

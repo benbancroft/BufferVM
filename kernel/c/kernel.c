@@ -35,6 +35,9 @@ void *stack_alloc(uint64_t *sp, size_t  length){
     return (void*)*sp;
 }
 
+#define STACK_ROUND(sp, items) \
+	(((uint64_t) (sp - items)) &~ 15UL)
+
 void new_aux_entry(uint64_t *sp, uint64_t *entries, uint64_t id, uint64_t value){
     uint64_t *entry = (uint64_t*)stack_alloc(sp, 2*sizeof (uint64_t));
     entry[0] = id;
@@ -93,7 +96,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     elf_info_t user_elf_info;
     void *elf_entry;
     int user_bin_fd = read_binary(user_binary_location);
-    load_elf_binary(user_bin_fd, &elf_entry, &user_elf_info, true, 0);
+    load_elf_binary(user_bin_fd, &elf_entry, &user_elf_info, false, 0);
     host_close(user_bin_fd);
     user_heap_start = user_elf_info.max_page_addr;
     vma_print();
@@ -127,9 +130,11 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //argv 0..n
     //argc
 
-    char *args = (char*)stack_alloc(&usp, 2);
+    char *args = (char*)stack_alloc(&usp, 4);
     args[0] = 0;
     args[1] = 0;
+    args[2] = 0;
+    args[3] = 0;
 
     printf("\n-------------------\nINITIALISED USERLAND\n-------------------\n\n");
 
