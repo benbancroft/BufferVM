@@ -26,11 +26,8 @@
   <component name="ChangeListManager">
     <list default="true" id="64521e75-0ecf-4157-ba79-ec1d2cd9b44d" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example-program-2/main.c" afterPath="$PROJECT_DIR$/example-program-2/main.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/asm/host.s" afterPath="$PROJECT_DIR$/kernel/asm/host.s" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/mmap.c" afterPath="$PROJECT_DIR$/kernel/c/mmap.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/syscall.c" afterPath="$PROJECT_DIR$/kernel/c/syscall.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/c/utils.c" afterPath="$PROJECT_DIR$/kernel/c/utils.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel/h/kernel_as.h" afterPath="$PROJECT_DIR$/kernel/h/kernel_as.h" />
     </list>
     <ignored path="BufferVM.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -60,23 +57,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example-program-2/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="13" column="53" selection-start-line="13" selection-start-column="53" selection-end-line="13" selection-end-column="53" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="paging.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/paging.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="41" column="8" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="8" />
+            <state relative-caret-position="18">
+              <caret line="1" column="19" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -122,12 +107,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="syscall.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
+      <file leaf-file-name="utils.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kernel/c/utils.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="57" column="25" selection-start-line="57" selection-start-column="25" selection-end-line="57" selection-end-column="25" />
-              <folding />
+            <state relative-caret-position="213">
+              <caret line="52" column="37" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
+              <folding>
+                <element signature="e#37#60#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -137,6 +124,26 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="293">
               <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="kernel_as.h" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/kernel/h/kernel_as.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="126">
+              <caret line="46" column="2" selection-start-line="46" selection-start-column="2" selection-end-line="46" selection-end-column="2" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kernel/h/utils.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -198,8 +205,6 @@
         <option value="$PROJECT_DIR$/kernel/c/stack.c" />
         <option value="$PROJECT_DIR$/example-program-2/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/kernel/c/elf.c" />
-        <option value="$PROJECT_DIR$/kernel/h/kernel_as.h" />
-        <option value="$PROJECT_DIR$/kernel/c/utils.c" />
         <option value="$PROJECT_DIR$/kernel/c/syscall.c" />
         <option value="$PROJECT_DIR$/common/paging.h" />
         <option value="$PROJECT_DIR$/vm/paging.c" />
@@ -208,6 +213,8 @@
         <option value="$PROJECT_DIR$/vm/vm.c" />
         <option value="$PROJECT_DIR$/kernel/c/mmap.c" />
         <option value="$PROJECT_DIR$/example-program-2/main.c" />
+        <option value="$PROJECT_DIR$/kernel/c/utils.c" />
+        <option value="$PROJECT_DIR$/kernel/h/kernel_as.h" />
       </list>
     </option>
   </component>
@@ -741,12 +748,12 @@
       <workItem from="1484593048426" duration="18863000" />
       <workItem from="1484681726527" duration="10524000" />
       <workItem from="1484766365800" duration="45958000" />
-      <workItem from="1484954678349" duration="70310000" />
+      <workItem from="1484954678349" duration="70916000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="772511000" />
+    <option name="totallyTimeSpent" value="773117000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -759,7 +766,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="27" width="1920" height="1053" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2542194" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930845" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -831,14 +838,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/kernel/h/stack.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="24" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/x86_64-linux-gnu/asm/kvm.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
@@ -1148,36 +1147,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/h/kernel_as.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="46" column="21" selection-start-line="46" selection-start-column="8" selection-end-line="46" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/utils.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="78" column="10" selection-start-line="78" selection-start-column="10" selection-end-line="78" selection-end-column="10" />
-          <folding>
-            <element signature="e#37#60#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/kernel/c/syscall.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="432">
           <caret line="57" column="25" selection-start-line="57" selection-start-column="25" selection-end-line="57" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/elf.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="326">
-          <caret line="101" column="33" selection-start-line="101" selection-start-column="33" selection-end-line="101" selection-end-column="33" />
           <folding />
         </state>
       </provider>
@@ -1202,14 +1175,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="175">
           <caret line="221" column="0" selection-start-line="221" selection-start-column="0" selection-end-line="221" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/page_fault.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1240,11 +1205,51 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/example-program-2/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="53" selection-start-line="13" selection-start-column="53" selection-end-line="13" selection-end-column="53" />
+        <state relative-caret-position="18">
+          <caret line="1" column="19" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/h/utils.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/page_fault.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="293">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/elf.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="326">
+          <caret line="101" column="33" selection-start-line="101" selection-start-column="33" selection-end-line="101" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/utils.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="52" column="37" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#37#60#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/h/kernel_as.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="46" column="2" selection-start-line="46" selection-start-column="2" selection-end-line="46" selection-end-column="2" />
+          <folding />
         </state>
       </provider>
     </entry>

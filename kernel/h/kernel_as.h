@@ -44,8 +44,8 @@
 #define AMD64_MSR_CSTAR			0xC0000083
 #define AMD64_MSR_SFMASK	0xC0000084
 
-#define SINGLE_STEP_F 0x0100
-//#define SINGLE_STEP_F 0x0
+//#define SINGLE_STEP_F 0x0100
+#define SINGLE_STEP_F 0x0
 
 #define MSR_FS_BASE		0xc0000100 /* 64bit FS base */
 #define MSR_GS_BASE		0xc0000101 /* 64bit GS base */
