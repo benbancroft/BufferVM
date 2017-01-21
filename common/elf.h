@@ -85,6 +85,7 @@ typedef struct elf64_phdr
 
 typedef struct elf_info {
     void *entry_addr;
+    uint64_t base_addr;
     uint64_t load_addr;
     uint64_t min_page_addr;
     uint64_t max_page_addr;

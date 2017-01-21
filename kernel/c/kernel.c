@@ -116,22 +116,24 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //user
 
     //TODO - random bytes for userspace PRNG seeding.
-    char *str_tst = stack_alloc(&esp, 5);
+    //zero currently
+    char *random_bytes = stack_alloc(&esp, 16);
 
     uint64_t num_entries = 0;
     uint64_t entries[MAX_ENTRIES*2];
 
     new_aux_entry(entries, &num_entries, AT_ENTRY, (uint64_t)user_elf_info.entry_addr);
     new_aux_entry(entries, &num_entries, AT_FLAGS, 0);
-    new_aux_entry(entries, &num_entries, AT_BASE, (uint64_t)elf_entry);
+    new_aux_entry(entries, &num_entries, AT_BASE, user_elf_info.base_addr);
     new_aux_entry(entries, &num_entries, AT_PHNUM, user_elf_info.phdr_num);
     new_aux_entry(entries, &num_entries, AT_PHENT, sizeof(elf64_phdr_t));
     new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t)user_elf_info.load_addr + user_elf_info.phdr_off);
     new_aux_entry(entries, &num_entries, AT_PAGESZ, PAGE_SIZE);
+    new_aux_entry(entries, &num_entries, AT_RANDOM, (uint64_t)random_bytes);
     //new_aux_entry(entries, &num_entries, AT_HWCAP, 0);
     //new_aux_entry(entries, &num_entries, AT_HWCAP2, 0);
 
-    printf("d %p %p %d\n", elf_entry, user_elf_info.entry_addr, user_elf_info.phdr_num);
+    printf("d %p %p %d\n", elf_entry, user_elf_info.base_addr, user_elf_info.phdr_num);
 
 
     //then working down stack
@@ -159,7 +161,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //write argv
     while (argc-- > 0) {
         //pass pointer in here
-        *(usp++) = (uint64_t)str_tst;
+        //*(usp++) = (uint64_t)str_tst;
     }
 
     //null 64-bit before envp
@@ -168,7 +170,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //write envp
     while (envc-- > 0) {
         //pass pointer in here
-        *(usp++) = (uint64_t)str_tst;
+        //*(usp++) = (uint64_t)str_tst;
     }
 
     //null 64-bit after envp

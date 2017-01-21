@@ -928,6 +928,9 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     //else, force it past the end of the heap region for user (MAX_HEAP anyone?)
     //should force any hint to be bigger than brk (unless MAP_FIXED)
 
+    //hack for now until mprotect
+    prot |= PROT_READ | PROT_WRITE | PROT_EXEC;
+
     vm_area_t *vma;
     int64_t phys_addr;
     uint64_t host_mmap_ret;
@@ -1019,4 +1022,11 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     }
 
     return addr;
+}
+
+int syscall_mprotect(void *addr, size_t len, int prot){
+    //TODO
+    printf("mprotect %p of len %d with prot %x\n", addr, len, prot);
+    vma_print();
+    return 0;
 }

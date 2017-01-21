@@ -158,6 +158,7 @@ void load_elf64_interpreter(int fd, char *path, void **elf_entry, elf_info_t *el
     elf_info_t interp_elf_info;
     int user_interp_fd = read_binary(path);
     load_elf_binary(user_interp_fd, elf_entry, &interp_elf_info, true, 0);
+    elf_info->base_addr = (uint64_t)*elf_entry;
     *elf_entry = *elf_entry + (uint64_t)interp_elf_info.entry_addr;
 }
 

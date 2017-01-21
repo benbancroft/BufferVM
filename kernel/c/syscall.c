@@ -152,6 +152,7 @@ void syscall_init()
     syscall_register(3, (uintptr_t) &syscall_close);
     syscall_register(5, (uintptr_t) &syscall_fstat);
     syscall_register(9, (uintptr_t) &syscall_mmap);
+    syscall_register(10, (uintptr_t) &syscall_mprotect);
     syscall_register(11, (uintptr_t) &syscall_munmap);
     syscall_register(12, (uintptr_t) &syscall_brk);
     syscall_register(20, (uintptr_t) &syscall_writev);

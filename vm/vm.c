@@ -26,10 +26,14 @@
 
 extern const unsigned char bootstrap[], bootstrap_end[];
 
+static size_t phy_mem_size;
+
 void vm_init(struct vm_t *vm, size_t mem_size)
 {
     int api_ver;
     struct kvm_userspace_memory_region memreg;
+
+    phy_mem_size = mem_size;
 
     vm->sys_fd = open("/dev/kvm", O_RDWR);
     if (vm->sys_fd < 0) {
@@ -240,7 +244,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     struct kvm_sregs sregs;
     struct kvm_regs regs;
 
-    elf_info_t kernel_elf_info = { NULL, 0, 0, 0, 0, 0 };
+    elf_info_t kernel_elf_info = { NULL, 0, 0, 0, 0, 0, 0 };
 
     uint64_t ksp_max;
     uint64_t ksp;
@@ -319,12 +323,17 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     while (1) {
         ret = ioctl(vcpu->fd, KVM_RUN, 0);
         if (ret == -1){
+            perror("KVM_RUN");
             if (ioctl(vcpu->fd, KVM_GET_REGS, &regs) < 0) {
                 perror("KVM_GET_REGS");
                 exit(1);
             }
-            printf("KVM_RUN exited with error: %d, PC: %p\n", ret, (void *)regs.rip);
-
+            printf("KVM_RUN exited with error: %d, PC: %p, Physical memory: %p, Paged memory %p, Exit reason %u\n",
+                   ret, (void *)regs.rip,
+                   (void *)phy_mem_size,
+                   (void *)(page_counter*PAGE_SIZE),
+                   vcpu->kvm_run->exit_reason);
+            exit(1);
         }
         switch (vcpu->kvm_run->exit_reason) {
             case KVM_EXIT_IO:
