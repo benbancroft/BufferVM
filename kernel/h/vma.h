@@ -68,6 +68,8 @@ vm_area_t *vma_find(uint64_t addr);
 
 uint64_t vma_prot_to_pg(uint64_t prot);
 
+int64_t vma_fault(vm_area_t *vma, bool continuous);
+
 uint64_t
 mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flags, uint64_t vma_prot, uint64_t offset,
             vm_area_t **vma_out);

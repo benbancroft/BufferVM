@@ -104,6 +104,12 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
 void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info){
     //TODO - random bytes for userspace PRNG seeding.
     //zero currently
+
+    char *arg0_str = "test.txt";
+    size_t arg0_str_len = strlen(arg0_str);
+
+    char *arg0 = stack_alloc(&esp, arg0_str_len+1);
+
     char *random_bytes = stack_alloc(&esp, 16);
 
     uint64_t num_entries = 0;
@@ -126,7 +132,7 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info){
     //argv 0..n
     //argc
 
-    size_t argc = 0, envc = 0, items;
+    size_t argc = 1, envc = 0, items;
     uint64_t *usp;
 
     stack_alloc(&esp, (num_entries + 2) * sizeof (uint64_t));
@@ -136,7 +142,16 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info){
     stack_round(&esp);
 
     grow_stack(user_stack_vma, esp);
+    //prefault all the stack that has been allocated
+    //we do this as we cannot handle kernel page faults as it would use the same stack
+    vma_fault(user_stack_vma, false);
 
+    //copy stack parameters
+
+    //arg0
+    memcpy(arg0, arg0_str, arg0_str_len+1);
+
+    //now work up the stack, copying the dynamic linkers arguments
     usp = (uint64_t *)esp;
 
     //argc onto top of aligned stack
@@ -145,7 +160,7 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info){
     //write argv
     while (argc-- > 0) {
         //pass pointer in here
-        //*(usp++) = (uint64_t)str_tst;
+        *(usp++) = (uint64_t)arg0;
     }
 
     //null 64-bit before envp

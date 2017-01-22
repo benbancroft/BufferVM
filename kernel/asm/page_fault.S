@@ -7,7 +7,7 @@ idt_page_fault_handler:
     cli
 
     btq $2, (%rsp)
-    jnc 1f
+    jnc .kernel_page_fault
 
     swapgs
 1:
@@ -39,6 +39,16 @@ idt_page_fault_handler:
 2:
     addq $8, %rsp
     iretq
+.kernel_page_fault:
+    movabs $LC3, %rdi
+    movq %cr2, %rsi
+    movq 8(%rsp), %rdx
+    movq (%rsp), %rcx
+    movq 24(%rsp), %r8
+    clr %rax       # needed for printf
+    call printf
+
+    call host_exit
 .unhandled_page_fault:
     //all bets are off here - clobber the fuck out of everything
 
@@ -106,5 +116,7 @@ idt_page_fault_handler:
 .section .data
 LC0:
         .ascii "Unhandled Page fault - VA: %p PC: %p Error: %d SP: %p\n\0"
+LC3:
+        .ascii "Kernel Page fault - VA: %p PC: %p Error: %d SP: %p\n\0"
 LC1:
     .ascii "Version error\n\0"

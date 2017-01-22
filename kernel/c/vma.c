@@ -145,3 +145,14 @@ vm_area_t *vma_find(uint64_t addr)
 
     return vma;
 }
+
+int64_t vma_fault(vm_area_t *vma, bool continuous){
+    int64_t phys_addr;
+
+    phys_addr = map_physical_pages(vma->start_addr,
+                                   -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER,
+                                   PAGE_DIFFERENCE(vma->end_addr, vma->start_addr),
+                                   continuous, 0);
+
+    return phys_addr;
+}

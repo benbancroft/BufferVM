@@ -51,6 +51,7 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
         vma = vma_find(addr);
 
         if (!vma){
+            printf("1\n");
             goto seg_fault;
         }
 
@@ -59,10 +60,12 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
         }
 
         if (!(vma->flags & VMA_GROWS)){
+            printf("2 %p %p %p\n", vma->start_addr, vma->end_addr, addr);
             goto seg_fault;
         }
 
         if (grow_stack(vma, addr)){
+            printf("3\n");
             goto seg_fault;
         }
 
@@ -72,6 +75,7 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
         map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER, 1, false, 0);
         return 1;
     }
+    printf("4\n");
 
 seg_fault:
     handle_segfault(addr, rip);
