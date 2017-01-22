@@ -576,10 +576,10 @@ vma_unlink(vm_area_t *vma, vm_area_t *prev) {
 }
 
 static vm_area_t *vma_remove(vm_area_t *vma) {
-    /*if (vma->file_info.fd != -1)
-        host_close(vma->file_info.fd);*/
+    if (vma->file_info.fd != -1)
+        host_close(vma->file_info.fd);
     size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
-    printf("rem %p %p\n", vma->start_addr, vma->end_addr);
+    printf("Unmapped Pages in range: %p to %p\n", vma->start_addr, vma->end_addr);
     for (size_t i = 0; i < pages; i++){
         unmap_physical_page(vma->start_addr+i*PAGE_SIZE, 0);
     }
@@ -645,8 +645,6 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
          * us to remove next before dropping the locks.
          */
         vma_unlink(next, vma);
-        /*if (file)
-            __remove_shared_vm_struct(next, file, mapping);*/
     } else if (insert) {
         /*
          * split_vma has split insert from vma, and needs
@@ -666,9 +664,8 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
     }
 
     if (remove_next) {
-        /*if (vma->file_info.fd != -1)
-            host_close(vma->file_info.fd);*/
-        vma_free(next);
+
+        vma_remove(next);
         /*
          * In mprotect's case 6 (see comments on vma_merge),
          * we must remove another next too. It would clutter
@@ -789,7 +786,7 @@ static int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
     }
 
     //dup file descriptor
-    //new->file_info.fd = host_dup(new->file_info.fd);
+    new->file_info.fd = host_dup(new->file_info.fd);
 
     if (new_below)
         err = vma_adjust(vma, addr, vma->end_addr, vma->page_offset + PAGE_DIFFERENCE(addr, new->start_addr), new);
@@ -800,8 +797,8 @@ static int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
         return 0;
 
     //on error, we need to clean up a few things - including the dup'd fd
-    /*if (vma->file_info.fd != -1)
-        host_close(new->file_info.fd);*/
+    if (vma->file_info.fd != -1)
+        host_close(new->file_info.fd);
     vma_free(new);
     return err;
 }
@@ -935,7 +932,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     //should force any hint to be bigger than brk (unless MAP_FIXED)
 
     //hack for now until mprotect
-    prot |= PROT_READ | PROT_WRITE | PROT_EXEC;
+    //prot |= PROT_READ | PROT_WRITE | PROT_EXEC;
 
     vm_area_t *vma;
     int64_t phys_addr;
@@ -964,7 +961,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
     if (fd != -1) {
 
-        //fd = host_dup(fd);
+        fd = host_dup(fd);
 
         //ASSERT(!IS_ERR_VALUE(fd));
 

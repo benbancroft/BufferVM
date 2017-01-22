@@ -95,7 +95,7 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
                 v_addr = NULL;
             }*/
 
-            prot |= PROT_EXEC | PROT_WRITE | PROT_READ;
+            //prot |= PROT_EXEC | PROT_WRITE | PROT_READ;
 
             //if (phdr.p_vaddr == 0) continue;
 
