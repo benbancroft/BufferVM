@@ -113,10 +113,11 @@ void vma_print_node(vm_area_t *vma)
 }
 
 void vma_print(){
-    printf("VMAs:\n");
+    printf("\nVMAs:\n");
     printf("-------------------------------------\n");
 
     vma_print_node(vma_list_start);
+    printf("\n");
 }
 
 //change this to return NULL on fail

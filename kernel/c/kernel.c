@@ -12,7 +12,6 @@
 
 #include "../../intelxed/kit/include/xed-interface.h"
 #include "../h/stack.h"
-#include "../../common/elf.h"
 #include "../h/utils.h"
 #include "../h/gdt.h"
 
@@ -52,8 +51,6 @@ void new_aux_entry(uint64_t *entries, uint64_t *num_entries, uint64_t id, uint64
 
 void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kernel_stack, uint64_t _tss_start, char *user_binary_location) {
 
-    uint64_t esp;
-
     kernel_min_address = _tss_start;
     kernel_stack = _kernel_stack_max;
     tss = (tss_entry_t*)_tss_start;
@@ -64,12 +61,9 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     map_physical_pages(gdt_page, 0x1000, PDE64_WRITEABLE, 1, true, 0);
     kernel_min_address = gdt_page;
 
-    uint64_t *test = (uint64_t*)gdt_page;
-
-    printf("Here %p\n", *test);
-
     gdt_init(gdt_page);
 
+    //unmap bootstrap and original gdt mapping
     unmap_physical_page(0x0000, 0);
     unmap_physical_page(0x1000, 0);
 
@@ -79,12 +73,10 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     syscall_init();
 
     vma_init(1000);
-    //gdt_load(0xDEADB000);
 
     kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
 
     user_stack_init(user_version_start, 16000);
-    esp = user_stack_start;
 
     printf("\n-------------------\nKERNEL START\n-------------------\n\n");
 
@@ -105,16 +97,11 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     user_heap_start = user_elf_info.max_page_addr;
     vma_print();
 
-    //load sym tables and dwarf information (if enabled?) - use heap that only works at this boot stage
-    //the file can be loaded into memory at zero?
-    //discard the file
-    //symbol/dwarf heap can then be closed - updating kernel min page addr below heap, and close heap
-    //then load binary below this (will be version memory) - can also assert that user address space is big enough (will likely be)
-    //load elf sections - this will be below version area so all should be good
-    //load dynlibs etc
+    //User stuff
+    load_user_land(user_stack_start, elf_entry, &user_elf_info);
+}
 
-    //user
-
+void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info){
     //TODO - random bytes for userspace PRNG seeding.
     //zero currently
     char *random_bytes = stack_alloc(&esp, 16);
@@ -122,19 +109,16 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     uint64_t num_entries = 0;
     uint64_t entries[MAX_ENTRIES*2];
 
-    new_aux_entry(entries, &num_entries, AT_ENTRY, (uint64_t)user_elf_info.entry_addr);
+    new_aux_entry(entries, &num_entries, AT_ENTRY, (uint64_t)user_elf_info->entry_addr);
     new_aux_entry(entries, &num_entries, AT_FLAGS, 0);
-    new_aux_entry(entries, &num_entries, AT_BASE, user_elf_info.base_addr);
-    new_aux_entry(entries, &num_entries, AT_PHNUM, user_elf_info.phdr_num);
+    new_aux_entry(entries, &num_entries, AT_BASE, user_elf_info->base_addr);
+    new_aux_entry(entries, &num_entries, AT_PHNUM, user_elf_info->phdr_num);
     new_aux_entry(entries, &num_entries, AT_PHENT, sizeof(elf64_phdr_t));
-    new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t)user_elf_info.load_addr + user_elf_info.phdr_off);
+    new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t)user_elf_info->load_addr + user_elf_info->phdr_off);
     new_aux_entry(entries, &num_entries, AT_PAGESZ, PAGE_SIZE);
     new_aux_entry(entries, &num_entries, AT_RANDOM, (uint64_t)random_bytes);
     //new_aux_entry(entries, &num_entries, AT_HWCAP, 0);
     //new_aux_entry(entries, &num_entries, AT_HWCAP2, 0);
-
-    printf("d %p %p %d\n", elf_entry, user_elf_info.base_addr, user_elf_info.phdr_num);
-
 
     //then working down stack
     //envp 0..n
@@ -183,17 +167,6 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
     //null aux entry
     memset(usp, 0, 2 * sizeof (uint64_t));
 
-    /*char *yo = "yo";
-    printf("strtst %p %p %s\n", str_tst, esp, yo);
-    memcpy(str_tst, yo, strlen(yo)+1);*/
-
-
-    /*char *args = (char*)stack_alloc(&usp, 4);
-    args[0] = 0;
-    args[1] = 0;
-    args[2] = 0;
-    args[3] = 0;*/
-
     printf("\n-------------------\nINITIALISED USERLAND\n-------------------\n\n");
 
     printf("User entry %p, stack %p\n", elf_entry, esp);
@@ -201,5 +174,5 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _kerne
 
     printf("\n-------------------\nENTERING USERLAND\n-------------------\n\n");
 
-    switch_usermode(elf_entry, esp);
+    switch_user_land(elf_entry, esp);
 }

@@ -2,21 +2,13 @@
 
         .section .text
         .global _start
-        .global switch_usermode
-        .global test
+        .global switch_user_land
 _start:
     movq %rdx, %rsp
 	call kernel_main
 
 	call host_exit
-test:
-    movq    $1,%rax	        # system call number (write).
-    syscall                 # call kernel.
-	movq $0xDEADBEEF, %rax
-	movq $42, (%rax)
-
-    hlt
-switch_usermode:
+switch_user_land:
     push $(USER_DS | 3)
     push %rsi
     push $(0x200 | SINGLE_STEP_F) #EFLAGS (enable ints)
