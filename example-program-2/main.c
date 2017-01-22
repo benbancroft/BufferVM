@@ -2,6 +2,8 @@
 #include <malloc.h>
 #include <string.h>
 
+#include "buffervm.h"
+
 int main(int argc, char *argv[], char *envp[]){
     printf("hello world from glibc!\n");
 
@@ -19,6 +21,8 @@ int main(int argc, char *argv[], char *envp[]){
     size_t size = strlen(hello)+1;
 
     char *mem = malloc(size);
+    mem = set_version((void *)mem, size, 5);
+
     memcpy(mem, hello, size);
 
     printf("here is some memory: %p %s\n", mem, mem);

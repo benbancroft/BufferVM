@@ -47,6 +47,8 @@
       <sourceFolder url="file://$MODULE_DIR$/vm/paging.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/gdt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/example-program-2/buffervm.S" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/example-program-2/buffervm.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program-2/main.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program-2/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/intelxed/CMakeLists.txt" isTestSource="false" />

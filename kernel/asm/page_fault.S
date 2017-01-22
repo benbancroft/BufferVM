@@ -91,16 +91,16 @@ idt_page_fault_handler:
     movq 8(%rsp), %rcx
     movq %rcx, (%rsp)
 
-    movl $1, %gs:CPU_TMP_DCNTR
+    movl $2, %gs:CPU_TMP_DCNTR
     movq 32(%rsp), %rcx
     movq %rcx, %gs:CPU_TMP_DSP
 
-    pushf
-    movl (%rsp), %ecx
-    orl $0x0100, %ecx
-    movl %ecx, (%rsp)
+    movw 24(%rsp), %cx
+    orw $0x0100, %cx
+    movw %cx, (%rsp)
     //restore register
     movq %gs:CPU_TMP_R15, %rcx
+    swapgs
     popf
 
     #allows us to jump without clobbering register

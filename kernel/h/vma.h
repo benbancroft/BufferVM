@@ -36,9 +36,10 @@ struct vm_area {
 #define VMA_WRITE        0x00000002
 #define VMA_EXEC         0x00000004
 #define VMA_SHARED       0x00000008
+#define VMA_IS_VERSIONED    0x00000010
 
-#define VMA_GROWS        0x00000010
-#define VMA_IS_PREFAULTED        0x00000020
+#define VMA_GROWS   0x00000010
+#define VMA_IS_PREFAULTED   0x00000020
 
 //do typedef earlier due to recursive reference
 typedef struct vma_node vma_node_t;

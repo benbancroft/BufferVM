@@ -28,52 +28,44 @@ idt_null_handler:
 idt_debug_handler:
     #cli
 
-    pushq %rax
-    pushq %rcx
-    pushq %rdx
+    swapgs
 
-    //expensive check for userland - can probably have this optional if user step is disabled?
-    movl $MSR_GS_BASE,%ecx
-    rdmsr
-    movabs $cpu_info, %rcx
-    cmpl %eax, %ecx
-    jne .idt_debug_userland   /* not equal -> in userland */
-    shrq $32, %rcx
-    cmpl %edx, %ecx
-    jne .idt_debug_userland  /* not equal -> in userland */
+    pushf
 
-    popq %rdx
-    popq %rcx
+    cmpl $0, %gs:CPU_TMP_DCNTR
+    je .idt_debug_userland
 
-    movl %gs:CPU_TMP_DCNTR, %eax
-
-    testl %eax, %eax
+    cmpl $1, %gs:CPU_TMP_DCNTR
     je .idt_debug_exit
 
 .idt_debug_continue:
     subl $0x1, %gs:CPU_TMP_DCNTR
-    popq %rax
+
+    popf
+    swapgs
 
     iretq
 .idt_debug_exit:
-    movq $(USER_DS | 3), 40(%rsp)
+    subl $0x1, %gs:CPU_TMP_DCNTR
+
+    pushq %rax
+
+    movq $(USER_DS | 3), 48(%rsp)
     movq %gs:CPU_TMP_DSP, %rax
-    movq %rax, 32(%rsp)
-    movq $(0x200 | SINGLE_STEP_F), 24(%rsp)
-    movq $(USER_CS | 3), 16(%rsp)
+    movq %rax, 40(%rsp)
+    movw 8(%rsp), %ax
+    movq $0, 32(%rsp)   #zero memory to stop extra flags being enabled
+    movw %ax, 32(%rsp)
+    movq $(USER_CS | 3), 24(%rsp)
     //return pointer should already be on the stack
 
     swapgs
     popq %rax
+    addq $8, %rsp
 
     iretq
 .idt_debug_userland:
-
-    popq %rdx
-    popq %rcx
-    popq %rax
-
-    swapgs
+    popf
     pushAllRegs(24(%rsp))
 
     movq (%rsp), %rdi

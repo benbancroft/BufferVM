@@ -36,7 +36,7 @@ uint64_t disassemble_instr_helper(uint64_t addr, char *buffer, xed_decoded_inst_
         ok = xed_format_context(XED_SYNTAX_ATT, xedd, buffer, BUFLEN, 0, 0, 0);
         if (ok) {
             if (regs != NULL) printf("  rax: %x, rdi: %x, rsi: %x, rdx: %x, rcx: %x, rbx: %x, rbp: %x, rsp: %x, r8: %x, r9: %x, r10: %x,"
-                           "r11: %x, r12: %x, r13: %x, r14: %x, r15: %x\n",
+                           " r11: %x, r12: %x, r13: %x, r14: %x, r15: %x\n",
                    cpu_info.regs.rax,
                    cpu_info.regs.rdi,
                    cpu_info.regs.rsi,
@@ -70,7 +70,10 @@ void disassemble_instr(uint64_t addr, regs_t *regs){
     char buffer[BUFLEN];
     xed_decoded_inst_t xedd;
 
-    disassemble_instr_helper(addr, buffer, &xedd, regs);
+    //disassemble_instr_helper(addr, buffer, &xedd, regs);
+    for (size_t i = 0; i < 1; i++){
+        addr = disassemble_instr_helper(addr, buffer, &xedd, regs);
+    }
 }
 
 void disassemble_address(uint64_t addr, size_t num_inst){

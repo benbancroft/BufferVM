@@ -124,9 +124,9 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     build_page_tables(vm->mem);
 
     //Page for bootstrap
-    map_physical_pages(0x0000, 0x0000, PDE64_WRITEABLE | PDE64_USER, 1, false, vm->mem);
+    map_physical_pages(0x0000, 0x0000, PDE64_WRITEABLE | PDE64_USER, 1, 0, vm->mem);
     //Page for gdt
-    int64_t gdt_page = map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE | PDE64_USER, 1, true, vm->mem);
+    int64_t gdt_page = map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE | PDE64_USER, 1, 0, vm->mem);
     printf("GDT page %" PRIx64 "\n", gdt_page);
 
     //map_physical_pages(0xDEADB000, allocate_pages(1, vm->mem, false), PDE64_WRITEABLE, 1, false, vm->mem);
@@ -227,7 +227,7 @@ static uint64_t setup_kernel_tss(struct vm_t *vm, struct kvm_sregs *sregs, uint6
 
     size_t i = 0;
     for (uint64_t p = tss_start; i < 3; p += PAGE_SIZE, i++) {
-        map_physical_pages(p, -1, PDE64_WRITEABLE, 1, false, vm->mem);
+        map_physical_pages(p, -1, PDE64_WRITEABLE, 1, 0, vm->mem);
     }
 
     return (tss_start);
@@ -274,7 +274,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     //allocate 20 stack pages for kernel stack
     ksp = kernel_elf_info.min_page_addr;
     for (p = ksp - PAGE_SIZE; i < 20; p -= PAGE_SIZE, i++) {
-        map_physical_pages(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, false, vm->mem);
+        map_physical_pages(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, 0, vm->mem);
     }
 
     //copy user binary location to top of stack

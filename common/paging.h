@@ -73,8 +73,12 @@ void unmap_page_entry(uint64_t *table, size_t index, char *mem_offset);
 
 void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags, char *mem_offset);
 
-int64_t map_physical_pages(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, size_t num_pages,
-                           bool continuous, char *mem_offset);
+#define MAP_CONTINUOUS 1
+#define MAP_NO_OVERWRITE (1 << 1)
+#define MAP_ZERO_PAGES (1 << 2)
+
+int64_t map_physical_pages(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t page_prot, size_t num_pages,
+                           uint64_t flags, char *mem_offset);
 void unmap_physical_page(uint64_t virtual_page_addr, char *mem_offset);
 
 #endif //BUFFERVM_PAGING_H

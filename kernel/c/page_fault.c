@@ -8,6 +8,7 @@
 #include "../h/vma.h"
 #include "../h/host.h"
 #include "../../common/paging.h"
+#include "../h/kernel.h"
 
 #define PF_PROT         (1<<0)
 #define PF_WRITE        (1<<1)
@@ -72,13 +73,27 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
     handle_paging:
         ASSERT(!(vma->flags & VMA_IS_PREFAULTED));
         printf("loading page at addr: %p\n", addr);
-        map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER, 1, false, 0);
+        map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->page_prot),
+                           1, 0, 0);
+        if (vma->page_prot & VMA_IS_VERSIONED)
+            map_physical_pages(user_version_start + PAGE_ALIGN_DOWN(addr), -1, PDE64_NO_EXE | PDE64_WRITEABLE,
+                               1, MAP_ZERO_PAGES, 0);
         return 1;
     }
     printf("4\n");
 
 seg_fault:
     handle_segfault(addr, rip);
-    handle_segfault(addr, rip);
     return 0;
 }
+
+/*int64_t page_do_fault(vm_area_t *vma, size_t num_pages, bool continuous){
+    int64_t phys_addr;
+
+    phys_addr = map_physical_pages(vma->start_addr,
+                                   -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER,
+                                   num_pages,
+                                   MAP_CONTINUOUS, 0);
+
+    return phys_addr;
+}*/

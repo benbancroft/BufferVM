@@ -910,7 +910,8 @@ static inline uint64_t prot_to_vma(uint64_t prot) {
 uint64_t vma_prot_to_pg(uint64_t prot) {
     return TRANSFER_FLAG(prot, VMA_READ, PDE64_PRESENT) |
            TRANSFER_FLAG(prot, VMA_WRITE, PDE64_WRITEABLE) |
-           TRANSFER_INV_FLAG(prot, VMA_EXEC, PDE64_NO_EXE);
+           TRANSFER_INV_FLAG(prot, VMA_EXEC, PDE64_NO_EXE) |
+           TRANSFER_INV_FLAG(prot, VMA_IS_VERSIONED, PDE64_USER) ;
 }
 
 /*
@@ -957,7 +958,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     addr = get_unmapped_area(addr, length, offset, flags);
 
     vma_flags |= flag_to_vma(flags);
-    vma_prot |= prot_to_vma(prot);
+    vma_prot |= prot_to_vma(prot) | TRANSFER_FLAG(flags, MAP_ANONYMOUS, VMA_IS_VERSIONED);
 
     if (fd != -1) {
 
@@ -1003,6 +1004,17 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     }
 
     addr = mmap_region(&file_info, addr, length, vma_flags, vma_prot, offset, &vma);
+
+    /*if (flags && MAP_ANONYMOUS){
+        //we need to prefault the memory that will store the version information for this vma
+        size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
+        for (size_t i = 0; i < pages; i++){
+            map_physical_pages(user_version_start + vma->start_addr + i*PAGE_SIZE, allocate_pages(1, NULL, true),
+                               PDE64_NO_EXE | PDE64_WRITEABLE, 1, 0, 0);
+        }
+
+        vma->flags |= VMA_IS_VERSIONED;
+    }*/
 
     //MAP_POPULATE | MAP_NONBLOCK cannot be used together
     if (vma != NULL && (file_info.fd != -1 || (flags & (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE)) {

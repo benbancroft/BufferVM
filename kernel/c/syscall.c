@@ -131,7 +131,7 @@ uint64_t syscall_brk(uint64_t brk){
         for (uint64_t p = curr_brk; p <= new_brk; p += PAGE_SIZE){
             //Version page
             map_physical_pages(user_version_start + p, allocate_pages(1, NULL, true),
-                               PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, false, 0);
+                               PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0, 0);
         }
 
         curr_brk = new_brk;
