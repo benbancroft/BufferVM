@@ -42,15 +42,7 @@ void user_stack_init(uint64_t _user_stack_start, const uint64_t stack_page_limit
 
     user_stack_page_limit = stack_page_limit;
 
-    //TODO - sort this out
-    file_t file_info = {-1, -1, -1};
-    addr = mmap_region(&file_info, user_stack_page, PAGE_SIZE, VMA_GROWS, VMA_WRITE, 0, &user_stack_vma);
-
-    /*addr = syscall_mmap(user_stack_page,
-                        PAGE_SIZE, PROT_READ | PROT_WRITE,
-                              MAP_ANONYMOUS | MAP_GROWSDOWN | MAP_FIXED,
-                              -1,
-                              0);*/
+    addr = mmap_region(NULL, user_stack_page, PAGE_SIZE, VMA_GROWS, VMA_WRITE, 0, &user_stack_vma);
 
     ASSERT(addr == user_stack_page);
 }

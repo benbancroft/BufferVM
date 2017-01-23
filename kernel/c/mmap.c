@@ -870,6 +870,10 @@ mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flag
 
     vm_area_t *vma, *prev, *next;
     rb_node_t **rb_link, *rb_parent;
+    file_t null_file_info = {-1, -1, -1};
+
+    if (file_info == NULL)
+        file_info = &null_file_info;
 
     while (vma_find_links(addr, addr + length, &prev, &rb_link,
                           &rb_parent)) {
