@@ -77,7 +77,7 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
                            1, 0, 0);
         if (vma->page_prot & VMA_IS_VERSIONED)
             map_physical_pages(user_version_start + PAGE_ALIGN_DOWN(addr), -1, PDE64_NO_EXE | PDE64_WRITEABLE,
-                               1, MAP_ZERO_PAGES, 0);
+                               1, MAP_ZERO_PAGES | MAP_NO_OVERWRITE, 0);
         return 1;
     }
     printf("4\n");

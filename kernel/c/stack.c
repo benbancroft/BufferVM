@@ -42,7 +42,7 @@ void user_stack_init(uint64_t _user_stack_start, const uint64_t stack_page_limit
 
     user_stack_page_limit = stack_page_limit;
 
-    addr = mmap_region(NULL, user_stack_page, PAGE_SIZE, VMA_GROWS, VMA_WRITE, 0, &user_stack_vma);
+    addr = mmap_region(NULL, user_stack_page, PAGE_SIZE, VMA_GROWS, VMA_WRITE | VMA_READ, 0, &user_stack_vma);
 
     ASSERT(addr == user_stack_page);
 }

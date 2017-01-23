@@ -9,6 +9,7 @@
 #include "../../common/paging.h"
 #include "../../common/version.h"
 #include "../h/vma.h"
+#include "../h/utils.h"
 
 uint64_t curr_brk;
 
@@ -105,39 +106,42 @@ uint64_t syscall_arch_prctl(int code, uint64_t addr) {
     return ret;
 }
 
+vm_area_t *user_heap_vma;
+
 uint64_t syscall_brk(uint64_t brk){
     uint64_t new_brk;
     size_t num_pages;
+    uint64_t addr;
 
     if (brk == 0 && curr_brk == 0){
         curr_brk = user_heap_start;
+
+        addr = mmap_region(NULL, curr_brk, PAGE_SIZE, VMA_GROWS, VMA_WRITE | VMA_READ | VMA_IS_VERSIONED, 0, &user_heap_vma);
+
+        ASSERT(addr == curr_brk);
+
         printf("starting heap at: %p\n", user_heap_start);
     }
     else {
         if (brk < curr_brk){
-            return -1;
+            //TODO - shrinking brk
+            return curr_brk;
         }
 
         new_brk = PAGE_ALIGN(brk);
 
-        printf("new heap at: %p\n", new_brk);
+        vm_area_t * vma = vma_find(curr_brk);
 
-        num_pages = (new_brk - curr_brk) + 1;
+        if (vma != NULL && new_brk <= vma->start_addr)
+            return curr_brk;
 
-        //Actual memory page
-        map_physical_pages(curr_brk, -1, PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, num_pages, false, 0);
+        vma->end_addr = new_brk;
+        vma_gap_update(vma);
 
-        //we have to make multiple calls for version pages, due to zeroing pages.
-        for (uint64_t p = curr_brk; p <= new_brk; p += PAGE_SIZE){
-            //Version page
-            map_physical_pages(user_version_start + p, allocate_pages(1, NULL, true),
-                               PDE64_NO_EXE | PDE64_WRITEABLE/* | PDE64_USER*/, 1, 0, 0);
-        }
+        printf("New brk at: %p\n", new_brk);
 
         curr_brk = new_brk;
     }
-
-    printf("brk: %p\n", curr_brk);
 
     return curr_brk;
 }

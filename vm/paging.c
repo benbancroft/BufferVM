@@ -197,7 +197,7 @@ void build_page_tables(char *mem_offset){
 int get_page_entry(uint64_t *table, size_t index, uint64_t *page) {
 
     if (table[index] & PDE64_PRESENT) {
-        *page = table[index] & 0xFFFFFFFFFFF000;
+        if (page != NULL) *page = table[index] & 0xFFFFFFFFFFF000;
         return 1;
     } else
         return 0;
@@ -221,7 +221,7 @@ void unmap_page_entry(uint64_t *table, size_t index, char *mem_offset){
     table[index] = 0;
 }
 
-void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, char *mem_offset){
+void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t flags, bool no_overwrite, char *mem_offset){
     virt_addr_info_t info = get_virt_addr_info(virtual_page_addr);
 
     uint64_t *pml4 = (void *)(mem_offset + pml4_addr);
@@ -235,7 +235,8 @@ void map_physical_page(uint64_t virtual_page_addr, int64_t physical_page_addr, u
     uint64_t pd2_addr = map_page_entry(pd, info.pg_dir_offset, PDE64_USER | PDE64_WRITEABLE, PAGE_CREATE, mem_offset);
     uint64_t *pd2 = (void *)(mem_offset + pd2_addr);
 
-    map_page_entry(pd2, info.pg_tbl_offset, flags | PDE64_WRITEABLE, physical_page_addr, mem_offset);
+    if (!no_overwrite || !get_page_entry(pd2, info.pg_tbl_offset, NULL))
+        map_page_entry(pd2, info.pg_tbl_offset, flags | PDE64_WRITEABLE, physical_page_addr, mem_offset);
 }
 
 void unmap_physical_page(uint64_t virtual_page_addr, char *mem_offset){
@@ -267,13 +268,13 @@ int64_t map_physical_pages(uint64_t virtual_page_addr, int64_t physical_page_add
         if (physical_page_addr == -1) return -1;
 
         for (size_t i = 0; i < num_pages; i++)
-            map_physical_page(virtual_page_addr + PAGE_SIZE*i, physical_page_addr + PAGE_SIZE*i, page_prot, mem_offset);
+            map_physical_page(virtual_page_addr + PAGE_SIZE*i, physical_page_addr + PAGE_SIZE*i, page_prot, flags & MAP_NO_OVERWRITE, mem_offset);
     }else{
         for (size_t i = 0; i < num_pages; i++){
             physical_page_addr = allocate_pages(1, mem_offset, flags & MAP_ZERO_PAGES);
             if (physical_page_addr == -1) return -1;
 
-            map_physical_page(virtual_page_addr + PAGE_SIZE*i, physical_page_addr, page_prot, mem_offset);
+            map_physical_page(virtual_page_addr + PAGE_SIZE*i, physical_page_addr, page_prot, flags & MAP_NO_OVERWRITE, mem_offset);
         }
     }
 
