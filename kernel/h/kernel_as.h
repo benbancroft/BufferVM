@@ -44,12 +44,20 @@
 #define AMD64_MSR_CSTAR			0xC0000083
 #define AMD64_MSR_SFMASK	0xC0000084
 
-//#define SINGLE_STEP_F 0x0100
-#define SINGLE_STEP_F 0x0
+#define SINGLE_STEP_F 0x0100
 
 #define MSR_FS_BASE		0xc0000100 /* 64bit FS base */
 #define MSR_GS_BASE		0xc0000101 /* 64bit GS base */
 #define MSR_KERNEL_GS_BASE	0xc0000102 /* SwapGS GS shadow - set this in kernel to effect userland */
+
+#define SINGLE_STEP_DEBUG 0
+
+#if (SINGLE_STEP_DEBUG == 1)
+#define check_ss_mode(flags) \
+    orl $SINGLE_STEP_F, flags;
+#else
+#define check_ss_mode(flags)
+#endif
 
 #define pushScratchRegs() \
     pushq %rax; \

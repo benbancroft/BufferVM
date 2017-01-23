@@ -1,4 +1,4 @@
-#include "h/kernel_as.h"
+#include "../h/kernel_as.h"
 
         .section .text
         .global _start
@@ -11,7 +11,8 @@ _start:
 switch_user_land:
     push $(USER_DS | 3)
     push %rsi
-    push $(0x200 | SINGLE_STEP_F) #EFLAGS (enable ints)
+    push $(0x200) #EFLAGS (enable ints)
+    check_ss_mode((%rsp))
     push $(USER_CS | 3) #(yes that is the correct GDT entry for DPL = 3 long mode)
     push %rdi
 .clear_regs:

@@ -27,7 +27,7 @@
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/gdt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/page_fault.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/kernel.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/start.S" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/asm/start.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/alloc.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/alloc.h" isTestSource="false" />

@@ -70,10 +70,7 @@ void disassemble_instr(uint64_t addr, regs_t *regs){
     char buffer[BUFLEN];
     xed_decoded_inst_t xedd;
 
-    //disassemble_instr_helper(addr, buffer, &xedd, regs);
-    for (size_t i = 0; i < 1; i++){
-        addr = disassemble_instr_helper(addr, buffer, &xedd, regs);
-    }
+    disassemble_instr_helper(addr, buffer, &xedd, regs);
 }
 
 void disassemble_address(uint64_t addr, size_t num_inst){

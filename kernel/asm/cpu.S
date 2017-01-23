@@ -13,4 +13,5 @@ cpu_init:
     movl %ecx, %edx
     movl $(MSR_GS_BASE), %ecx
     wrmsr
+    movl $0, %gs:CPU_TMP_DCNTR
     ret

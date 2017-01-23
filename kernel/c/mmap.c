@@ -1005,17 +1005,6 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
     addr = mmap_region(&file_info, addr, length, vma_flags, vma_prot, offset, &vma);
 
-    /*if (flags && MAP_ANONYMOUS){
-        //we need to prefault the memory that will store the version information for this vma
-        size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
-        for (size_t i = 0; i < pages; i++){
-            map_physical_pages(user_version_start + vma->start_addr + i*PAGE_SIZE, allocate_pages(1, NULL, true),
-                               PDE64_NO_EXE | PDE64_WRITEABLE, 1, 0, 0);
-        }
-
-        vma->flags |= VMA_IS_VERSIONED;
-    }*/
-
     //MAP_POPULATE | MAP_NONBLOCK cannot be used together
     if (vma != NULL && (file_info.fd != -1 || (flags & (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE)) {
 

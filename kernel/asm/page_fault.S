@@ -44,7 +44,7 @@ idt_page_fault_handler:
     movq %cr2, %rsi
     movq 8(%rsp), %rdx
     movq (%rsp), %rcx
-    movq 24(%rsp), %r8
+    movq 32(%rsp), %r8
     clr %rax       # needed for printf
     call printf
 
@@ -95,9 +95,9 @@ idt_page_fault_handler:
     movq 32(%rsp), %rcx
     movq %rcx, %gs:CPU_TMP_DSP
 
-    movw 24(%rsp), %cx
-    orw $0x0100, %cx
-    movw %cx, (%rsp)
+    movq 24(%rsp), %rcx
+    orq $SINGLE_STEP_F, %rcx
+    movq %rcx, (%rsp)
     //restore register
     movq %gs:CPU_TMP_R15, %rcx
     swapgs

@@ -30,8 +30,6 @@ idt_debug_handler:
 
     swapgs
 
-    pushf
-
     cmpl $0, %gs:CPU_TMP_DCNTR
     je .idt_debug_userland
 
@@ -41,7 +39,6 @@ idt_debug_handler:
 .idt_debug_continue:
     subl $0x1, %gs:CPU_TMP_DCNTR
 
-    popf
     swapgs
 
     iretq
@@ -50,22 +47,19 @@ idt_debug_handler:
 
     pushq %rax
 
-    movq $(USER_DS | 3), 48(%rsp)
+    movq $(USER_DS | 3), 40(%rsp)
     movq %gs:CPU_TMP_DSP, %rax
-    movq %rax, 40(%rsp)
-    movw 8(%rsp), %ax
-    movq $0, 32(%rsp)   #zero memory to stop extra flags being enabled
-    movw %ax, 32(%rsp)
-    movq $(USER_CS | 3), 24(%rsp)
+    movq %rax, 32(%rsp)
+    btr $8, 24(%rsp)    #remove resume flag so cpu doesn't add debug flag back
+    check_ss_mode(24(%rsp))
+    movq $(USER_CS | 3), 16(%rsp)
     //return pointer should already be on the stack
 
     swapgs
     popq %rax
-    addq $8, %rsp
 
     iretq
 .idt_debug_userland:
-    popf
     pushAllRegs(24(%rsp))
 
     movq (%rsp), %rdi
