@@ -103,20 +103,21 @@ void vma_free(vm_area_t *addr){
     }
 }
 
-void vma_print_node(vm_area_t *vma)
+void vma_print_node(vm_area_t *vma, bool follow)
 {
     if (vma == NULL) return;
 
     printf("VMA addr: %p end: %p\n", vma->start_addr, vma->end_addr);
 
-    vma_print_node(vma->next);
+    if (follow)
+        vma_print_node(vma->next, true);
 }
 
 void vma_print(){
     printf("\nVMAs:\n");
     printf("-------------------------------------\n");
 
-    vma_print_node(vma_list_start);
+    vma_print_node(vma_list_start, true);
     printf("\n");
 }
 

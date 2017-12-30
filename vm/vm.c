@@ -237,7 +237,7 @@ void intHandler(int signal) {
     //Here to be interrupted
 }
 
-void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_binary_location)
+void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, char *argv[], char *envp[])
 {
     signal(SIGINT, intHandler);
 
@@ -249,12 +249,22 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     uint64_t ksp_max;
     uint64_t ksp;
     uint64_t tss_start;
-    uint64_t user_binary_location_addr;
 
     size_t i;
     uint64_t p;
-
+    size_t arg_size;
     int ret;
+
+    char **envp_copy = envp;
+    int envc = 0;
+    char *kernel_argv[argc];
+    uint64_t argv_start, envp_start;
+
+    while(*envp_copy++)
+        envc++;
+
+    char *kernel_envp[envc + 1];
+    kernel_envp[envc] = NULL;
 
     printf("Testing protected mode\n");
 
@@ -268,9 +278,6 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     load_elf_binary(kernel_binary_fd, NULL, &kernel_elf_info, true, vm->mem);
     printf("Entry point kernel: %p\n", kernel_elf_info.entry_addr);
 
-    /*load_elf_binary(prog_binary_fd, &user_elf_info, vm->mem);
-    printf("Entry point user: %p\n", user_elf_info.entry_addr);*/
-
     //allocate 20 stack pages for kernel stack
     ksp = kernel_elf_info.min_page_addr;
     for (p = ksp - PAGE_SIZE; i < 20; p -= PAGE_SIZE, i++) {
@@ -279,14 +286,49 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
 
     //copy user binary location to top of stack
     ksp_max = ksp;
-    size_t user_loc_size = strlen(user_binary_location) + 1;
-    if (!write_virtual_addr(ksp - user_loc_size, user_binary_location, user_loc_size, vm->mem))
+
+
+    //Put argv and envp onto kernel stack
+
+    //argv
+    for (int i = argc - 1; i >= 0; i--)
     {
-        perror("Error writing user binary location.");
-        exit(1);
+        arg_size = strlen(argv[i]) + 1;
+        ksp -= arg_size;
+        kernel_argv[i] = (char *)ksp;
+        if (!write_virtual_addr(ksp, argv[i], arg_size, vm->mem))
+        {
+            perror("Error writing argv value.");
+            exit(1);
+        }
+
     }
-    user_binary_location_addr = ksp - user_loc_size;
-    ksp = P2ALIGN(user_binary_location_addr, MIN_ALIGN);
+
+    //envp
+    for (int i = envc - 1; i >= 0; i--)
+    {
+        arg_size = strlen(envp[i]) + 1;
+        ksp -= arg_size;
+        kernel_envp[i] = (char *)ksp;
+        if (!write_virtual_addr(ksp, envp[i], arg_size, vm->mem))
+        {
+            perror("Error writing envp value.");
+            exit(1);
+        }
+
+    }
+
+    ksp = P2ALIGN(ksp, MIN_ALIGN);
+
+    //argv pointers
+    ksp -= sizeof (kernel_argv);
+    argv_start = ksp;
+    write_virtual_addr(argv_start, (char *)kernel_argv, sizeof (kernel_argv), vm->mem);
+
+    //envp pointers
+    ksp -= sizeof (kernel_envp);
+    envp_start = ksp;
+    write_virtual_addr(envp_start, (char *)kernel_envp, sizeof (kernel_envp), vm->mem);
 
     tss_start = setup_kernel_tss(vm, &sregs, p);
 
@@ -305,11 +347,14 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
     //kernel stack max
     regs.rsi = ksp_max;
     //kernel stack actual
-    regs.rdx = ksp;
     //tss start
-    regs.rcx = tss_start;
-    //user_binary_location
-    regs.r8 = user_binary_location_addr;
+    regs.rdx = tss_start;
+    //argc
+    regs.rcx = argc;
+    //argv location
+    regs.r8 = argv_start;
+    //envp location
+    regs.r9 = envp_start;
 
     if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {
         perror("KVM_SET_REGS");
@@ -470,6 +515,19 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_
                         } else
                             ret = -EFAULT;
                         regs.rax = ret;
+                    }
+                    break;
+                    case 17:
+                    {
+                        struct stat stats;
+                        char *file;
+                        if (read_virtual_cstr(regs.rdi, &file, vm->mem)) {
+                            regs.rax = stat(file, &stats);
+                            free(file);
+                            if (!write_virtual_addr(regs.rsi, (char *) &stats, sizeof(stats), vm->mem))
+                                regs.rax = -1;
+                        }else
+                            regs.rax = -1;
                     }
                     break;
                     case 16:

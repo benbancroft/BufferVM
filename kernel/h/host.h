@@ -20,6 +20,8 @@ int host_close(uint32_t fd);
 
 int host_dup(uint32_t fd);
 
+int host_stat(const char *path, stat_t *stats);
+
 int host_fstat(uint32_t fd, stat_t *stats);
 
 int host_access(const char *pathname, int mode);

@@ -12,7 +12,5 @@ bootstrap:
         ljmp $0x10, $1f
         .code64
 1:
-        movq %rdx, %rsp
-
         jmp *%rdi
 bootstrap_end:

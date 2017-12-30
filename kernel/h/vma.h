@@ -61,6 +61,8 @@ vm_area_t *vma_zalloc();
 
 void vma_free(vm_area_t *addr);
 
+void vma_print_node(vm_area_t *vma, bool follow);
+
 void vma_print();
 
 void vma_gap_update(vm_area_t *vma);

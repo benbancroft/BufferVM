@@ -24,6 +24,7 @@ int main(int argc, char *argv[], char *envp[]){
     mem = set_version((void *)mem, size, 5);
 
     memcpy(mem, hello, size);
+    mem[size-1] = 0;
 
     printf("here is some memory: %p %s\n", mem, mem);
 

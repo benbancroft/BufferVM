@@ -76,6 +76,6 @@ void vcpu_init(struct vm_t *vm, struct vcpu_t *vcpu);
 
 void kvm_show_regs(struct vm_t *vm);
 
-void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, char *user_binary_location);
+void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, char *argv[], char *envp[]);
 
 #endif //BUFFERVM_VM_H

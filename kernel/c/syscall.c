@@ -55,6 +55,17 @@ int syscall_close(int32_t fd){
     return host_close(fd);
 }
 
+int syscall_ioctl(uint32_t fd, uint64_t request, void *argp){
+    printf("syscall_ioctl fd: %d\n", fd);
+    return 0;
+    //return host_fstat(fd, stats);
+}
+
+int syscall_stat(const char *path, stat_t *stats){
+    printf("syscall_stat path: %s\n", path);
+    return host_stat(path, stats);
+}
+
 int syscall_fstat(uint32_t fd, stat_t *stats){
     printf("syscall_fstat fd: %d\n", fd);
     return host_fstat(fd, stats);
@@ -159,11 +170,13 @@ void syscall_init()
     syscall_register(1, (uintptr_t) &syscall_write);
     syscall_register(2, (uintptr_t) &syscall_open);
     syscall_register(3, (uintptr_t) &syscall_close);
+    syscall_register(4, (uintptr_t) &syscall_stat);
     syscall_register(5, (uintptr_t) &syscall_fstat);
     syscall_register(9, (uintptr_t) &syscall_mmap);
     syscall_register(10, (uintptr_t) &syscall_mprotect);
     syscall_register(11, (uintptr_t) &syscall_munmap);
     syscall_register(12, (uintptr_t) &syscall_brk);
+    syscall_register(16, (uintptr_t) &syscall_ioctl);
     syscall_register(20, (uintptr_t) &syscall_writev);
     syscall_register(21, (uintptr_t) &syscall_access);
     syscall_register(60, (uintptr_t) &syscall_exit);

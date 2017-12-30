@@ -4,7 +4,6 @@
         .global _start
         .global switch_user_land
 _start:
-    movq %rdx, %rsp
 	call kernel_main
 
 	call host_exit

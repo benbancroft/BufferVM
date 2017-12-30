@@ -87,7 +87,7 @@ int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_on
         if (section_max_addr > max_addr)
             max_addr = section_max_addr;
 
-        printf("Loaded header at %p of size: %" PRIu64 " file offset %" PRIu64 "\n", (void *) taddr, (uint64_t) phdr.p_memsz, (uint64_t) phdr.p_offset);
+        printf("Loaded header at %p of size: %" PRIx64 " at file offset: %" PRIu64 "\n", (void *) taddr, (uint64_t) phdr.p_memsz, (uint64_t) phdr.p_offset);
     }
 
     // Align to page size

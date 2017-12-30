@@ -4,11 +4,22 @@
 #include "../common/elf.h"
 #include <unistd.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[], char *envp[]) {
     if (argc < 3) {
         fprintf(stderr, "%s kernel.elf binary\n", argv[0]);
         return 1;
     }
+
+    /*char **argvc = argv;
+    printf("\nargv:");
+    while(argc-- > 0)
+        printf(" %s",*argvc++);
+    printf("\n");
+
+    printf("envp:");
+    while(*envp)
+        printf(" %s",*envp++);
+    printf("\n\n");*/
 
 
     int kernel_binary_fd;
@@ -22,7 +33,7 @@ int main(int argc, char **argv) {
     vm_init(&vm, 0xFFF00000);
     vcpu_init(&vm, &vcpu);
 
-    run(&vm, &vcpu, kernel_binary_fd, argv[2]);
+    run(&vm, &vcpu, kernel_binary_fd, argc - 2, &argv[2], envp);
 
     close(kernel_binary_fd);
 

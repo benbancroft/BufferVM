@@ -5,6 +5,7 @@
 .globl host_open
 .globl host_close
 .globl host_dup
+.globl host_stat
 .globl host_fstat
 .globl host_mmap
 .globl host_lseek
@@ -48,6 +49,11 @@ host_dup:
 
 host_fstat:
     movq $0xB, %rax
+    hlt
+    ret
+
+host_stat:
+    movq $0x11, %rax
     hlt
     ret
 
