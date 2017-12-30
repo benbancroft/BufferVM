@@ -10,7 +10,7 @@
 #include "../../common/paging.h"
 #include "../h/host.h"
 
-#include "../../intelxed/kit/include/xed-interface.h"
+#include "../../intelxed/kit/include/xed/xed-interface.h"
 #include "../h/stack.h"
 #include "../../common/utils.h"
 #include "../h/gdt.h"

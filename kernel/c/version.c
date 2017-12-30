@@ -6,7 +6,7 @@
 #include "../../common/version.h"
 #include "../h/kernel.h"
 #include "../../common/paging.h"
-#include "../../intelxed/kit/include/xed-interface.h"
+#include "../../intelxed/kit/include/xed/xed-interface.h"
 
 bool on_same_page(void *addr1, void *addr2) {
     return P2ALIGN((uint64_t) addr1, PAGE_SIZE) == P2ALIGN((uint64_t) addr2, PAGE_SIZE);

@@ -2,7 +2,7 @@
 // Created by ben on 27/12/16.
 //
 #include "../../common/utils.h"
-#include "../../intelxed/kit/include/xed-interface.h"
+#include "../../intelxed/kit/include/xed/xed-interface.h"
 #include "../h/cpu.h"
 #include "../h/vma_heap.h"
 
