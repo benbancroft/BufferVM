@@ -2,6 +2,8 @@
 // Created by ben on 07/12/16.
 //
 
+#include <stdio.h>
+
 #include "../../libc/version.h"
 #include "../../common/version.h"
 #include "../h/kernel.h"

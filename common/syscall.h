@@ -10,13 +10,13 @@
 #define MAX_ERRNO	4095
 #define IS_ERR_VALUE(x) ((x) >= (unsigned long)-MAX_ERRNO)
 
-#ifndef VM
-
 typedef struct file {
     int fd;
     uint64_t dev;
     uint64_t inode;
 } file_t;
+
+#ifndef VM
 
 typedef struct iovec
 {

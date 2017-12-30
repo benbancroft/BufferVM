@@ -7,6 +7,7 @@
 
 #include "../../libc/stdlib.h"
 #include "../../common/syscall.h"
+#include "../../common/vma.h"
 
 void host_exit();
 
@@ -35,5 +36,7 @@ ssize_t host_writev(uint64_t fd, const iovec_t *vec, uint64_t vlen, int flags);
 int host_regs();
 
 int host_print_var(int64_t var);
+
+int host_set_vma_heap(uint64_t vma_heap_addr, vm_area_t **vma_list_start, rb_root_t *vma_rb_root);
 
 #endif //KERNEL_HOST_H

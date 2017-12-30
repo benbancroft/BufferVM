@@ -10,6 +10,7 @@
 .globl host_mmap
 .globl host_lseek
 .globl host_access
+.globl host_set_vma_heap
 .globl host_writev
 .globl host_regs
 .globl allocate_pages
@@ -19,6 +20,7 @@
 .globl host_print_var
 
 host_exit:
+    call vma_print
     movq $0x0, %rax
     hlt
 
@@ -92,6 +94,11 @@ host_writev:
 
 host_access:
     movq $0x10, %rax
+    hlt
+    ret
+
+host_set_vma_heap:
+    movq $0x12, %rax
     hlt
     ret
 

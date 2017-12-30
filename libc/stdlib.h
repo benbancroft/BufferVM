@@ -39,7 +39,6 @@ char *strncat(char *s1, char *s2, int n);
 int puts(const char *string);
 void putchar(char c);
 char *convert(int64_t num, size_t base);
-void printf(char* format,...);
 char *getline(void);
 
 #endif

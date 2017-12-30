@@ -2,6 +2,8 @@
 // Created by ben on 14/10/16.
 //
 
+#include <stdio.h>
+
 #include "../../libc/stdlib.h"
 #include "../h/host.h"
 

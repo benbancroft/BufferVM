@@ -23,6 +23,7 @@
 #include "gdt.h"
 #include "../common/elf.h"
 #include "../common/syscall.h"
+#include "vma.h"
 
 extern const unsigned char bootstrap[], bootstrap_end[];
 
@@ -413,65 +414,64 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
                     case 0: {
                         printf("Exit hostcall\n");
 
+                        vma_print();
+
+                        vma_print_node(vma_find(0x400005), false);
+
                         char buffer[0x1000];
                         uint64_t number;
                         //printf("Size: %s %d\n", buffer, regs.rdx);
                         if (read_virtual_addr(0xDEADB000, 0x1000, buffer, vm->mem)) {
-                            memcpy(&number, buffer+0xEEF, sizeof(uint64_t));
+                            memcpy(&number, buffer + 0xEEF, sizeof(uint64_t));
                             printf("0xDEADBEEF val: %" PRIu64 "\n", number);
                         }
 
                         return;
                     }
-                    case 1:
-                    {
+                    case 1: {
                         char buffer[regs.rdx];
                         //printf("Size: %s %d\n", buffer, regs.rdx);
-                        if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm->mem)){
+                        if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm->mem)) {
                             regs.rax = write(regs.rdi, buffer, regs.rdx);
-                        }else{
+                        } else {
                             printf("Failed to write - Un-paged buffer?\n");
                         }
                     }
                         break;
-                    case 2:
-                        {
-                            char buffer[regs.rdx];
-                            regs.rax = read(regs.rdi, buffer, regs.rdx);
-                            if (!write_virtual_addr(regs.rsi, buffer, regs.rdx, vm->mem))
-                                regs.rax = -1;
-                        }
+                    case 2: {
+                        char buffer[regs.rdx];
+                        regs.rax = read(regs.rdi, buffer, regs.rdx);
+                        if (!write_virtual_addr(regs.rsi, buffer, regs.rdx, vm->mem))
+                            regs.rax = -1;
+                    }
                         break;
-                    case 3:
-                        {
-                            char *buffer;
-                            if (read_virtual_cstr(regs.rdi, &buffer, vm->mem)){
-                                regs.rax = open(buffer, (int32_t)regs.rsi, (uint16_t)regs.rdx);
-                                free(buffer);
-                            }else{
-                                printf("Failed to write - Un-paged buffer?\n");
-                            }
+                    case 3: {
+                        char *buffer;
+                        if (read_virtual_cstr(regs.rdi, &buffer, vm->mem)) {
+                            regs.rax = open(buffer, (int32_t) regs.rsi, (uint16_t) regs.rdx);
+                            free(buffer);
+                        } else {
+                            printf("Failed to write - Un-paged buffer?\n");
                         }
+                    }
                         break;
                     case 4:
-                        regs.rax = close((int)regs.rdi);
+                        regs.rax = close((int) regs.rdi);
                         break;
                     case 10:
-                        regs.rax = dup((int)regs.rdi);
+                        regs.rax = dup((int) regs.rdi);
                         break;
-                    case 11:
-                        {
-                            struct stat stats;
-                            regs.rax = fstat((int)regs.rdi, &stats);
-                            if (!write_virtual_addr(regs.rsi, (char *)&stats, sizeof (stats), vm->mem))
-                                regs.rax = -1;
-                        }
+                    case 11: {
+                        struct stat stats;
+                        regs.rax = fstat((int) regs.rdi, &stats);
+                        if (!write_virtual_addr(regs.rsi, (char *) &stats, sizeof(stats), vm->mem))
+                            regs.rax = -1;
+                    }
                         break;
-                    case 12:
-                    {
+                    case 12: {
                         regs.rax =
-                                ((uint64_t)mmap(vm->mem + regs.rdi, regs.rsi, regs.rdx, regs.rcx, regs.r8, regs.r9)) -
-                                        (uint64_t)vm->mem;
+                                ((uint64_t) mmap(vm->mem + regs.rdi, regs.rsi, regs.rdx, regs.rcx, regs.r8, regs.r9)) -
+                                (uint64_t) vm->mem;
                     }
                         break;
                     case 13:
@@ -486,27 +486,26 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
                     case 14:
                         unmap_physical_page(regs.rdi, vm->mem);
                         break;
-                    case 15:
-                    {
+                    case 15: {
                         struct iovec vectors[regs.rdx];
                         struct iovec *vec;
                         void *vecbuf;
                         size_t ret = 0;
 
-                        if (read_virtual_addr(regs.rsi, regs.rdx * sizeof (struct iovec), vectors, vm->mem)){
-                            for (size_t i = 0; i < regs.rdx; i++){
+                        if (read_virtual_addr(regs.rsi, regs.rdx * sizeof(struct iovec), vectors, vm->mem)) {
+                            for (size_t i = 0; i < regs.rdx; i++) {
                                 vec = &vectors[i];
 
                                 vecbuf = malloc(vec->iov_len);
-                                if (!read_virtual_addr((uint64_t)vec->iov_base, vec->iov_len, vecbuf, vm->mem)){
+                                if (!read_virtual_addr((uint64_t) vec->iov_base, vec->iov_len, vecbuf, vm->mem)) {
                                     ret = -EFAULT;
                                     break;
                                 }
                                 vec->iov_base = vecbuf;
                             }
-                            if (!IS_ERR_VALUE(ret)){
+                            if (!IS_ERR_VALUE(ret)) {
                                 ret = writev(regs.rdi, vectors, regs.rdx);
-                                for (size_t i = 0; i < regs.rdx; i++){
+                                for (size_t i = 0; i < regs.rdx; i++) {
                                     vec = &vectors[i];
                                     free(vec->iov_base);
                                 }
@@ -516,9 +515,8 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
                             ret = -EFAULT;
                         regs.rax = ret;
                     }
-                    break;
-                    case 17:
-                    {
+                        break;
+                    case 17: {
                         struct stat stats;
                         char *file;
                         if (read_virtual_cstr(regs.rdi, &file, vm->mem)) {
@@ -526,12 +524,25 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
                             free(file);
                             if (!write_virtual_addr(regs.rsi, (char *) &stats, sizeof(stats), vm->mem))
                                 regs.rax = -1;
-                        }else
+                        } else
                             regs.rax = -1;
                     }
-                    break;
+                        break;
                     case 16:
-                        regs.rax = access((char *)regs.rdi, regs.rsi);
+                        regs.rax = access((char *) regs.rdi, regs.rsi);
+                        break;
+                    case 18: {
+                        uint64_t phys;
+                        regs.rax = 0;
+
+                        vma_heap_addr = regs.rdi;
+
+                        if (!get_phys_addr(regs.rsi, &phys, vm->mem)) return;
+                        vma_list_start_ptr = (vm_area_t **)(vm->mem + phys);
+
+                        if (!get_phys_addr(regs.rdx, &phys, vm->mem)) return;
+                        vma_rb_root_ptr = (rb_root_t *)(vm->mem + phys);
+                    }
                         break;
                     case 7:
                         regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);

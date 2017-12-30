@@ -2,6 +2,7 @@
 // Created by ben on 17/10/16.
 //
 
+#include <stdio.h>
 #include "../h/gdt.h"
 #include "../h/tss.h"
 #include "../../common/paging.h"

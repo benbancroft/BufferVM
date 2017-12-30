@@ -8,6 +8,14 @@
 #include "../../common/utils.h"
 #include "../h/host.h"
 
+inline vm_area_t *vma_ptr(vm_area_t *vma) {
+    return (vma);
+}
+
+inline rb_node_t *vma_rb_ptr(rb_node_t *vma){
+    return (vma);
+}
+
 int vma_find_links(uint64_t addr,
                    uint64_t end, vm_area_t **pprev,
                    rb_node_t ***rb_link, rb_node_t **rb_parent) {

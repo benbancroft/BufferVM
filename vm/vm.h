@@ -70,6 +70,8 @@ struct vcpu_t {
     struct kvm_run *kvm_run;
 };
 
+extern struct vm_t vm;
+
 void vm_init(struct vm_t *vm, size_t mem_size);
 
 void vcpu_init(struct vm_t *vm, struct vcpu_t *vcpu);

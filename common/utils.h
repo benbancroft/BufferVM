@@ -6,6 +6,7 @@
 #define PROJECT_UTILS_H
 
 #include "stdlib.h"
+#include <stdio.h>
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 

@@ -6,17 +6,16 @@ void memcpy(void *dest, void *src, size_t n) {
     char *cdest = (char *) dest;
 
     //copy src to dest
-    for (size_t i = 0; i < n; i++){
+    for (size_t i = 0; i < n; i++) {
         cdest[i] = csrc[i];
     }
 }
 
-void *memset(void *dest, int c, size_t n)
-{
+void *memset(void *dest, int c, size_t n) {
     if (n != 0) {
         char *sp = dest;
         do {
-            *sp++ = (char)c;
+            *sp++ = (char) c;
         } while (--n != 0);
     }
     return (dest);
@@ -24,31 +23,27 @@ void *memset(void *dest, int c, size_t n)
 
 int memcmp(const void *s1, const void *s2, size_t n) {
     size_t i;
-    const unsigned char *cs = (const unsigned char*)s1;
-    const unsigned char *ct = (const unsigned char*)s2;
+    const unsigned char *cs = (const unsigned char *) s1;
+    const unsigned char *ct = (const unsigned char *) s2;
 
-    for (i = 0; i < n; i++, cs++, ct++)
-    {
-        if (*cs < *ct)
-        {
+    for (i = 0; i < n; i++, cs++, ct++) {
+        if (*cs < *ct) {
             return -1;
-        }
-        else if (*cs > *ct)
-        {
+        } else if (*cs > *ct) {
             return 1;
         }
     }
     return 0;
 }
 
-int strcmp (const char *s1, const char *s2) {
-    const unsigned char *p1 = (const unsigned char *)s1;
-    const unsigned char *p2 = (const unsigned char *)s2;
+int strcmp(const char *s1, const char *s2) {
+    const unsigned char *p1 = (const unsigned char *) s1;
+    const unsigned char *p2 = (const unsigned char *) s2;
 
     while (*p1 != '\0') {
-        if (*p2 == '\0') return  1;
-        if (*p2 > *p1)   return -1;
-        if (*p1 > *p2)   return  1;
+        if (*p2 == '\0') return 1;
+        if (*p2 > *p1) return -1;
+        if (*p1 > *p2) return 1;
 
         p1++;
         p2++;
@@ -59,8 +54,7 @@ int strcmp (const char *s1, const char *s2) {
     return 0;
 }
 
-size_t strlen(const char *str)
-{
+size_t strlen(const char *str) {
     if (!str) {
         return 0;
     }
@@ -73,8 +67,7 @@ size_t strlen(const char *str)
     return str - ptr;
 }
 
-char *strncat(char *s1, char *s2, int n)
-{
+char *strncat(char *s1, char *s2, int n) {
     char *os1 = s1;
 
     while (*s1++);
@@ -119,6 +112,7 @@ char *convert(int64_t num, size_t base) {
 void printf(char *format, ...) {
     char *traverse, *start;
     int64_t i = 0;
+    bool long_int = false;
     char *s;
 
     va_list arg;
@@ -131,14 +125,24 @@ void printf(char *format, ...) {
             write(1, start, i);
             traverse++;
 
+            long_int:
             switch (*traverse) {
                 case 'c' :
                     i = va_arg(arg, int64_t);     //char argument
                     putchar(i);
                     break;
-
+                case 'l':
+                    long_int = true;
+                    traverse++;
+                    goto long_int;
                 case 'd' :
-                    i = va_arg(arg, int64_t);         //decimal argument
+                    //decimal
+                    if (!long_int) {
+                        i = va_arg(arg, int);
+                    } else {
+                        i = va_arg(arg, int64_t);
+                    }
+
                     if (i < 0) {
                         i = -i;
                         putchar('-');
@@ -147,7 +151,12 @@ void printf(char *format, ...) {
                     break;
 
                 case 'o':
-                    i = va_arg(arg, int64_t); //octal
+                    //octal
+                    if (!long_int) {
+                        i = va_arg(arg, int);
+                    } else {
+                        i = va_arg(arg, int64_t);
+                    }
                     puts(convert(i, 8));
                     break;
                 case 's':
@@ -155,7 +164,12 @@ void printf(char *format, ...) {
                     puts(s);
                     break;
                 case 'x':
-                    i = va_arg(arg, int64_t); //hexadecimal
+                    //hexadecimal
+                    if (!long_int) {
+                        i = va_arg(arg, int);
+                    } else {
+                        i = va_arg(arg, int64_t);
+                    }
                     puts(convert(i, 16));
                     break;
                 case 'p':
@@ -166,6 +180,7 @@ void printf(char *format, ...) {
             }
             start = traverse + 1;
             i = 0;
+            long_int = false;
         }
     }
     write(1, start, i);

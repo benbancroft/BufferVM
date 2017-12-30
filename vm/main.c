@@ -4,6 +4,8 @@
 #include "../common/elf.h"
 #include <unistd.h>
 
+struct vm_t vm;
+
 int main(int argc, char *argv[], char *envp[]) {
     if (argc < 3) {
         fprintf(stderr, "%s kernel.elf binary\n", argv[0]);
@@ -27,7 +29,6 @@ int main(int argc, char *argv[], char *envp[]) {
         return 1;
     }
 
-    struct vm_t vm;
     struct vcpu_t vcpu;
 
     vm_init(&vm, 0xFFF00000);

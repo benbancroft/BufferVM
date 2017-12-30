@@ -42,8 +42,18 @@ struct vm_area {
 #define VMA_IS_PREFAULTED   0x00000020
 
 extern rb_root_t vma_rb_root;
+extern rb_root_t *vma_rb_root_ptr;
 extern uint64_t vma_highest_addr;
 extern vm_area_t *vma_list_start;
+extern vm_area_t **vma_list_start_ptr;
+extern uint64_t vma_heap_addr;
+
+//stubs for none common code
+
+vm_area_t *vma_ptr(vm_area_t *);
+rb_node_t *vma_rb_ptr(rb_node_t *vma);
+
+//common functions
 
 void vma_print_node(vm_area_t *vma, bool follow);
 
