@@ -5,8 +5,11 @@
 #include "../../common/version.h"
 #include "../h/kernel.h"
 #include "../../common/paging.h"
-#include "../h/host.h"
 #include "../../intelxed/kit/include/xed-interface.h"
+#include "../h/insn.h"
+#include "../h/utils.h"
+#include "../h/host.h"
+#include "../h/vma.h"
 
 bool on_same_page(void *addr1, void *addr2) {
     return P2ALIGN((uint64_t) addr1, PAGE_SIZE) == P2ALIGN((uint64_t) addr2, PAGE_SIZE);
@@ -52,17 +55,62 @@ bool check_version_instruction(uint64_t *addr, uint64_t *rip, size_t offset, uin
                            XED_REINTERPRET_CAST(const xed_uint8_t*, rip),
                            15);
 
+    ASSERT(on_same_page(rip, rip+15));
+
     if (xed_error == XED_ERROR_NONE) {
         inst_len = xed_decoded_inst_get_operand_width(&xedd) / 8;
+
+        /*struct insn insn;
+        insn_init(&insn, (void *)rip, 15, 1);
+        insn_get_opcode(&insn);
+        insn_attr_t flags = insn.attr;
+        bool is_byte = !inat_is_force64(flags) && flags & INAT_BYTEOP;
+        bool is_vector = flags & INAT_VEXOK;
+
+        if (is_vector){
+            printf("pc %p, xed: %d, mine: %d opcode %x\n", rip, inst_len, is_vector ? insn.vector_bytes : (is_byte ? 1 : insn.opnd_bytes), insn.opcode.value);
+            disassemble_address((uint64_t)rip, 1);
+        }
+        ASSERT(is_vector || inst_len == (is_byte ? 1 : insn.opnd_bytes));*/
+
         if (inst_len <= offset)
+            return (true);
+    } else{
+
+        printf ("Failed on getting instruction length - using my method\n");
+
+        struct insn insn;
+        insn_init(&insn, (void *)rip, 15, 1);
+        insn_get_opcode(&insn);
+        insn_attr_t flags = insn.attr;
+        bool is_byte = !inat_is_force64(flags) && flags & INAT_BYTEOP;
+        bool is_vector = flags & INAT_VEXOK;
+        size_t length = is_vector ? insn.vector_bytes : (is_byte ? 1 : insn.opnd_bytes);
+
+        printf("pc %p, length: %d opcode %x\n", rip, length, insn.opcode.value);
+
+        for (size_t i = 0; i < 15; i++) {
+            printf(" %x", *((char*)rip+i) & 0xFF);
+        }
+        putchar('\n');
+
+        if (length <= offset)
             return (true);
     }
     printf ("VADDR: %p, RIP: %p PVer: %d byte: %d\n", addr, rip, ptr_ver, offset);
+
+    vm_area_t *vma = vma_find((uint64_t)normalise_version_ptr(addr));
+    vma_print_node(vma, false);
+
+    disassemble_address((uint64_t)normalise_version_ptr(addr), 10);
 
     return (false);
 }
 
 bool check_version(void *addr, uint64_t *rip) {
+
+    vm_area_t *vma = vma_find((uint64_t)normalise_version_ptr(addr));
+    ASSERT(vma->page_prot & VMA_IS_VERSIONED);
 
     //printf("Checking version of VA %p at RIP: %p\n", addr, rip);
     uint64_t ptr_ver = get_version_ptr(addr);

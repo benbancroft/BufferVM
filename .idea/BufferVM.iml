@@ -2,39 +2,46 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/kernel/h/rbtree.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/utils.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/h/stack.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/h/rbtree.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/h/inat-tables.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/h/vma.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/h/insn.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/h/inat_types.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/h/inat.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/h/stack.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/syscall.S" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/asm/tss.S" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/asm/start.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/idt.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/cpu.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/host.s" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/asm/page_fault.S" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/asm/tss.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/stack.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/c/tss.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/cpu.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/elf.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/mmap.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/c/cpu.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/tss.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/vma.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/utils.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/syscall.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/c/version.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/inat-tables.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/insn.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/cstubs.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/version.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/kernel/c/inat.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/idt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/gdt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/page_fault.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kernel/c/kernel.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/kernel/asm/start.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/alloc.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/example-program/alloc.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/example-program/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/main.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/example-program/alloc.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/sbrk.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/start.s" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/example-program/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/cstubs.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program/sbrk.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/stdlib_inc.h" isTestSource="false" />
@@ -47,8 +54,8 @@
       <sourceFolder url="file://$MODULE_DIR$/vm/paging.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/gdt.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vm/vm.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/example-program-2/buffervm.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program-2/buffervm.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/example-program-2/buffervm.S" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program-2/main.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/example-program-2/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/intelxed/CMakeLists.txt" isTestSource="false" />

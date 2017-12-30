@@ -9,7 +9,7 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffreestanding -fPIC -mcmodel=large -mno-re
 
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections,--build-id=none" )
 
-set(SOURCE_FILES asm/start.S c/kernel.c asm/host.s c/idt.c c/gdt.c asm/idt.S asm/page_fault.S c/cstubs.c asm/tss.S c/tss.c c/syscall.c asm/syscall.S asm/cpu.S c/version.c ${COMMON_SOURCE_FILES} c/mmap.c c/stack.c h/stack.h c/page_fault.c c/utils.c h/utils.h c/vma.c h/vma.h h/rbtree.h c/elf.c c/cpu.c)
+set(SOURCE_FILES asm/start.S c/kernel.c asm/host.s c/idt.c c/gdt.c asm/idt.S asm/page_fault.S c/cstubs.c asm/tss.S c/tss.c c/syscall.c asm/syscall.S asm/cpu.S c/version.c ${COMMON_SOURCE_FILES} c/mmap.c c/stack.c h/stack.h c/page_fault.c c/utils.c h/utils.h c/vma.c h/vma.h h/rbtree.h c/elf.c c/cpu.c c/insn.c h/insn.h h/inat.h h/inat_types.h c/inat.c c/inat-tables.c h/inat-tables.h)
 
 SET(CMAKE_C_LINK_EXECUTABLE "${PROJECT_SOURCE_DIR}/linker.py -c '${CMAKE_C_FLAGS}' -l '<LINK_FLAGS>' -L '<LINK_LIBRARIES>' -s ${PROJECT_SOURCE_DIR}/kernel.ld -o '<OBJECTS>' -t <TARGET>")
 
