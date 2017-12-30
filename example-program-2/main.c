@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "buffervm.h"
+#include "../libc/version.h"
 
 int main(int argc, char *argv[], char *envp[]){
     printf("hello world from glibc!\n");
@@ -26,6 +27,7 @@ int main(int argc, char *argv[], char *envp[]){
     memcpy(mem, hello, size);
     mem[size-1] = 0;
 
+    //mem = set_version_ptr(4, mem);
     printf("here is some memory: %p %s\n", mem, mem);
 
 

@@ -5,7 +5,7 @@
 #ifndef PROJECT_UTILS_H
 #define PROJECT_UTILS_H
 
-#include "../../libc/stdlib.h"
+#include "stdlib.h"
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 

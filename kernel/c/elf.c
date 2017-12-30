@@ -6,7 +6,7 @@
 #include "../h/syscall.h"
 #include "../../common/elf.h"
 #include "../../common/paging.h"
-#include "../h/utils.h"
+#include "../../common/utils.h"
 
 bool is_elf(int fd){
     unsigned char e_ident[EI_NIDENT];
@@ -105,7 +105,7 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, void** elf_start, elf_info_
                                       fd,
                                       file_offset);
             //Will handle error codes too - debugging point
-            printf("Error %p\n", -(uint64_t) start_addr);
+            //printf("Error %p\n", -(uint64_t) start_addr);
             ASSERT(!IS_ERR_VALUE(start_addr));
             ASSERT(!(flags & MAP_FIXED) || start_addr == map_addr);
 

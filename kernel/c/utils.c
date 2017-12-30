@@ -1,10 +1,10 @@
 //
 // Created by ben on 27/12/16.
 //
-#include "../h/utils.h"
+#include "../../common/utils.h"
 #include "../../intelxed/kit/include/xed-interface.h"
 #include "../h/cpu.h"
-#include "../h/vma.h"
+#include "../h/vma_heap.h"
 
 #define BUFLEN  100
 

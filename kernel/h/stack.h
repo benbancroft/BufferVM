@@ -6,7 +6,7 @@
 #define PROJECT_STACK_H
 
 #include "../../libc/stdlib.h"
-#include "vma.h"
+#include "vma_heap.h"
 
 extern uint64_t user_stack_start;
 extern uint64_t user_stack_min;

@@ -12,7 +12,7 @@
 
 #include "../../intelxed/kit/include/xed-interface.h"
 #include "../h/stack.h"
-#include "../h/utils.h"
+#include "../../common/utils.h"
 #include "../h/gdt.h"
 
 uint64_t kernel_min_address;
@@ -97,6 +97,9 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_s
     load_elf_binary(user_bin_fd, &elf_entry, &user_elf_info, false, 0);
     host_close(user_bin_fd);
     user_heap_start = user_elf_info.max_page_addr;
+
+    printf("Heap stack region: %p %p\n", user_version_start, user_heap_start);
+
     vma_print();
 
     /*char **argvc = argv;

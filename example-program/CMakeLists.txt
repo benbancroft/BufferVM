@@ -4,6 +4,8 @@ project(ExampleProgram)
 
 enable_language(ASM)
 
+include_directories(../libc)
+
 set(CMAKE_C_FLAGS "-g -w -m64 -nostdlib -fno-stack-protector")
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror" )
 

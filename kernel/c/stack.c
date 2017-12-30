@@ -4,8 +4,8 @@
 
 #include "../h/stack.h"
 #include "../../common/paging.h"
-#include "../h/vma.h"
-#include "../h/utils.h"
+#include "../h/vma_heap.h"
+#include "../../common/utils.h"
 #include "../h/host.h"
 #include "../h/syscall.h"
 

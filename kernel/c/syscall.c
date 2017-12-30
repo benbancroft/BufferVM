@@ -8,8 +8,8 @@
 #include "../h/host.h"
 #include "../../common/paging.h"
 #include "../../common/version.h"
-#include "../h/vma.h"
-#include "../h/utils.h"
+#include "../h/vma_heap.h"
+#include "../../common/utils.h"
 
 uint64_t curr_brk;
 

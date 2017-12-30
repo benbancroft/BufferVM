@@ -2,10 +2,10 @@
 // Created by ben on 07/12/16.
 //
 
+#include "../../libc/version.h"
 #include "../../common/version.h"
 #include "../h/kernel.h"
 #include "../../common/paging.h"
-#include "../h/host.h"
 #include "../../intelxed/kit/include/xed-interface.h"
 
 bool on_same_page(void *addr1, void *addr2) {
@@ -43,7 +43,7 @@ bool check_version_instruction(uint64_t *addr, uint64_t *rip, size_t offset, uin
     xed_error_enum_t xed_error;
     xed_bool_t ok;
     xed_decoded_inst_t xedd;
-    uint64_t inst_len;
+    uint64_t inst_len, m_ver;
 
     xed_decoded_inst_zero(&xedd);
 
@@ -57,7 +57,8 @@ bool check_version_instruction(uint64_t *addr, uint64_t *rip, size_t offset, uin
         if (inst_len <= offset)
             return (true);
     }
-    printf ("VADDR: %p, RIP: %p PVer: %d byte: %d\n", addr, rip, ptr_ver, offset);
+    m_ver = get_version(addr + offset);
+    printf ("VADDR: %p, RIP: %p PVer: %d, MVer: %d, byte: %d\n", addr, rip, ptr_ver, m_ver, offset);
 
     return (false);
 }

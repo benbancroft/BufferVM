@@ -4,11 +4,12 @@
 
 #include "../../libc/stdlib.h"
 #include "../h/stack.h"
-#include "../h/utils.h"
-#include "../h/vma.h"
+#include "../../common/utils.h"
+#include "../h/vma_heap.h"
 #include "../h/host.h"
 #include "../../common/paging.h"
 #include "../h/kernel.h"
+#include "../../common/vma.h"
 
 #define PF_PROT         (1<<0)
 #define PF_WRITE        (1<<1)

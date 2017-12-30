@@ -29,4 +29,13 @@ typedef struct rb_root {
 
 #define rb_parent(r)   ((rb_node_t *)((r)->__rb_parent_color & ~3))
 
+void rb_link_node(rb_node_t *, rb_node_t *, rb_node_t **);
+void rb_insert(rb_node_t *, rb_root_t *);
+rb_node_t *rb_erase(rb_node_t *, rb_root_t *);
+
+//VMA rbtree stubs
+void vma_rb_gap_propagate(rb_node_t *rb, rb_node_t *stop);
+void vma_rb_gap_rotate(rb_node_t *rb_old, rb_node_t *rb_new);
+void vma_rb_gap_copy(rb_node_t *rb_old, rb_node_t *rb_new);
+
 #endif //PROJECT_RBTREE_H
