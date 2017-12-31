@@ -2,6 +2,7 @@
 
     .section .text
     .global cpu_init
+    .global invlpg
 
 cpu_init:
     movw $0, %ax
@@ -14,4 +15,8 @@ cpu_init:
     movl $(MSR_GS_BASE), %ecx
     wrmsr
     movl $0, %gs:CPU_TMP_DCNTR
+    ret
+
+invlpg:
+    invlpg	(%rdi)
     ret

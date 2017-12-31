@@ -33,3 +33,11 @@ inline vm_area_t *vma_ptr(vm_area_t *vma) {
 inline rb_node_t *vma_rb_ptr(rb_node_t *vma) {
     return ((rb_node_t *) vma_heap_ptr(vma));
 }
+
+void unmap_vma(vm_area_t *vma) {
+    size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
+    printf("Unmapped Pages in range: %p to %p n %ld\n", (void *) vma->start_addr, (void *) vma->end_addr, pages);
+    for (size_t i = 0; i < pages; i++) {
+        unmap_physical_page(vma->start_addr + i * PAGE_SIZE, vm.mem);
+    }
+}

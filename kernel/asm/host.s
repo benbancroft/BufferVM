@@ -11,6 +11,7 @@
 .globl host_lseek
 .globl host_access
 .globl host_set_vma_heap
+.globl host_unmap_vma
 .globl host_writev
 .globl host_regs
 .globl allocate_pages
@@ -99,6 +100,11 @@ host_access:
 
 host_set_vma_heap:
     movq $0x12, %rax
+    hlt
+    ret
+
+host_unmap_vma:
+    movq $0x13, %rax
     hlt
     ret
 

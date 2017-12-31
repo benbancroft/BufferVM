@@ -39,4 +39,6 @@ int host_print_var(int64_t var);
 
 int host_set_vma_heap(uint64_t vma_heap_addr, vm_area_t **vma_list_start, rb_root_t *vma_rb_root);
 
+void host_unmap_vma(vm_area_t *vma);
+
 #endif //KERNEL_HOST_H

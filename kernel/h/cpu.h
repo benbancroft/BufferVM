@@ -41,4 +41,6 @@ extern cpu_t cpu_info;
 
 extern void cpu_init(void);
 
+extern void invlpg(uint64_t);
+
 #endif //PROJECT_CPU_H

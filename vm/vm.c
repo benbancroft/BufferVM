@@ -544,6 +544,9 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
                         vma_rb_root_ptr = (rb_root_t *)(vm->mem + phys);
                     }
                         break;
+                    case 19:
+                        unmap_vma(vma_ptr((vm_area_t *)regs.rdi));
+                        break;
                     case 7:
                         regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);
                         break;

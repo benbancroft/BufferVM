@@ -7,6 +7,7 @@
 #include "../../common/paging.h"
 #include "../../common/utils.h"
 #include "../h/host.h"
+#include "../h/cpu.h"
 
 inline vm_area_t *vma_ptr(vm_area_t *vma) {
     return (vma);
@@ -193,14 +194,20 @@ vma_unlink(vm_area_t *vma, vm_area_t *prev) {
         next->prev = prev;
 }
 
+static void unmap_vma(vm_area_t *vma) {
+    host_unmap_vma(vma);
+
+    size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
+    for (size_t i = 0; i < pages; i++){
+        invlpg(vma->start_addr+i*PAGE_SIZE);
+    }
+}
+
 static vm_area_t *vma_remove(vm_area_t *vma) {
     if (vma->file_info.fd != -1)
         host_close(vma->file_info.fd);
-    size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
-    printf("Unmapped Pages in range: %p to %p\n", vma->start_addr, vma->end_addr);
-    for (size_t i = 0; i < pages; i++){
-        unmap_physical_page(vma->start_addr+i*PAGE_SIZE, 0);
-    }
+
+    unmap_vma(vma);
     vma_free(vma);
     return vma->next;
 }

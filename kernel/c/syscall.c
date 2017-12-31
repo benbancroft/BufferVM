@@ -13,27 +13,6 @@
 
 uint64_t curr_brk;
 
-/* Syscall table and parameter info */
-void *syscall_table[SYSCALL_MAX];
-
-/* Register a syscall */
-void syscall_register(int num, void *fn)
-{
-    if (num >= 0 && num <= SYSCALL_MAX)
-    {
-        syscall_table[num] = fn;
-    }
-}
-
-/* Unregister a syscall */
-void syscall_unregister(int num)
-{
-    if (num >= 0 && num <= SYSCALL_MAX)
-    {
-        syscall_table[num] = NULL;
-    }
-}
-
 void syscall_read(uint32_t fd, const char* buf, size_t count){
     host_read(fd, buf, count);
 }
@@ -157,34 +136,33 @@ uint64_t syscall_brk(uint64_t brk){
     return curr_brk;
 }
 
+/* Syscall table and parameter info */
+
+void *syscall_table[SYSCALL_MAX] = {
+        [0 ... SYSCALL_MAX-1] = &syscall_null_handler,
+        [0] = &syscall_read,
+        [1] = &syscall_write,
+        [2] = &syscall_open,
+        [3] = &syscall_close,
+        [4] = &syscall_stat,
+        [5] = &syscall_fstat,
+        [9] = &syscall_mmap,
+        [10] = &syscall_mprotect,
+        [11] = &syscall_munmap,
+        [12] = &syscall_brk,
+        [16] = &syscall_ioctl,
+        [20] = &syscall_writev,
+        [21] = &syscall_access,
+        [60] = &syscall_exit,
+        [158] = &syscall_arch_prctl,
+        [231] = &syscall_exit_group,
+        [SYSCALL_MAX-1] = &get_version,
+        [SYSCALL_MAX-2] = &set_version
+};
+
 void syscall_init()
 {
     syscall_setup();
-
-    size_t i;
-    for (i = 0; i < SYSCALL_MAX; ++i) {
-        syscall_register(i, (uintptr_t) &syscall_null_handler);
-    }
-
-    syscall_register(0, (uintptr_t) &syscall_read);
-    syscall_register(1, (uintptr_t) &syscall_write);
-    syscall_register(2, (uintptr_t) &syscall_open);
-    syscall_register(3, (uintptr_t) &syscall_close);
-    syscall_register(4, (uintptr_t) &syscall_stat);
-    syscall_register(5, (uintptr_t) &syscall_fstat);
-    syscall_register(9, (uintptr_t) &syscall_mmap);
-    syscall_register(10, (uintptr_t) &syscall_mprotect);
-    syscall_register(11, (uintptr_t) &syscall_munmap);
-    syscall_register(12, (uintptr_t) &syscall_brk);
-    syscall_register(16, (uintptr_t) &syscall_ioctl);
-    syscall_register(20, (uintptr_t) &syscall_writev);
-    syscall_register(21, (uintptr_t) &syscall_access);
-    syscall_register(60, (uintptr_t) &syscall_exit);
-    syscall_register(158, (uintptr_t) &syscall_arch_prctl);
-    syscall_register(231, (uintptr_t) &syscall_exit_group);
-
-    syscall_register(SYSCALL_MAX, (uintptr_t) &get_version);
-    syscall_register(SYSCALL_MAX-1, (uintptr_t) &set_version);
 
     curr_brk = 0;
 }
