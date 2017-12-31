@@ -40,12 +40,12 @@ int syscall_ioctl(uint32_t fd, uint64_t request, void *argp){
     //return host_fstat(fd, stats);
 }
 
-int syscall_stat(const char *path, stat_t *stats){
+int syscall_stat(const char *path, vm_stat_t *stats){
     printf("syscall_stat path: %s\n", path);
     return host_stat(path, stats);
 }
 
-int syscall_fstat(uint32_t fd, stat_t *stats){
+int syscall_fstat(uint32_t fd, vm_stat_t *stats){
     printf("syscall_fstat fd: %d\n", fd);
     return host_fstat(fd, stats);
 }
@@ -54,7 +54,7 @@ int syscall_access(const char *pathname, int mode){
     return host_access(pathname, mode);
 }
 
-ssize_t syscall_writev(uint64_t fd, const iovec_t *vec, uint64_t vlen, int flags){
+ssize_t syscall_writev(uint64_t fd, const vm_iovec_t *vec, uint64_t vlen, int flags){
     return host_writev(fd, vec, vlen, flags);
 }
 

@@ -29,7 +29,7 @@ struct vm_area {
 
     //file page offset
     uint64_t page_offset;
-    file_t file_info;
+    vm_file_t file_info;
 };
 
 #define VMA_READ         0x00000001

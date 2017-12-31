@@ -54,31 +54,39 @@ extern uint32_t pt_start_addr;
 extern uint64_t page_counter;
 extern uint64_t pml4_addr;
 
-int read_virtual_cstr(uint64_t virtual_addr, char **buffer, char *mem_offset);
-int write_virtual_addr(uint64_t virtual_addr, char *source, size_t length, char *mem_offset);
-int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer, char *mem_offset);
+int read_virtual_cstr(uint64_t virtual_addr, char **buffer);
+
+int write_virtual_addr(uint64_t virtual_addr, char *source, size_t length);
+
+int read_virtual_addr(uint64_t virtual_addr, size_t size, void *buffer);
+
 uint64_t un_sign_extend(uint64_t addr);
+
 virt_addr_info_t get_virt_addr_info(uint64_t addr);
 
-int is_vpage_present(uint64_t virtual_addr, char *mem_offset);
-int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr, char *mem_offset);
+int is_vpage_present(uint64_t virtual_addr);
+
+int get_phys_addr(uint64_t virtual_addr, uint64_t *phys_addr);
+
 int get_page_entry(uint64_t *table, size_t index, uint64_t *page);
 
-void build_page_tables(char *mem_offset);
+void build_page_tables();
 
-int64_t allocate_pages(size_t num_pages, char *mem_offset, bool zero_page);
+int64_t allocate_pages(size_t num_pages, bool zero_page);
 
-uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t page, char *mem_offset);
-void unmap_page_entry(uint64_t *table, size_t index, char *mem_offset);
+uint64_t map_page_entry(uint64_t *table, size_t index, uint64_t flags, int64_t page);
 
-void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags, char *mem_offset);
+void unmap_page_entry(uint64_t *table, size_t index);
+
+void load_address_space(uint64_t start_addr, size_t mem_size, char *elf_seg_start, size_t elf_seg_size, uint64_t flags);
 
 #define MAP_CONTINUOUS 1
 #define MAP_NO_OVERWRITE (1 << 1)
 #define MAP_ZERO_PAGES (1 << 2)
 
 int64_t map_physical_pages(uint64_t virtual_page_addr, int64_t physical_page_addr, uint64_t page_prot, size_t num_pages,
-                           uint64_t flags, char *mem_offset);
-void unmap_physical_page(uint64_t virtual_page_addr, char *mem_offset);
+                           uint64_t flags);
+
+void unmap_physical_page(uint64_t virtual_page_addr);
 
 #endif //BUFFERVM_PAGING_H

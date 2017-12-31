@@ -93,7 +93,7 @@ typedef struct elf_info {
     uint64_t phdr_num;
 } elf_info_t;
 
-int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only, char *mem_offset);
+int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only);
 int read_binary(char *name);
 
 #endif //COMMON_ELF_H

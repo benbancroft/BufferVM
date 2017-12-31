@@ -24,6 +24,7 @@
 #include "../common/elf.h"
 #include "../common/syscall.h"
 #include "vma.h"
+#include "host.h"
 
 extern const unsigned char bootstrap[], bootstrap_end[];
 
@@ -125,12 +126,10 @@ static void setup_long_mode(struct vm_t *vm, struct kvm_sregs *sregs) {
     build_page_tables(vm->mem);
 
     //Page for bootstrap
-    map_physical_pages(0x0000, 0x0000, PDE64_WRITEABLE | PDE64_USER, 1, 0, vm->mem);
+    map_physical_pages(0x0000, 0x0000, PDE64_WRITEABLE | PDE64_USER, 1, 0);
     //Page for gdt
-    int64_t gdt_page = map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE | PDE64_USER, 1, 0, vm->mem);
+    int64_t gdt_page = map_physical_pages(0x1000, 0x1000, PDE64_WRITEABLE | PDE64_USER, 1, 0);
     printf("GDT page %" PRIx64 "\n", gdt_page);
-
-    //map_physical_pages(0xDEADB000, allocate_pages(1, vm->mem, false), PDE64_WRITEABLE, 1, false, vm->mem);
 
     sregs->cr0 |= CR0_PE; /* enter protected mode */
     sregs->gdt.base = gdt_page;
@@ -228,7 +227,7 @@ static uint64_t setup_kernel_tss(struct vm_t *vm, struct kvm_sregs *sregs, uint6
 
     size_t i = 0;
     for (uint64_t p = tss_start; i < 3; p += PAGE_SIZE, i++) {
-        map_physical_pages(p, -1, PDE64_WRITEABLE, 1, 0, vm->mem);
+        map_physical_pages(p, -1, PDE64_WRITEABLE, 1, 0);
     }
 
     return (tss_start);
@@ -276,18 +275,19 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
 
     setup_long_mode(vm, &sregs);
 
-    load_elf_binary(kernel_binary_fd, NULL, &kernel_elf_info, true, vm->mem);
+    load_elf_binary(kernel_binary_fd, NULL, &kernel_elf_info, true);
     printf("Entry point kernel: %p\n", kernel_elf_info.entry_addr);
 
     //allocate 20 stack pages for kernel stack
     ksp = kernel_elf_info.min_page_addr;
-    for (p = ksp - PAGE_SIZE; i < 20; p -= PAGE_SIZE, i++) {
-        map_physical_pages(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, 0, vm->mem);
+    for (p = ksp - PAGE_SIZE, i = 0; i < 20; p -= PAGE_SIZE, i++) {
+        map_physical_pages(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE | PDE64_USER, 1, 0);
     }
+
+    //TODO - add protection for writing argv/envp off the end of the kernel's stack
 
     //copy user binary location to top of stack
     ksp_max = ksp;
-
 
     //Put argv and envp onto kernel stack
 
@@ -297,7 +297,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
         arg_size = strlen(argv[i]) + 1;
         ksp -= arg_size;
         kernel_argv[i] = (char *)ksp;
-        if (!write_virtual_addr(ksp, argv[i], arg_size, vm->mem))
+        if (!write_virtual_addr(ksp, argv[i], arg_size))
         {
             perror("Error writing argv value.");
             exit(1);
@@ -311,7 +311,7 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
         arg_size = strlen(envp[i]) + 1;
         ksp -= arg_size;
         kernel_envp[i] = (char *)ksp;
-        if (!write_virtual_addr(ksp, envp[i], arg_size, vm->mem))
+        if (!write_virtual_addr(ksp, envp[i], arg_size))
         {
             perror("Error writing envp value.");
             exit(1);
@@ -324,12 +324,12 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
     //argv pointers
     ksp -= sizeof (kernel_argv);
     argv_start = ksp;
-    write_virtual_addr(argv_start, (char *)kernel_argv, sizeof (kernel_argv), vm->mem);
+    write_virtual_addr(argv_start, (char *)kernel_argv, sizeof (kernel_argv));
 
     //envp pointers
     ksp -= sizeof (kernel_envp);
     envp_start = ksp;
-    write_virtual_addr(envp_start, (char *)kernel_envp, sizeof (kernel_envp), vm->mem);
+    write_virtual_addr(envp_start, (char *)kernel_envp, sizeof (kernel_envp));
 
     tss_start = setup_kernel_tss(vm, &sregs, p);
 
@@ -406,160 +406,10 @@ void run(struct vm_t *vm, struct vcpu_t *vcpu, int kernel_binary_fd, int argc, c
                     exit(1);
                 }
 
-                //add page table mapping in future
                 //check for interupt
 
-                switch (regs.rax) {
-                    //Exit
-                    case 0: {
-                        printf("Exit hostcall\n");
-
-                        vma_print();
-
-                        vma_print_node(vma_find(0x400005), false);
-
-                        char buffer[0x1000];
-                        uint64_t number;
-                        //printf("Size: %s %d\n", buffer, regs.rdx);
-                        if (read_virtual_addr(0xDEADB000, 0x1000, buffer, vm->mem)) {
-                            memcpy(&number, buffer + 0xEEF, sizeof(uint64_t));
-                            printf("0xDEADBEEF val: %" PRIu64 "\n", number);
-                        }
-
-                        return;
-                    }
-                    case 1: {
-                        char buffer[regs.rdx];
-                        //printf("Size: %s %d\n", buffer, regs.rdx);
-                        if (read_virtual_addr(regs.rsi, regs.rdx, buffer, vm->mem)) {
-                            regs.rax = write(regs.rdi, buffer, regs.rdx);
-                        } else {
-                            printf("Failed to write - Un-paged buffer?\n");
-                        }
-                    }
-                        break;
-                    case 2: {
-                        char buffer[regs.rdx];
-                        regs.rax = read(regs.rdi, buffer, regs.rdx);
-                        if (!write_virtual_addr(regs.rsi, buffer, regs.rdx, vm->mem))
-                            regs.rax = -1;
-                    }
-                        break;
-                    case 3: {
-                        char *buffer;
-                        if (read_virtual_cstr(regs.rdi, &buffer, vm->mem)) {
-                            regs.rax = open(buffer, (int32_t) regs.rsi, (uint16_t) regs.rdx);
-                            free(buffer);
-                        } else {
-                            printf("Failed to write - Un-paged buffer?\n");
-                        }
-                    }
-                        break;
-                    case 4:
-                        regs.rax = close((int) regs.rdi);
-                        break;
-                    case 10:
-                        regs.rax = dup((int) regs.rdi);
-                        break;
-                    case 11: {
-                        struct stat stats;
-                        regs.rax = fstat((int) regs.rdi, &stats);
-                        if (!write_virtual_addr(regs.rsi, (char *) &stats, sizeof(stats), vm->mem))
-                            regs.rax = -1;
-                    }
-                        break;
-                    case 12: {
-                        regs.rax =
-                                ((uint64_t) mmap(vm->mem + regs.rdi, regs.rsi, regs.rdx, regs.rcx, regs.r8, regs.r9)) -
-                                (uint64_t) vm->mem;
-                    }
-                        break;
-                    case 13:
-                        regs.rax = lseek(regs.rdi, regs.rsi, regs.rdx);
-                        break;
-                    case 5:
-                        regs.rax = allocate_pages(regs.rdi, vm->mem, regs.rdx == 1);
-                        break;
-                    case 6:
-                        regs.rax = map_physical_pages(regs.rdi, regs.rsi, regs.rdx, regs.rcx, regs.r8, vm->mem);
-                        break;
-                    case 14:
-                        unmap_physical_page(regs.rdi, vm->mem);
-                        break;
-                    case 15: {
-                        struct iovec vectors[regs.rdx];
-                        struct iovec *vec;
-                        void *vecbuf;
-                        size_t ret = 0;
-
-                        if (read_virtual_addr(regs.rsi, regs.rdx * sizeof(struct iovec), vectors, vm->mem)) {
-                            for (size_t i = 0; i < regs.rdx; i++) {
-                                vec = &vectors[i];
-
-                                vecbuf = malloc(vec->iov_len);
-                                if (!read_virtual_addr((uint64_t) vec->iov_base, vec->iov_len, vecbuf, vm->mem)) {
-                                    ret = -EFAULT;
-                                    break;
-                                }
-                                vec->iov_base = vecbuf;
-                            }
-                            if (!IS_ERR_VALUE(ret)) {
-                                ret = writev(regs.rdi, vectors, regs.rdx);
-                                for (size_t i = 0; i < regs.rdx; i++) {
-                                    vec = &vectors[i];
-                                    free(vec->iov_base);
-                                }
-                            }
-
-                        } else
-                            ret = -EFAULT;
-                        regs.rax = ret;
-                    }
-                        break;
-                    case 17: {
-                        struct stat stats;
-                        char *file;
-                        if (read_virtual_cstr(regs.rdi, &file, vm->mem)) {
-                            regs.rax = stat(file, &stats);
-                            free(file);
-                            if (!write_virtual_addr(regs.rsi, (char *) &stats, sizeof(stats), vm->mem))
-                                regs.rax = -1;
-                        } else
-                            regs.rax = -1;
-                    }
-                        break;
-                    case 16:
-                        regs.rax = access((char *) regs.rdi, regs.rsi);
-                        break;
-                    case 18: {
-                        uint64_t phys;
-                        regs.rax = 0;
-
-                        vma_heap_addr = regs.rdi;
-
-                        if (!get_phys_addr(regs.rsi, &phys, vm->mem)) return;
-                        vma_list_start_ptr = (vm_area_t **)(vm->mem + phys);
-
-                        if (!get_phys_addr(regs.rdx, &phys, vm->mem)) return;
-                        vma_rb_root_ptr = (rb_root_t *)(vm->mem + phys);
-                    }
-                        break;
-                    case 19:
-                        unmap_vma(vma_ptr((vm_area_t *)regs.rdi));
-                        break;
-                    case 7:
-                        regs.rax = (uint64_t)is_vpage_present(regs.rdi, vm->mem);
-                        break;
-                    case 8:
-                        printf("RAX: %llu, RDI %llu, RSI %llu\n", regs.rax, regs.rdi, regs.rsi);
-                        break;
-                    case 9:
-                        printf("Host var: %" PRIx64 "\n", (int64_t)regs.rdi);
-                        break;
-                    default:
-                        printf("Unsupported hostcall %" PRIu64 "\n", (uint64_t) regs.rax);
-                        return;
-
+                if (handle_host_call(&regs)) {
+                    return;
                 }
 
                 if (ioctl(vcpu->fd, KVM_SET_REGS, &regs) < 0) {

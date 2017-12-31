@@ -52,7 +52,7 @@ void vma_init(size_t max_entries) {
     vma_heap_head = (void *) PAGE_ALIGN_DOWN(kernel_min_address - vma_max_num);
 
     map_physical_pages((uint64_t) vma_heap_head, -1, PDE64_NO_EXE | PDE64_WRITEABLE,
-                       PAGE_DIFFERENCE(kernel_min_address, (uint64_t) vma_heap_head), MAP_CONTINUOUS, 0);
+                       PAGE_DIFFERENCE(kernel_min_address, (uint64_t) vma_heap_head), MAP_CONTINUOUS);
 
     kernel_min_address = vma_heap_addr = (uint64_t) vma_heap_head;
 
@@ -74,7 +74,7 @@ vm_area_t *vma_alloc() {
 
         if (PAGE_ALIGN_DOWN(old_head) != PAGE_ALIGN_DOWN(new_head)) {
             for (uint64_t p = PAGE_ALIGN_DOWN(old_head) + PAGE_SIZE; p <= PAGE_ALIGN_DOWN(new_head); p += PAGE_SIZE) {
-                map_physical_pages(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE, 1, 0, 0);
+                map_physical_pages(p, -1, PDE64_NO_EXE | PDE64_WRITEABLE, 1, 0);
             }
         }
 
@@ -117,7 +117,7 @@ int64_t vma_fault(vm_area_t *vma, bool continuous) {
     phys_addr = map_physical_pages(vma->start_addr,
                                    -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER,
                                    PAGE_DIFFERENCE(vma->end_addr, vma->start_addr),
-                                   MAP_CONTINUOUS, 0);
+                                   MAP_CONTINUOUS);
 
     return phys_addr;
 }

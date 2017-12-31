@@ -310,7 +310,7 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
     return 0;
 }
 
-static inline int vma_can_merge(vm_area_t *vma, file_t *file_info, uint64_t vm_flags) {
+static inline int vma_can_merge(vm_area_t *vma, vm_file_t *file_info, uint64_t vm_flags) {
     //TODO - check this covers everything
     // will need to add a check with fcntl F_GETFL to heuristically test if open flags are the same for the fd
     if (vma->file_info.dev != file_info->dev || vma->file_info.inode != file_info->inode)
@@ -320,7 +320,7 @@ static inline int vma_can_merge(vm_area_t *vma, file_t *file_info, uint64_t vm_f
 
 
 static int
-can_vma_merge_before(vm_area_t *vma, uint64_t vm_flags, file_t *file_info, uint64_t vm_pgoff) {
+can_vma_merge_before(vm_area_t *vma, uint64_t vm_flags, vm_file_t *file_info, uint64_t vm_pgoff) {
     if (vma_can_merge(vma, file_info, vm_flags)) {
         if (vma->page_offset == vm_pgoff)
             return 1;
@@ -329,7 +329,7 @@ can_vma_merge_before(vm_area_t *vma, uint64_t vm_flags, file_t *file_info, uint6
 }
 
 static int
-can_vma_merge_after(vm_area_t *vma, uint64_t vm_flags, file_t *file_info, uint64_t vm_pgoff) {
+can_vma_merge_after(vm_area_t *vma, uint64_t vm_flags, vm_file_t *file_info, uint64_t vm_pgoff) {
     if (vma_can_merge(vma, file_info, vm_flags)) {
         uint64_t vm_pglen;
         vm_pglen = file_info->fd != -1 ? PAGE_DIFFERENCE(vma->end_addr, vma->start_addr) : 0;
@@ -340,7 +340,7 @@ can_vma_merge_after(vm_area_t *vma, uint64_t vm_flags, file_t *file_info, uint64
 }
 
 vm_area_t *
-vma_merge(vm_area_t *prev, uint64_t addr, uint64_t end, uint64_t vm_flags, file_t *file_info, uint64_t pgoff) {
+vma_merge(vm_area_t *prev, uint64_t addr, uint64_t end, uint64_t vm_flags, vm_file_t *file_info, uint64_t pgoff) {
     uint64_t pglen = file_info->fd != -1 ? PAGE_DIFFERENCE(end, addr) : 0;
     vm_area_t *area, *next;
     int err;

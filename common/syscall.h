@@ -5,32 +5,32 @@
 #ifndef COMMON_SYSCALL_H
 #define COMMON_SYSCALL_H
 
+#include <stddef.h>
+
 #include "syscall_as.h"
 
 #define MAX_ERRNO	4095
 #define IS_ERR_VALUE(x) ((x) >= (unsigned long)-MAX_ERRNO)
 
-typedef struct file {
+typedef struct vm_file {
     int fd;
     uint64_t dev;
     uint64_t inode;
-} file_t;
+} vm_file_t;
 
-#ifndef VM
-
-typedef struct iovec
+typedef struct vm_iovec
 {
     void *iov_base;	/* BSD uses caddr_t (1003.1g requires void *) */
     size_t iov_len; /* Must be size_t (1003.1g) */
-} iovec_t;
+} vm_iovec_t;
 
-typedef struct timespec
+typedef struct vm_timespec
 {
     int64_t tv_sec;		/* Seconds.  */
     int64_t tv_nsec;	/* Nanoseconds.  */
-} timespec_t;
+} vm_timespec_t;
 
-typedef struct stat {
+typedef struct vm_stat {
     uint64_t  st_dev;     /* ID of device containing file */
     uint64_t  st_ino;     /* inode number */
     uint64_t  st_nlink;   /* number of hard links */
@@ -42,10 +42,12 @@ typedef struct stat {
     int64_t    st_size;    /* total size, in bytes */
     int64_t st_blksize; /* blocksize for file system I/O */
     int64_t  st_blocks;  /* number of 512B blocks allocated */
-    timespec_t    st_atime;   /* time of last access */
-    timespec_t    st_mtime;   /* time of last modification */
-    timespec_t    st_ctime;   /* time of last status change */
-} stat_t;
+    vm_timespec_t    st_vm_atime;   /* time of last access */
+    vm_timespec_t    st_vm_mtime;   /* time of last modification */
+    vm_timespec_t    st_vm_ctime;   /* time of last status change */
+} vm_stat_t;
+
+#ifndef VM
 
 //arch_prctl
 

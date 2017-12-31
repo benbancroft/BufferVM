@@ -17,7 +17,7 @@
 #define PF_RSVD         (1<<3)
 #define PF_INSTR        (1<<4)
 
-void handle_segfault(uint64_t addr, uint64_t rip){
+void handle_segfault(uint64_t addr, uint64_t rip) {
 
     vma_print();
 
@@ -27,7 +27,7 @@ void handle_segfault(uint64_t addr, uint64_t rip){
     host_exit();
 }
 
-int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
+int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip) {
 
     vm_area_t *vma;
 
@@ -48,42 +48,42 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip){
 
     printf("page fault at %p error: %d rip %p\n", addr, error_code, rip);
 
-    if (!(error_code & PF_PROT)){
+    if (!(error_code & PF_PROT)) {
 
         vma = vma_find(addr);
 
-        if (!vma){
+        if (!vma) {
             printf("1\n");
             goto seg_fault;
         }
 
-        if (vma->start_addr <= addr){
+        if (vma->start_addr <= addr) {
             goto handle_paging;
         }
 
-        if (!(vma->flags & VMA_GROWS)){
+        if (!(vma->flags & VMA_GROWS)) {
             printf("2 %p %p %p\n", vma->start_addr, vma->end_addr, addr);
             goto seg_fault;
         }
 
-        if (grow_stack(vma, addr)){
+        if (grow_stack(vma, addr)) {
             printf("3\n");
             goto seg_fault;
         }
 
-    handle_paging:
+        handle_paging:
         ASSERT(!(vma->flags & VMA_IS_PREFAULTED));
         printf("loading page at addr: %p\n", addr);
         map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->page_prot),
-                           1, 0, 0);
+                           1, 0);
         if (vma->page_prot & VMA_IS_VERSIONED)
             map_physical_pages(user_version_start + PAGE_ALIGN_DOWN(addr), -1, PDE64_NO_EXE | PDE64_WRITEABLE,
-                               1, MAP_ZERO_PAGES | MAP_NO_OVERWRITE, 0);
+                               1, MAP_ZERO_PAGES | MAP_NO_OVERWRITE);
         return 1;
     }
     printf("4\n");
 
-seg_fault:
+    seg_fault:
     handle_segfault(addr, rip);
     return 0;
 }

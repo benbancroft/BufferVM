@@ -18,7 +18,7 @@ int vma_find_links(uint64_t,
                    rb_node_t ***, rb_node_t **);
 
 vm_area_t *
-vma_merge(vm_area_t *, uint64_t, uint64_t, uint64_t, file_t *, uint64_t);
+vma_merge(vm_area_t *, uint64_t, uint64_t, uint64_t, vm_file_t *, uint64_t);
 
 void detach_vmas_to_be_unmapped(vm_area_t *, vm_area_t *, uint64_t);
 

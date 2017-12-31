@@ -196,12 +196,12 @@ int syscall_munmap(uint64_t addr, size_t length) {
 }
 
 uint64_t
-mmap_region(file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flags, uint64_t vma_prot, uint64_t offset,
+mmap_region(vm_file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_flags, uint64_t vma_prot, uint64_t offset,
             vm_area_t **vma_out) {
 
     vm_area_t *vma, *prev, *next;
     rb_node_t **rb_link, *rb_parent;
-    file_t null_file_info = {-1, -1, -1};
+    vm_file_t null_file_info = {-1, -1, -1};
 
     if (file_info == NULL)
         file_info = &null_file_info;
@@ -275,7 +275,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     uint64_t host_mmap_ret;
     uint64_t vma_flags = 0;
     uint64_t vma_prot = 0;
-    file_t file_info = {-1, -1, -1};
+    vm_file_t file_info = {-1, -1, -1};
     int64_t org_length = length;
 
     if (offset & ~PAGE_MASK)
@@ -301,7 +301,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
         //ASSERT(!IS_ERR_VALUE(fd));
 
-        stat_t stats;
+        vm_stat_t stats;
         host_fstat(fd, &stats);
 
         //store inode for comparison later

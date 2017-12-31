@@ -23,15 +23,16 @@ uint64_t kernel_stack;
 uint64_t user_heap_start;
 uint64_t user_version_start;
 
-void xed_user_abort_function(const char *msg, const char *file, int line, void *other){
+void xed_user_abort_function(const char *msg, const char *file, int line, void *other) {
     printf("abort thing needs writing!\n");
     host_exit();
 }
-void *stack_alloc(uint64_t *sp, size_t  length){
+
+void *stack_alloc(uint64_t *sp, size_t length) {
     *sp -= length;
     //grow_stack(user_stack_vma, *sp);
 
-    return (void*)*sp;
+    return (void *) *sp;
 }
 
 uint64_t stack_round(uint64_t *sp) {
@@ -40,8 +41,8 @@ uint64_t stack_round(uint64_t *sp) {
 
 #define MAX_ENTRIES 10
 
-void new_aux_entry(uint64_t *entries, uint64_t *num_entries, uint64_t id, uint64_t value){
-    if (*num_entries+2 > MAX_ENTRIES*2){
+void new_aux_entry(uint64_t *entries, uint64_t *num_entries, uint64_t id, uint64_t value) {
+    if (*num_entries + 2 > MAX_ENTRIES * 2) {
         printf("AUX entry table is full.\n");
         return;
     }
@@ -49,23 +50,24 @@ void new_aux_entry(uint64_t *entries, uint64_t *num_entries, uint64_t id, uint64
     entries[(*num_entries)++] = value;
 }
 
-void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_start, int argc, char *argv[], char *envp[]) {
+void
+kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_start, int argc, char *argv[], char *envp[]) {
 
     kernel_min_address = _tss_start;
     kernel_stack = _kernel_stack_max;
-    tss = (tss_entry_t*)_tss_start;
+    tss = (tss_entry_t *) _tss_start;
 
     //TODO - add some assert mechanism to see if enough space (will this be needed?)
 
     uint64_t gdt_page = kernel_min_address - PAGE_SIZE;
-    map_physical_pages(gdt_page, 0x1000, PDE64_WRITEABLE, 1, true, 0);
+    map_physical_pages(gdt_page, 0x1000, PDE64_WRITEABLE, 1, true);
     kernel_min_address = gdt_page;
 
     gdt_init(gdt_page);
 
     //unmap bootstrap and original gdt mapping
-    unmap_physical_page(0x0000, 0);
-    unmap_physical_page(0x1000, 0);
+    unmap_physical_page(0x0000);
+    unmap_physical_page(0x1000);
 
     cpu_init();
     tss_init(kernel_stack);
@@ -74,7 +76,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_s
 
     vma_init(1000);
 
-    kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2*PAGE_SIZE) / 2;
+    kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2 * PAGE_SIZE) / 2;
 
     user_stack_init(user_version_start, 16000);
 
@@ -94,7 +96,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_s
     elf_info_t user_elf_info;
     void *elf_entry;
     int user_bin_fd = read_binary(argv[0]);
-    load_elf_binary(user_bin_fd, &elf_entry, &user_elf_info, false, 0);
+    load_elf_binary(user_bin_fd, &elf_entry, &user_elf_info, false);
     host_close(user_bin_fd);
     user_heap_start = user_elf_info.max_page_addr;
 
@@ -117,7 +119,7 @@ void kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_s
     load_user_land(user_stack_start, elf_entry, &user_elf_info, argc, argv, envp);
 }
 
-void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, int argc, char *argv[], char *envp[]){
+void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, int argc, char *argv[], char *envp[]) {
 
     char *arg;
     size_t items, arg_size;
@@ -132,7 +134,7 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, in
     char **envp_copy = envp;
     int envc = 0;
 
-    while(*envp_copy++)
+    while (*envp_copy++)
         envc++;
 
     uint64_t *user_argv[argc];
@@ -141,22 +143,20 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, in
     //Put argv and envp onto user stack
 
     //argv
-    for (int i = argc - 1; i >= 0; i--)
-    {
+    for (int i = argc - 1; i >= 0; i--) {
         arg_size = strlen(argv[i]) + 1;
         arg = stack_alloc(&esp, arg_size);
-        user_argv[i] = (uint64_t *)arg;
+        user_argv[i] = (uint64_t *) arg;
         argv_array_size += arg_size;
     }
 
     argv_array_start = esp;
 
     //envp
-    for (int i = envc - 1; i >= 0; i--)
-    {
+    for (int i = envc - 1; i >= 0; i--) {
         arg_size = strlen(envp[i]) + 1;
         arg = stack_alloc(&esp, arg_size);
-        user_envp[i] = (uint64_t *)arg;
+        user_envp[i] = (uint64_t *) arg;
         envp_array_size += arg_size;
     }
 
@@ -168,16 +168,16 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, in
     char *random_bytes = stack_alloc(&esp, 16);
 
     uint64_t num_entries = 0;
-    uint64_t entries[MAX_ENTRIES*2];
+    uint64_t entries[MAX_ENTRIES * 2];
 
-    new_aux_entry(entries, &num_entries, AT_ENTRY, (uint64_t)user_elf_info->entry_addr);
+    new_aux_entry(entries, &num_entries, AT_ENTRY, (uint64_t) user_elf_info->entry_addr);
     new_aux_entry(entries, &num_entries, AT_FLAGS, 0);
     new_aux_entry(entries, &num_entries, AT_BASE, user_elf_info->base_addr);
     new_aux_entry(entries, &num_entries, AT_PHNUM, user_elf_info->phdr_num);
     new_aux_entry(entries, &num_entries, AT_PHENT, sizeof(elf64_phdr_t));
-    new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t)user_elf_info->load_addr + user_elf_info->phdr_off);
+    new_aux_entry(entries, &num_entries, AT_PHDR, (uint64_t) user_elf_info->load_addr + user_elf_info->phdr_off);
     new_aux_entry(entries, &num_entries, AT_PAGESZ, PAGE_SIZE);
-    new_aux_entry(entries, &num_entries, AT_RANDOM, (uint64_t)random_bytes);
+    new_aux_entry(entries, &num_entries, AT_RANDOM, (uint64_t) random_bytes);
     //new_aux_entry(entries, &num_entries, AT_HWCAP, 0);
     //new_aux_entry(entries, &num_entries, AT_HWCAP2, 0);
 
@@ -187,9 +187,9 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, in
     //argv 0..n
     //argc
 
-    stack_alloc(&esp, (num_entries + 2) * sizeof (uint64_t));
+    stack_alloc(&esp, (num_entries + 2) * sizeof(uint64_t));
 
-    items = ((argc + 1) + (envc + 1) + 1) * sizeof (uint64_t);
+    items = ((argc + 1) + (envc + 1) + 1) * sizeof(uint64_t);
     stack_alloc(&esp, items);
     stack_round(&esp);
 
@@ -200,40 +200,40 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, in
 
     //now we can copy stack arguments into faulted memory
 
-    memcpy((void *)argv_array_start, *argv, argv_array_size);
-    memcpy((void *)envp_array_start, *envp, envp_array_size);
+    memcpy((void *) argv_array_start, *argv, argv_array_size);
+    memcpy((void *) envp_array_start, *envp, envp_array_size);
 
     //now work up the stack, copying the dynamic linkers arguments
-    usp = (uint64_t *)esp;
+    usp = (uint64_t *) esp;
 
     //argc onto top of aligned stack
     *(usp++) = argc;
 
     //write argv
-    memcpy(usp, user_argv, sizeof (user_argv));
-    usp += sizeof (user_argv) / sizeof (uint64_t);
+    memcpy(usp, user_argv, sizeof(user_argv));
+    usp += sizeof(user_argv) / sizeof(uint64_t);
 
     //null 64-bit before envp
     *(usp++) = 0;
 
     //write envp
-    memcpy(usp, user_envp, sizeof (user_envp));
-    usp += sizeof (user_envp) / sizeof (uint64_t);
+    memcpy(usp, user_envp, sizeof(user_envp));
+    usp += sizeof(user_envp) / sizeof(uint64_t);
 
     //null 64-bit after envp
     *(usp++) = 0;
 
-    for (size_t i = 0; i < num_entries; i++){
+    for (size_t i = 0; i < num_entries; i++) {
         *(usp++) = entries[i];
     }
 
     //null aux entry
-    memset(usp, 0, 2 * sizeof (uint64_t));
+    memset(usp, 0, 2 * sizeof(uint64_t));
 
     printf("\n-------------------\nINITIALISED USERLAND\n-------------------\n\n");
 
     printf("User entry %p, stack %p\n", elf_entry, esp);
-    disassemble_address((uint64_t)elf_entry, 5);
+    disassemble_address((uint64_t) elf_entry, 5);
 
     printf("\n-------------------\nENTERING USERLAND\n-------------------\n\n");
 

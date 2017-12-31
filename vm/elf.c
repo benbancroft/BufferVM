@@ -15,7 +15,7 @@
 #include "../common/elf.h"
 #include "../common/paging.h"
 
-int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only, char *mem_offset) {
+int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_only) {
     Elf *e;
     size_t n;
     GElf_Ehdr ehdr;
@@ -77,7 +77,7 @@ int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_on
         if (!(phdr.p_flags & PF_X))
             flags |= PDE64_NO_EXE;
 
-        load_address_space(taddr, phdr.p_memsz, (char *) start, phdr.p_filesz, flags, mem_offset);
+        load_address_space(taddr, phdr.p_memsz, (char *) start, phdr.p_filesz, flags);
 
         section_max_addr = taddr + phdr.p_memsz;
 
@@ -87,7 +87,8 @@ int load_elf_binary(int fd, void **elf_entry, elf_info_t *elf_info, bool load_on
         if (section_max_addr > max_addr)
             max_addr = section_max_addr;
 
-        printf("Loaded header at %p of size: %" PRIx64 " at file offset: %" PRIu64 "\n", (void *) taddr, (uint64_t) phdr.p_memsz, (uint64_t) phdr.p_offset);
+        printf("Loaded header at %p of size: %" PRIx64 " at file offset: %" PRIu64 "\n", (void *) taddr,
+               (uint64_t) phdr.p_memsz, (uint64_t) phdr.p_offset);
     }
 
     // Align to page size

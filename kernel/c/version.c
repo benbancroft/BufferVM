@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 
+#include "../h/host.h"
 #include "../../libc/version.h"
 #include "../../common/version.h"
 #include "../h/kernel.h"
@@ -15,28 +16,28 @@ bool on_same_page(void *addr1, void *addr2) {
 }
 
 void *set_version(uint64_t *addr, size_t length, uint64_t version) {
-    uint8_t *version_buf = (uint8_t *)user_version_start + (uint64_t)normalise_version_ptr(addr);
+    uint8_t *version_buf = (uint8_t *) user_version_start + (uint64_t) normalise_version_ptr(addr);
 
-    uint64_t start_page = PAGE_ALIGN_DOWN((uint64_t)version_buf);
-    uint64_t end_page = PAGE_ALIGN_DOWN((uint64_t)version_buf+length);
+    uint64_t start_page = PAGE_ALIGN_DOWN((uint64_t) version_buf);
+    uint64_t end_page = PAGE_ALIGN_DOWN((uint64_t) version_buf + length);
     size_t pages = PAGE_DIFFERENCE(end_page, start_page);
 
     map_physical_pages(start_page, -1, PDE64_NO_EXE | PDE64_WRITEABLE,
-                       pages, MAP_ZERO_PAGES | MAP_NO_OVERWRITE, 0);
+                       pages, MAP_ZERO_PAGES | MAP_NO_OVERWRITE);
 
     for (size_t i = 0; i < length; i++)
-        version_buf[i] = (uint8_t)version;
+        version_buf[i] = (uint8_t) version;
 
     return set_version_ptr(version, addr);
 }
 
 uint8_t get_version(uint64_t *addr) {
-    uint8_t *version_buf = (uint8_t *)user_version_start + (uint64_t)normalise_version_ptr(addr);
+    uint8_t *version_buf = (uint8_t *) user_version_start + (uint64_t) normalise_version_ptr(addr);
 
-    uint64_t start_page = PAGE_ALIGN_DOWN((uint64_t)version_buf);
+    uint64_t start_page = PAGE_ALIGN_DOWN((uint64_t) version_buf);
 
     map_physical_pages(start_page, -1, PDE64_NO_EXE | PDE64_WRITEABLE,
-                       1, MAP_ZERO_PAGES | MAP_NO_OVERWRITE, 0);
+                       1, MAP_ZERO_PAGES | MAP_NO_OVERWRITE);
 
     return (*version_buf);
 }
@@ -60,7 +61,7 @@ bool check_version_instruction(uint64_t *addr, uint64_t *rip, size_t offset, uin
             return (true);
     }
     m_ver = get_version(addr + offset);
-    printf ("VADDR: %p, RIP: %p PVer: %d, MVer: %d, byte: %d\n", addr, rip, ptr_ver, m_ver, offset);
+    printf("VADDR: %p, RIP: %p PVer: %d, MVer: %d, byte: %d\n", addr, rip, ptr_ver, m_ver, offset);
 
     return (false);
 }
@@ -70,14 +71,13 @@ bool check_version(void *addr, uint64_t *rip) {
     //printf("Checking version of VA %p at RIP: %p\n", addr, rip);
     uint64_t ptr_ver = get_version_ptr(addr);
     void *norm_addr = normalise_version_ptr(addr);
-    for (size_t i = 0; i < 10; i++){
-        void *off_ptr_nor = normalise_version_ptr(addr+i);
-        if (!on_same_page(norm_addr, off_ptr_nor) && is_vpage_present((uint64_t)off_ptr_nor, NULL)){
+    for (size_t i = 0; i < 10; i++) {
+        void *off_ptr_nor = normalise_version_ptr(addr + i);
+        if (!on_same_page(norm_addr, off_ptr_nor) && is_vpage_present((uint64_t) off_ptr_nor)) {
             //check to see if rip size was bigger than i
             //if so, this would have likely failed on execution, but we caught it here
             return check_version_instruction(addr, rip, i, ptr_ver);
-        }
-        else if (get_version(addr+i) != ptr_ver){
+        } else if (get_version(addr + i) != ptr_ver) {
             return check_version_instruction(addr, rip, i, ptr_ver);
         }
     }
