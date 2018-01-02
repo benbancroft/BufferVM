@@ -2,7 +2,9 @@
 // Created by ben on 29/12/16.
 //
 
-#include "../../libc/stdlib.h"
+#include <stdlib.h>
+#include <string.h>
+
 #include "../h/vma_heap.h"
 #include "../../common/utils.h"
 #include "../h/kernel.h"

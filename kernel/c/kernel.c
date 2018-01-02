@@ -2,6 +2,8 @@
 // Created by ben on 13/10/16.
 //
 
+#include <string.h>
+
 #include "../h/cpu.h"
 #include "../h/idt.h"
 #include "../h/tss.h"

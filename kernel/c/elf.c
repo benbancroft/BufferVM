@@ -2,6 +2,8 @@
 // Created by ben on 03/01/17.
 //
 
+#include <string.h>
+
 #include "../h/host.h"
 #include "../h/syscall.h"
 #include "../../common/elf.h"

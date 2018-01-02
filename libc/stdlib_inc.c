@@ -67,16 +67,18 @@ size_t strlen(const char *str) {
     return str - ptr;
 }
 
-char *strncat(char *s1, char *s2, int n) {
+char *strncat(char *s1, const char *s2, size_t n) {
     char *os1 = s1;
 
     while (*s1++);
     --s1;
     while (*s1++ = *s2++)
-        if (--n < 0) {
+        if (n == 0) {
             *--s1 = '\0';
             break;
-        }
+        } else {
+		n--;
+	}
     return (os1);
 }
 
@@ -109,11 +111,12 @@ char *convert(int64_t num, size_t base) {
 }
 
 
-void printf(char *format, ...) {
+int printf(char *format, ...) {
     char *traverse, *start;
     int64_t i = 0;
     bool long_int = false;
     char *s;
+    int written = 0;
 
     va_list arg;
     va_start(arg, format);
@@ -186,6 +189,9 @@ void printf(char *format, ...) {
     write(1, start, i);
 
     va_end(arg);
+
+    //TODO - Implement written number of bytes (needs to handle error -1)
+    return (written);
 }
 
 int fgetc(int fd) {

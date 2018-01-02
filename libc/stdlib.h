@@ -31,15 +31,10 @@ extern int open(const char *filename, int32_t flags, uint16_t mode);
 extern int close(int32_t handle);
 
 int fgetc(int fd);
-void memcpy(void *dest, void *src, size_t n);
-void *memset(void *dest, int src, size_t n);
-int memcmp(const void *s1, const void *s2, size_t n);
-int strcmp (const char *s1, const char *s2);
-size_t strlen(const char *str);
-char *strncat(char *s1, char *s2, int n);
 int puts(const char *string);
 void putchar(char c);
 char *convert(int64_t num, size_t base);
 char *getline(void);
+void abort(void);
 
 #endif

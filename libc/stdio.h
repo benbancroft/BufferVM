@@ -5,6 +5,16 @@
 #ifndef LIBC_STDIO_H
 #define LIBC_STDIO_H
 
-void printf(char* format,...);
+#define FILE void
+
+extern FILE *stderr;
+
+extern FILE *stdin;
+
+extern FILE *stdout; 
+
+int printf(char* format,...);
+
+int fprintf(FILE *, const char *, ...);
 
 #endif //LIBC_STDIO_H

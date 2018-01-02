@@ -5,7 +5,8 @@
 #ifndef KERNEL_HOST_H
 #define KERNEL_HOST_H
 
-#include "../../libc/stdlib.h"
+#include <stdlib.h>
+
 #include "../../common/syscall.h"
 #include "../../common/vma.h"
 

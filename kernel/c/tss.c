@@ -2,6 +2,8 @@
 // Created by ben on 17/10/16.
 //
 
+#include <string.h>
+
 #include "../h/tss.h"
 #include "../h/host.h"
 

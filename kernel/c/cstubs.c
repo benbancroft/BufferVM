@@ -3,11 +3,9 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "../../libc/stdlib.h"
 #include "../h/host.h"
-
-#define FILE void
 
 void *realloc(void * ptr, size_t size){
 
@@ -29,8 +27,8 @@ ssize_t read(int fd, void *buffer, size_t length){
     return host_read(fd, buffer, length);
 }
 
-void fprintf(FILE * stream, char *format, ...){
-    printf("fprintf unimplemented!\n");
+int fprintf(FILE * stream, const char *format, ...){
+    return (printf("fprintf unimplemented!\n"));
 }
 
 void abort(void){
