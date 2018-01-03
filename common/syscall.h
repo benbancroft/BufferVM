@@ -47,7 +47,26 @@ typedef struct vm_stat {
     vm_timespec_t    st_vm_ctime;   /* time of last status change */
 } vm_stat_t;
 
-#ifndef VM
+#define UTSNAME_LENGTH 65
+
+typedef struct vm_utsname
+{
+    /* Name of the implementation of the operating system.  */
+    char sysname[UTSNAME_LENGTH];
+
+    /* Name of this node on the network.  */
+    char nodename[UTSNAME_LENGTH];
+
+    /* Current release level of this implementation.  */
+    char release[UTSNAME_LENGTH];
+    /* Current version level of this release.  */
+    char version[UTSNAME_LENGTH];
+
+    /* Name of the hardware type the system is running on.  */
+    char machine[UTSNAME_LENGTH];
+
+    char domainname[UTSNAME_LENGTH];
+} utsname_t;
 
 //arch_prctl
 
@@ -65,6 +84,8 @@ typedef struct vm_stat {
 #define PROT_NONE       0x0             /* page can not be accessed */
 #define PROT_GROWSDOWN  0x01000000      /* mprotect flag: extend change to start of growsdown vma */
 #define PROT_GROWSUP    0x02000000      /* mprotect flag: extend change to end of growsup vma */
+
+#ifndef VM
 
 #define MAP_SHARED      0x01            /* Share changes */
 #define MAP_PRIVATE     0x02            /* Changes are private */

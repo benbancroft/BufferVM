@@ -24,12 +24,15 @@ int main(int argc, char *argv[], char *envp[]){
     char *mem = malloc(size);
     mem = set_version((void *)mem, size, 5);
 
+    printf("Versioned buffer from %p to %p\n", mem, mem + size - 1);
+
     memcpy(mem, hello, size);
     mem[size-1] = 0;
+    //mem[size] = 0;
 
-    //mem = set_version_ptr(4, mem);
-    printf("here is some memory: %p %s\n", mem, mem);
-
+    mem = set_version_ptr(4, mem);
+    mem[size-1] = 0;
+    //printf("here is some memory: %p %s\n", mem, mem);
 
     return 0;
 }

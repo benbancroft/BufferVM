@@ -9,6 +9,8 @@
 #include "../common/rbtree.h"
 #include "../common/vma.h"
 
+void host_map_vma(vm_area_t *);
+
 void host_unmap_vma(vm_area_t *);
 
 #endif //PROJECT_VMA_H

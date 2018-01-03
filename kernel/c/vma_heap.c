@@ -12,6 +12,7 @@
 #include "../../common/rbtree.h"
 #include "../../common/syscall.h"
 #include "../h/host.h"
+#include "../h/vma.h"
 
 vma_node_t *vma_free_list;
 size_t vma_max_num;
@@ -116,10 +117,14 @@ void vma_free(vm_area_t *addr) {
 int64_t vma_fault(vm_area_t *vma, bool continuous) {
     int64_t phys_addr;
 
-    phys_addr = map_physical_pages(vma->start_addr,
+    unmap_vma(vma);
+    host_map_vma(vma);
+    phys_addr = vma->phys_page_start;
+
+    /*phys_addr = map_physical_pages(vma->start_addr,
                                    -1, vma_prot_to_pg(vma->page_prot) | PDE64_USER,
                                    PAGE_DIFFERENCE(vma->end_addr, vma->start_addr),
-                                   MAP_CONTINUOUS);
+                                   MAP_CONTINUOUS);*/
 
     return phys_addr;
 }

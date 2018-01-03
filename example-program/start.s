@@ -2,55 +2,7 @@
 .globl _start
 
 _start:
-
-    movq $0, %rdi
-    call sbrk
-    movq %rax, %r12
-
-    addq $0x2000, %rax
-    movq %rax, %r13
-    movq %rax, %rdi
-    call sbrk
-    subq $0x1000, %r13
-
-    /*movq %r13, %rdi
-    movq $8, %rsi
-    movq $5, %rdx
-    call set_version*/
-
-    #movq $0, 8(%r12)
-
-    /*movq %r13, %rsi
-    movq %r12, %rdi
-    movb $42, 1000(%rsi)
-    movb $42, %al
-    movb %al, 1000(%rsi)
-    #CMPSQ*/
-
-    testb  $0x60, 0x314(%rax)
-    #pcmpeqb  0x10(%rax), %xmm1
-
-    /*vmovups v1,%ymm0
-    vmovups v2,%ymm1
-    vmovups v3,%ymm2
-    #        addend + multiplicant1   * multiplicant2   = destination
-    vfmaddps %ymm0,   %ymm1,            %ymm2,            %ymm3
-    vmovups %ymm3, v4*/
-
-    movabs $LC0, %rdi
-    movq %r12, %rsi
-    movq %r13, %rdx
-    clr %rax       # needed for printf
-    call printf
-
-	#call main
-
-    /*movq $0xDEADBEEF, %rax
-    movq $43, %rdi
-	movq %rdi, (%rax)
-	movq $99, %rdi
-	movq (%rax), %rdi
-	movq %rdi, (%rax)*/
+	call main
 
 	# exit
 	movq $60, %rax

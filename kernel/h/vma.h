@@ -22,4 +22,6 @@ vma_merge(vm_area_t *, uint64_t, uint64_t, uint64_t, vm_file_t *, uint64_t);
 
 void detach_vmas_to_be_unmapped(vm_area_t *, vm_area_t *, uint64_t);
 
+void unmap_vma(vm_area_t *vma);
+
 #endif //PROJECT_VMA_H

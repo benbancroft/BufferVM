@@ -136,7 +136,6 @@ static uint64_t get_unmapped_area(uint64_t addr, uint64_t length, uint64_t offse
 
 int syscall_munmap(uint64_t addr, size_t length) {
 
-    printf("munmap\n");
     uint64_t end;
     vm_area_t *vma, *prev, *last;
 
@@ -227,6 +226,7 @@ mmap_region(vm_file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_f
         vma->page_offset = offset;
         vma->page_prot = vma_prot;
         vma->file_info = *file_info;
+        vma->phys_page_start = -1;
 
         vma_link(vma, prev, rb_link, rb_parent);
     }
@@ -234,19 +234,6 @@ mmap_region(vm_file_t *file_info, uint64_t addr, uint64_t length, uint64_t vma_f
     *vma_out = vma;
 
     return addr;
-}
-
-static inline uint64_t prot_to_vma(uint64_t prot) {
-    return TRANSFER_FLAG(prot, PROT_READ, VMA_READ) |
-           TRANSFER_FLAG(prot, PROT_WRITE, VMA_WRITE) |
-           TRANSFER_FLAG(prot, PROT_EXEC, VMA_EXEC);
-}
-
-uint64_t vma_prot_to_pg(uint64_t prot) {
-    return TRANSFER_FLAG(prot, VMA_READ, PDE64_PRESENT) |
-           TRANSFER_FLAG(prot, VMA_WRITE, PDE64_WRITEABLE) |
-           TRANSFER_INV_FLAG(prot, VMA_EXEC, PDE64_NO_EXE) |
-           TRANSFER_INV_FLAG(prot, VMA_IS_VERSIONED, PDE64_USER) ;
 }
 
 /*
@@ -345,6 +332,7 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
         //in the case of files, mappings need to be continuous
         phys_addr = vma_fault(vma, true);
+        //phys_addr = vma->phys_page_start;
 
         //printf("virtaddr %p %x %x\n", addr, org_length, offset);
 
@@ -363,6 +351,53 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
     }
 
     return addr;
+}
+
+uint64_t do_brk(uint64_t addr, uint64_t request) {
+    uint64_t error, len, flags, prot, pgoff = PAGE_OFFSET(addr);
+    vm_area_t *vma, *prev;
+    rb_node_t **rb_link, *rb_parent;
+    vm_file_t null_file_info = {-1, -1, -1};
+
+    len = (uint64_t)PAGE_ALIGN(request);
+
+    if (len < request)
+        return (uint64_t)-ENOMEM;
+    if (!len)
+        return 0;
+
+    prot  = VMA_READ | VMA_WRITE | VMA_EXEC;
+    flags = 0;
+
+    error = get_unmapped_area(addr, len, 0, MAP_FIXED);
+    if (PAGE_OFFSET(error))
+        return error;
+
+    while (vma_find_links(addr, addr + len, &prev, &rb_link,
+                          &rb_parent)) {
+        if (syscall_munmap(addr, len))
+            return (uint64_t)-ENOMEM;
+    }
+
+    //lets try and merge with an applicable region
+    //see can_vma_merge_before and can_vma_merge_after for criteria
+    vma = vma_merge(prev, addr, addr + len, flags, &null_file_info, pgoff);
+
+    if (vma == NULL) {
+        vma = vma_zalloc();
+
+        vma->start_addr = addr;
+        vma->end_addr = addr + len;
+        vma->flags = flags;
+        vma->page_offset = pgoff;
+        vma->page_prot = prot;
+        vma->file_info = null_file_info;
+        vma->phys_page_start = -1;
+
+        vma_link(vma, prev, rb_link, rb_parent);
+    }
+
+    return 0;
 }
 
 int syscall_mprotect(void *addr, size_t len, int prot){

@@ -30,6 +30,7 @@ void handle_segfault(uint64_t addr, uint64_t rip) {
 int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip) {
 
     vm_area_t *vma;
+    bool grown = false;
 
     /*bool p, w, u, r, i;
 
@@ -69,10 +70,12 @@ int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip) {
         if (grow_stack(vma, addr)) {
             printf("3\n");
             goto seg_fault;
+        } else {
+            grown = true;
         }
 
         handle_paging:
-        ASSERT(!(vma->flags & VMA_IS_PREFAULTED));
+        ASSERT(grown || !(vma->flags & VMA_IS_PREFAULTED));
         printf("loading page at addr: %p\n", addr);
         map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->page_prot),
                            1, 0);

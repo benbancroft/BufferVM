@@ -41,6 +41,9 @@
 #define PAGE_OFFSET(addr) (addr & ~PAGE_MASK)
 #define PAGE_DIFFERENCE(left, right) ((left - right) >> PAGE_SHIFT)
 
+#define PHYSICAL_HEAP_SIZE 0xFFF00000UL
+#define PHYSICAL_HEAP_PAGES (PHYSICAL_HEAP_SIZE / PAGE_SIZE)
+
 typedef struct {
     uint64_t version;
     uint64_t pg_dir_ptr_offset;

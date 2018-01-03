@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 
-project(ExampleProgram)
+project(ExampleProgram2)
 
 enable_language(ASM)
 

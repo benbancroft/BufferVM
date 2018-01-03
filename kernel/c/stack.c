@@ -8,6 +8,7 @@
 #include "../../common/utils.h"
 #include "../h/host.h"
 #include "../h/syscall.h"
+#include "../h/vma.h"
 
 /**
  * Stack start address
@@ -58,6 +59,9 @@ int grow_stack(vm_area_t *vma, uint64_t addr){
     user_stack_page = new_start;
 
     vma_gap_update(vma);
+
+    unmap_vma(vma);
+    host_map_vma(vma);
 
     //printf("grow stack\n");
     return 0;

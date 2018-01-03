@@ -149,6 +149,9 @@ void vma_link_rb(vm_area_t *vma, rb_node_t **rb_link, rb_node_t *rb_parent) {
 void vma_link(vm_area_t *vma, vm_area_t *prev, rb_node_t **rb_link, rb_node_t *rb_parent) {
     vma_link_list(vma, prev, rb_parent);
     vma_link_rb(vma, rb_link, rb_parent);
+
+    unmap_vma(vma);
+    host_map_vma(vma);
 }
 
 void
@@ -180,6 +183,10 @@ static void vma_insert(vm_area_t *vma) {
     if (vma_find_links(vma->start_addr, vma->end_addr,
                        &prev, &rb_link, &rb_parent))
         ASSERT(false);
+
+    //Set default phys page value
+    vma->phys_page_start = -1;
+
     vma_link(vma, prev, rb_link, rb_parent);
     //mm->map_count++;
 }
@@ -194,8 +201,8 @@ vma_unlink(vm_area_t *vma, vm_area_t *prev) {
         next->prev = prev;
 }
 
-static void unmap_vma(vm_area_t *vma) {
-    host_unmap_vma(vma);
+void unmap_vma(vm_area_t *vma) {
+    //host_unmap_vma(vma);
 
     size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
     for (size_t i = 0; i < pages; i++){
@@ -262,6 +269,9 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
     if (adjust_next) {
         next->start_addr += adjust_next << PAGE_SHIFT;
         next->page_offset += adjust_next;
+
+        unmap_vma(next);
+        host_map_vma(next);
     }
 
     if (remove_next) {
@@ -286,6 +296,11 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
             else if (!adjust_next)
                 vma_gap_update(next);
         }
+    }
+
+    if (start_changed || end_changed){
+        unmap_vma(vma);
+        host_map_vma(vma);
     }
 
     if (remove_next) {

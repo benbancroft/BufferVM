@@ -19,14 +19,15 @@ void *set_version(uint64_t *addr, size_t length, uint64_t version) {
     uint8_t *version_buf = (uint8_t *) user_version_start + (uint64_t) normalise_version_ptr(addr);
 
     uint64_t start_page = PAGE_ALIGN_DOWN((uint64_t) version_buf);
-    uint64_t end_page = PAGE_ALIGN_DOWN((uint64_t) version_buf + length);
+    uint64_t end_page = PAGE_ALIGN((uint64_t) version_buf + length);
     size_t pages = PAGE_DIFFERENCE(end_page, start_page);
 
     map_physical_pages(start_page, -1, PDE64_NO_EXE | PDE64_WRITEABLE,
                        pages, MAP_ZERO_PAGES | MAP_NO_OVERWRITE);
 
-    for (size_t i = 0; i < length; i++)
+    for (size_t i = 0; i < length; i++) {
         version_buf[i] = (uint8_t) version;
+    }
 
     return set_version_ptr(version, addr);
 }
@@ -61,6 +62,7 @@ bool check_version_instruction(uint64_t *addr, uint64_t *rip, size_t offset, uin
             return (true);
     }
     m_ver = get_version(addr + offset);
+
     printf("VADDR: %p, RIP: %p PVer: %d, MVer: %d, byte: %d\n", addr, rip, ptr_ver, m_ver, offset);
 
     return (false);

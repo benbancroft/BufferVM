@@ -12,23 +12,22 @@
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <bits/uio.h>
 #include <asm/errno.h>
 #include <sys/uio.h>
+#include <sys/utsname.h>
 #include "../common/vma.h"
 #include "../common/paging.h"
 #include "vm.h"
 #include "vma.h"
 
-static bool exit = false;
+static bool exit_vm = false;
 
 void host_exit() {
     printf("Exit hostcall\n");
 
     vma_print();
-    vma_print_node(vma_find(0x400005), false);
 
-    exit = true;
+    exit_vm = true;
 
     return;
 }
@@ -59,6 +58,22 @@ int host_open(const char *filename, int32_t flags, uint16_t mode) {
 
     if (read_virtual_cstr((uint64_t) filename, &buffer)) {
         ret = open(buffer, flags, mode);
+        free(buffer);
+
+        return (ret);
+    } else {
+        printf("Failed to write - Un-paged buffer?\n");
+
+        return (-1);
+    }
+}
+
+int host_openat(int dfd, const char *filename, int32_t flags, uint16_t mode) {
+    char *buffer;
+    int ret;
+
+    if (read_virtual_cstr((uint64_t) filename, &buffer)) {
+        ret = openat(dfd, buffer, flags, mode);
         free(buffer);
 
         return (ret);
@@ -161,6 +176,16 @@ int host_set_vma_heap(uint64_t i_vma_heap_addr, vm_area_t **vma_list_start, rb_r
     return (0);
 }
 
+int host_uname(utsname_t *buf){
+    int ret;
+    struct utsname uname_buf;
+    ret = uname(&uname_buf);
+    if (!write_virtual_addr((uint64_t) buf, (char *) &uname_buf, sizeof(uname_buf)))
+        ret = -1;
+
+    return (ret);
+}
+
 typedef uint64_t (*hostcall_func_t)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 
 #define HOSTCALL_DEF(NAME)  \
@@ -180,9 +205,9 @@ int handle_host_call(struct kvm_regs *regs) {
     uint64_t call_no = regs->rax;
 
     if (call_no < sizeof(hostcall_table) / sizeof(hostcall_func_t)) {
+        //printf("Supported hostcall %" PRIu64 "\n", call_no);
         regs->rax = (uint64_t) hostcall_table[call_no](regs->rdi, regs->rsi, regs->rdx, regs->rcx, regs->r8, regs->r9);
-
-        if (exit)
+        if (exit_vm)
             return (1);
     } else {
         printf("Unsupported hostcall %" PRIu64 "\n", call_no);

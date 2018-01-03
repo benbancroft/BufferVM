@@ -1,4 +1,4 @@
-#include "../libc/stdlib.h"
+#include <stdio.h>
 #include "alloc.h"
 #include "../common/version.h"
 
@@ -41,10 +41,10 @@ void main() {
 
     //version test case
 
-    my_string = "epic string";
+    /*my_string = "epic string";
     printf("String: %s, Ver: %d\n", my_string, (int)get_version_ptr(my_string));
     ver_string = set_version_ptr(5, my_string);
-    printf("Versioned string: %s Ver: %d\n", ver_string, (int)get_version_ptr(ver_string));
+    printf("Versioned string: %s Ver: %d\n", ver_string, (int)get_version_ptr(ver_string));*/
 
     //stack test
 
@@ -56,9 +56,9 @@ void main() {
     char *mem = malloc(10);
     printf("Heap: %p\n", mem);
 
-    mem = set_version(mem, 10, 5);
+    /*mem = set_version(mem, 10, 5);
     printf("Versioned mem - Ver: %d prt: %p\n", (int)get_version_ptr(mem), mem);
-    mem[9] = 42;
+    mem[9] = 42;*/
 
     //file stuff
     int32_t file_handle = open("test.txt", 0, 0);
@@ -97,16 +97,14 @@ void main() {
 
     printf("File map addr %p contents: %s\n", addr, addr);
 
-    //munmap(0x3ffc043000, 0x1000);
-
     //read test case
 
-    /*printf("\nPlease enter a character: \n");
-    printf("Your character: %c\n", fgetc(1));*/
+    printf("\nPlease enter a character: \n");
+    printf("Your character: %c\n", fgetc(1));
 
-    printf("\nPlease enter your name: \n");
+    /*printf("\nPlease enter your name: \n");
     char *name = getline();
-    printf("My name is: %s", name);
+    printf("My name is: %s", name);*/
 
     printf("yey\n");
     return;

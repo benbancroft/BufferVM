@@ -17,7 +17,9 @@
         host_exit(); \
     } while (0)
 
-#define ASSERT(condition) do { if (!(condition)) ASSERT_FAIL(); } while (0)
+#define ASSERT(condition) VERIFY(condition)
+
+#define VERIFY(condition) do { if (!(condition)) ASSERT_FAIL(); } while (0)
 
 #define TRANSFER_FLAG(x, bit1, bit2) (x & (uint64_t)bit1 ? (uint64_t)bit2 : 0)
 #define TRANSFER_INV_FLAG(x, bit1, bit2) (!(x & (uint64_t)bit1) ? (uint64_t)bit2 : 0)

@@ -8,7 +8,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "syscall.h"
+#include "paging.h"
 #include "rbtree.h"
+#include "utils.h"
 
 typedef struct vm_area vm_area_t;
 
@@ -18,6 +20,14 @@ struct vm_area {
 
     uint64_t page_prot;
     uint64_t flags;
+
+    bool faulted;
+    bool updated;
+    int64_t phys_page_start;
+    int64_t phys_page_end;
+
+    uint64_t old_start_addr;
+    uint64_t old_end_addr;
 
     //reference to VMA above and below
     vm_area_t *prev, *next;
@@ -41,6 +51,19 @@ struct vm_area {
 #define VMA_GROWS   0x00000010
 #define VMA_IS_PREFAULTED   0x00000020
 
+static inline uint64_t prot_to_vma(uint64_t prot) {
+    return TRANSFER_FLAG(prot, PROT_READ, VMA_READ) |
+           TRANSFER_FLAG(prot, PROT_WRITE, VMA_WRITE) |
+           TRANSFER_FLAG(prot, PROT_EXEC, VMA_EXEC);
+}
+
+static inline uint64_t vma_prot_to_pg(uint64_t prot) {
+    return TRANSFER_FLAG(prot, VMA_READ, PDE64_PRESENT) |
+           TRANSFER_FLAG(prot, VMA_WRITE, PDE64_WRITEABLE) |
+           TRANSFER_INV_FLAG(prot, VMA_EXEC, PDE64_NO_EXE) |
+           TRANSFER_INV_FLAG(prot, VMA_IS_VERSIONED, PDE64_USER) ;
+}
+
 extern rb_root_t vma_rb_root;
 extern rb_root_t *vma_rb_root_ptr;
 extern uint64_t vma_highest_addr;
@@ -55,7 +78,7 @@ rb_node_t *vma_rb_ptr(rb_node_t *vma);
 
 //common functions
 
-void vma_print_node(vm_area_t *vma, bool follow);
+void vma_print_node(vm_area_t *vma, bool follow, size_t page_count);
 
 void vma_print();
 

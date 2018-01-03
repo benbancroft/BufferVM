@@ -77,4 +77,4 @@ syscall_null_handler:
     ret
 .section .data
 LC0:
-        .ascii "Syscall: %p\n\0"
+        .ascii "Syscall: %ld\n\0"

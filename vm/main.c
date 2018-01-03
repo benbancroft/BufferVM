@@ -31,7 +31,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
     struct vcpu_t vcpu;
 
-    vm_init(&vm, 0xFFF00000);
+    vm_init(&vm, PHYSICAL_HEAP_SIZE);
     vcpu_init(&vm, &vcpu);
 
     run(&vm, &vcpu, kernel_binary_fd, argc - 2, &argv[2], envp);
