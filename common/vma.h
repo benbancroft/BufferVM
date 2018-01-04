@@ -21,8 +21,7 @@ struct vm_area {
     uint64_t page_prot;
     uint64_t flags;
 
-    bool faulted;
-    bool updated;
+    //information needed to resize a VMA
     int64_t phys_page_start;
     int64_t phys_page_end;
 
@@ -51,6 +50,7 @@ struct vm_area {
 
 #define VMA_GROWS   0x00000010
 #define VMA_IS_PREFAULTED   0x00000020
+#define VMA_HAS_RESIZED   0x00000040
 
 static inline uint64_t prot_to_vma(uint64_t prot) {
     return TRANSFER_FLAG(prot, PROT_READ, VMA_READ) |

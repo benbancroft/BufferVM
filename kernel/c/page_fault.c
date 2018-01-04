@@ -100,14 +100,10 @@ int handle_user_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip) {
             grown = true;
         }
 
-        handle_paging:
-        ASSERT(grown || !(vma->flags & VMA_IS_PREFAULTED));
-        printf("loading page at addr: %p\n", addr);
-        map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, vma_prot_to_pg(vma->page_prot),
-                           1, 0);
-        if (vma->page_prot & VMA_IS_VERSIONED)
-            map_physical_pages(user_version_start + PAGE_ALIGN_DOWN(addr), -1, PDE64_NO_EXE | PDE64_WRITEABLE,
-                               1, MAP_ZERO_PAGES | MAP_NO_OVERWRITE);
+handle_paging:
+        VERIFY(grown || !(vma->flags & VMA_IS_PREFAULTED));
+        printf("Loading page at addr: %p\n", addr);
+
         return 1;
     }
     printf("4\n");

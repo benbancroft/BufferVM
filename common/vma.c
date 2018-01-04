@@ -46,8 +46,12 @@ void vma_print_node(vm_area_t *vma, bool follow, size_t page_count) {
     }
 
     size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
-    printf("VMA addr: %p end: %p file: %d pages: %ld grows: %d faulted: %d updated: %d contiguous: %d\n", (void *) vma->start_addr, (void *) vma->end_addr,
-           vma->file_info.fd, pages, (int)((vma->flags & VMA_GROWS) == VMA_GROWS), vma->faulted, vma->updated, vma_contiguous(vma));
+    printf("VMA addr: %p end: %p file: %d pages: %ld grows: %d faulted: %d updated: %d contiguous: %d\n",
+           (void *) vma->start_addr, (void *) vma->end_addr, vma->file_info.fd, pages,
+           (int)((vma->flags & VMA_GROWS) == VMA_GROWS),
+           (int)((vma->flags & VMA_IS_PREFAULTED) == VMA_IS_PREFAULTED),
+           (int)((vma->flags & VMA_HAS_RESIZED) == VMA_HAS_RESIZED),
+           vma_contiguous(vma));
 
     if (follow)
         vma_print_node(vma_ptr(vma->next), true, page_count + pages);

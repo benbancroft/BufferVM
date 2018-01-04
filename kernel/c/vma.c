@@ -323,7 +323,7 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
 }
 
 static inline int vma_can_merge(vm_area_t *vma, vm_file_t *file_info, uint64_t vm_flags) {
-    if (vma->flags ^ vm_flags)
+    if ((vma->flags ^ vm_flags) & ~(VMA_IS_PREFAULTED | VMA_HAS_RESIZED))
         return 0;
     if (vma->file_info.dev != file_info->dev || vma->file_info.inode != file_info->inode)
         return 0;

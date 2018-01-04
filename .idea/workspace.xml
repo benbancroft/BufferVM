@@ -20,382 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="64521e75-0ecf-4157-ba79-ec1d2cd9b44d" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CMakeASMCompiler.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CMakeCCompiler.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CMakeCXXCompiler.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CMakeDetermineCompilerABI_C.bin" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CMakeDetermineCompilerABI_CXX.bin" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CMakeSystem.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CompilerIdC/CMakeCCompilerId.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.9.6/CompilerIdCXX/CMakeCXXCompilerId.cpp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeRuleHashes.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cmake.check_cache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.cxx" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/Project.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/cmake_clean_target.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/flags.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/link.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/ASM.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/bootstrap.o.objlib" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/flags.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/bootstrap.o.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/bootloader.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/bootstrap/cmake_install.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/ASM.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/C.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/flags.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/link.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/example-program-2.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/ExampleProgram2.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/cmake_install.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program-2/example-program-2" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/ASM.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/C.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/flags.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/link.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/example-program.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/ExampleProgram.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/cmake_install.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/example-program/example-program" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/intelxed.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/intelxed.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/intelxed.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/intelxed.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/intelxed.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/intelxed.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/cmake_install.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/intelxed.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/.mbuild.hash.xeddecgen" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/.mbuild.hash.xedencgen" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/.mbuild.hash.xedgen" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/.mbuild.hash.xedlib" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/DEC-ERR.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/DEC-OUT.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/DECGEN-OUTPUT-FILES.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ENC-ERR.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ENC-OUT.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ENCGEN-OUTPUT-FILES.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/all_constraints_vv0.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/all_constraints_vv1.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/all_constraints_vv2.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/all_constraints_vv3.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/cdata.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-chip-models.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-conversion-table.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-cpuid.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-dec-instructions.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-dec-patterns.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-dec-spine.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-element-type-base.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-element-types.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-enc-dec-patterns.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-enc-instructions.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-enc-patterns.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-extra-widths.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-fields.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-ild-getters.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-ild-scanners.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-pointer-names.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-registers.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-state.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dgen/all-widths.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/dummy-prep" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/idata.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ild_debug.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ild_easz_debug.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ild_easz_debug_header.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ild_eosz_debug_header.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/ild_oesz_debug.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-chip-features-table.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-enc-groups.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-enc-operand-lu.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-enc-patterns.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-encoder.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-disp-bytes.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-disp-l1.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-disp-l2.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-disp-l3.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-easz-getters.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-easz.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-eosz-getters.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-eosz.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-getters.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-imm-bytes.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-imm-l1.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-imm-l2.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-imm-l3.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-modrm.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-scanners-base.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed-ild-scanners.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-chain-capture-lu.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-chain-capture.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-dynamic-part1-capture.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-nt-capture.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-op-chain-capture-lu.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-op-chain-capture.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-operand-lu.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-lu-vv0.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-lu-vv1.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-lu-vv2.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-lu-vv3.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-vv0.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-vv1.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-vv2.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash-vv3.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/include-private/xed3-phash.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/inline_nt.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/nt_function_log.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/prep-inputs" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-address-width-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-address-width-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-attribute-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-attribute-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-attribute-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-attributes-init.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-attributes-list.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-build-defines.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-category-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-category-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-category-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-chip-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-chip-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-chip-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-chip-features-table.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-classifiers.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-convert-table-init.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-convert-table-init.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-cpuid-bit-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-cpuid-bit-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-cpuid-bit-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-cpuid-tables.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-enc-groups.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-enc-operand-lu.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-enc-patterns.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-0.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-1.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-2.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-3.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-4.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-gen-defs.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-iforms-init.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-iforms.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-init.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-order-init.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-encoder-pattern-lu.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-error-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-error-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-exception-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-exception-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-exception-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-extension-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-extension-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-extension-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-flag-action-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-flag-action-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-flag-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-flag-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-flags-actions.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-flags-complex.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-flags-simple.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-gen-table-defs.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iclass-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iclass-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iclass-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iclass-string.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iform-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iform-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iform-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iform-map-init.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iform-max.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iformfl-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iformfl-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-iformfl-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-ild-disp-l3.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-ild-easz.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-ild-eosz.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-ild-imm-l3.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-inst-table-0.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-inst-table-data.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-inst-table.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-operand-data.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-operand-sequences.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-operand-type-mappings.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-pointer-names.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-pointer-names.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-reg-class.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-init-width.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-isa-set-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-isa-set-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-isa-set-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-machine-mode-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-machine-mode-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-nonterminal-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-nonterminal-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-nonterminal-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-accessors.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-accessors.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-action-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-action-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-convert-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-convert-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-convert-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-convert-init.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-ctype-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-ctype-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-ctype-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-ctype-map.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-ctype-map.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-element-type-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-element-type-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-element-xtype-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-element-xtype-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-element-xtype-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-storage.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-type-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-type-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-type-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-visibility-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-visibility-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-width-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-width-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-operand-width-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-class-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-class-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-class-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-enum.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-role-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-reg-role-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-rep-map.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-syntax-enum.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed-syntax-enum.h" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed3-operand-lu.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed3-phash-lu-vv0.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed3-phash-lu-vv1.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed3-phash-lu-vv2.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed3-phash-lu-vv3.c" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/intelxed/obj/xed3_nt_cdicts.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/ASM.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/C.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/flags.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/link.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/kernel.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/cmake_install.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/kernel.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/script.ld" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/kernel/sections.map" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/C.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/cmake_clean_target.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/flags.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/link.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/c.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/cmake_install.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/libc/libc.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/BufferVM.cbp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/CMakeDirectoryInformation.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/C.includecache" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/DependInfo.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/build.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/cmake_clean.cmake" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/depend.internal" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/depend.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/flags.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/link.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/buffervm.dir/progress.make" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/CMakeFiles/progress.marks" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/Makefile" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/buffervm" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cmake-build-debug/vm/cmake_install.cmake" />
-      <change beforePath="$PROJECT_DIR$/.idea/BufferVM.iml" afterPath="$PROJECT_DIR$/.idea/BufferVM.iml" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/common/utils.h" afterPath="$PROJECT_DIR$/common/utils.h" />
+      <change beforePath="$PROJECT_DIR$/common/vma.c" afterPath="$PROJECT_DIR$/common/vma.c" />
       <change beforePath="$PROJECT_DIR$/common/vma.h" afterPath="$PROJECT_DIR$/common/vma.h" />
-      <change beforePath="$PROJECT_DIR$/example-program-2/main.c" afterPath="$PROJECT_DIR$/example-program-2/main.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/asm/page_fault.S" afterPath="$PROJECT_DIR$/kernel/asm/page_fault.S" />
-      <change beforePath="$PROJECT_DIR$/kernel/c/elf.c" afterPath="$PROJECT_DIR$/kernel/c/elf.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/c/kernel.c" afterPath="$PROJECT_DIR$/kernel/c/kernel.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/c/mmap.c" afterPath="$PROJECT_DIR$/kernel/c/mmap.c" />
       <change beforePath="$PROJECT_DIR$/kernel/c/page_fault.c" afterPath="$PROJECT_DIR$/kernel/c/page_fault.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/c/stack.c" afterPath="$PROJECT_DIR$/kernel/c/stack.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/c/syscall.c" afterPath="$PROJECT_DIR$/kernel/c/syscall.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/c/version.c" afterPath="$PROJECT_DIR$/kernel/c/version.c" />
       <change beforePath="$PROJECT_DIR$/kernel/c/vma.c" afterPath="$PROJECT_DIR$/kernel/c/vma.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/c/vma_heap.c" afterPath="$PROJECT_DIR$/kernel/c/vma_heap.c" />
-      <change beforePath="$PROJECT_DIR$/kernel/h/kernel.h" afterPath="$PROJECT_DIR$/kernel/h/kernel.h" />
-      <change beforePath="$PROJECT_DIR$/kernel/h/syscall.h" afterPath="$PROJECT_DIR$/kernel/h/syscall.h" />
-      <change beforePath="$PROJECT_DIR$/kernel/h/vma_heap.h" afterPath="$PROJECT_DIR$/kernel/h/vma_heap.h" />
-      <change beforePath="$PROJECT_DIR$/libc/stdlib_inc.c" afterPath="$PROJECT_DIR$/libc/stdlib_inc.c" />
-      <change beforePath="$PROJECT_DIR$/vm/host.c" afterPath="$PROJECT_DIR$/vm/host.c" />
-      <change beforePath="$PROJECT_DIR$/vm/paging.c" afterPath="$PROJECT_DIR$/vm/paging.c" />
       <change beforePath="$PROJECT_DIR$/vm/vma.c" afterPath="$PROJECT_DIR$/vm/vma.c" />
     </list>
     <ignored path="BufferVM.iws" />
@@ -417,21 +46,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="vm.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vm/vm.c">
+      <file leaf-file-name="vma.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vm/vma.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-853">
-              <caret line="128" column="22" lean-forward="false" selection-start-line="128" selection-start-column="4" selection-end-line="128" selection-end-column="22" />
+            <state relative-caret-position="161">
+              <caret line="107" column="41" lean-forward="false" selection-start-line="107" selection-start-column="26" selection-end-line="107" selection-end-column="41" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vma.c" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/vm/vma.c">
+      <file leaf-file-name="vma.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/common/vma.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="90" column="29" lean-forward="true" selection-start-line="90" selection-start-column="29" selection-end-line="90" selection-end-column="29" />
+            <state relative-caret-position="162">
+              <caret line="23" column="40" lean-forward="false" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="page_fault.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kernel/c/page_fault.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="269">
+              <caret line="97" column="27" lean-forward="false" selection-start-line="97" selection-start-column="27" selection-end-line="97" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -440,7 +79,7 @@
       <file leaf-file-name="kernel.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kernel/c/kernel.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="67">
+            <state relative-caret-position="3582">
               <caret line="199" column="10" lean-forward="false" selection-start-line="199" selection-start-column="10" selection-end-line="199" selection-end-column="10" />
               <folding />
             </state>
@@ -450,18 +89,18 @@
       <file leaf-file-name="mmap.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kernel/c/mmap.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1734">
+            <state relative-caret-position="5886">
               <caret line="327" column="84" lean-forward="false" selection-start-line="327" selection-start-column="84" selection-end-line="327" selection-end-column="84" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="paging.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/paging.h">
+      <file leaf-file-name="vma.c" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/common/vma.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="237">
-              <caret line="40" column="19" lean-forward="false" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="19" />
+            <state relative-caret-position="121">
+              <caret line="52" column="46" lean-forward="false" selection-start-line="52" selection-start-column="46" selection-end-line="52" selection-end-column="46" />
               <folding />
             </state>
           </provider>
@@ -471,17 +110,7 @@
         <entry file="file://$PROJECT_DIR$/kernel/c/stack.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="237">
-              <caret line="38" column="0" lean-forward="true" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="vma.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/vma.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="2" lean-forward="false" selection-start-line="0" selection-start-column="2" selection-end-line="0" selection-end-column="2" />
+              <caret line="38" column="0" lean-forward="false" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -500,7 +129,7 @@
       <file leaf-file-name="vma_heap.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kernel/h/vma_heap.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="522">
+            <state relative-caret-position="513">
               <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
               <folding />
             </state>
@@ -510,8 +139,8 @@
       <file leaf-file-name="vma.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kernel/c/vma.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="186">
-              <caret line="288" column="12" lean-forward="false" selection-start-line="288" selection-start-column="12" selection-end-line="288" selection-end-column="12" />
+            <state relative-caret-position="200">
+              <caret line="325" column="71" lean-forward="false" selection-start-line="325" selection-start-column="56" selection-end-line="325" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -529,7 +158,6 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>un</find>
-      <find>merge</find>
       <find>LC3</find>
       <find>kernel_page_fault</find>
       <find>page_fault_user_check</find>
@@ -545,6 +173,7 @@
       <find>dup</find>
       <find>remap_region</find>
       <find>ASSERT(!PAGE_OFF</find>
+      <find>merge</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -578,7 +207,6 @@
         <option value="$PROJECT_DIR$/common/host.h" />
         <option value="$PROJECT_DIR$/vm/main.c" />
         <option value="$PROJECT_DIR$/common/paging.h" />
-        <option value="$PROJECT_DIR$/common/vma.c" />
         <option value="$PROJECT_DIR$/kernel/asm/syscall.S" />
         <option value="$PROJECT_DIR$/libc/stdlib_inc.c" />
         <option value="$PROJECT_DIR$/example-program-2/CMakeLists.txt" />
@@ -590,20 +218,21 @@
         <option value="$PROJECT_DIR$/kernel/h/kernel.h" />
         <option value="$PROJECT_DIR$/kernel/h/kernel_as.h" />
         <option value="$PROJECT_DIR$/common/utils.h" />
-        <option value="$PROJECT_DIR$/kernel/c/page_fault.c" />
         <option value="$PROJECT_DIR$/example-program-2/main.c" />
         <option value="$PROJECT_DIR$/kernel/asm/page_fault.S" />
         <option value="$PROJECT_DIR$/vm/host.c" />
         <option value="$PROJECT_DIR$/kernel/c/version.c" />
         <option value="$PROJECT_DIR$/vm/paging.c" />
-        <option value="$PROJECT_DIR$/common/vma.h" />
-        <option value="$PROJECT_DIR$/kernel/c/vma.c" />
         <option value="$PROJECT_DIR$/kernel/c/mmap.c" />
         <option value="$PROJECT_DIR$/kernel/c/vma_heap.c" />
         <option value="$PROJECT_DIR$/kernel/h/vma_heap.h" />
         <option value="$PROJECT_DIR$/kernel/c/kernel.c" />
         <option value="$PROJECT_DIR$/kernel/c/stack.c" />
+        <option value="$PROJECT_DIR$/kernel/c/page_fault.c" />
+        <option value="$PROJECT_DIR$/kernel/c/vma.c" />
         <option value="$PROJECT_DIR$/vm/vma.c" />
+        <option value="$PROJECT_DIR$/common/vma.h" />
+        <option value="$PROJECT_DIR$/common/vma.c" />
       </list>
     </option>
   </component>
@@ -997,12 +626,13 @@
       <workItem from="1514999400518" duration="11000" />
       <workItem from="1515009351011" duration="290000" />
       <workItem from="1515009679926" duration="3486000" />
-      <workItem from="1515020841215" duration="16563000" />
+      <workItem from="1515020841215" duration="17167000" />
+      <workItem from="1515077506039" duration="1806000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="972112000" />
+    <option name="totallyTimeSpent" value="974522000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1224,7 +854,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1422">
           <caret line="79" column="28" lean-forward="false" selection-start-line="79" selection-start-column="28" selection-end-line="79" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1247,7 +876,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="134">
           <caret line="42" column="32" lean-forward="false" selection-start-line="42" selection-start-column="32" selection-end-line="42" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1271,7 +899,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
           <caret line="14" column="63" lean-forward="false" selection-start-line="14" selection-start-column="63" selection-end-line="14" selection-end-column="63" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1287,7 +914,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="107">
           <caret line="36" column="0" lean-forward="false" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1295,9 +921,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
           <caret line="41" column="42" lean-forward="false" selection-start-line="41" selection-start-column="42" selection-end-line="41" selection-end-column="42" />
-          <folding>
-            <element signature="e#1473#1534#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1321,7 +944,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="486">
           <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1359,21 +981,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/page_fault.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="40" column="83" lean-forward="false" selection-start-line="40" selection-start-column="83" selection-end-line="40" selection-end-column="83" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/common/stdlib_inc.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#54#133#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1381,7 +992,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="196">
           <caret line="45" column="8" lean-forward="false" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1389,7 +999,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1397,15 +1006,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="302">
           <caret line="35" column="27" lean-forward="false" selection-start-line="35" selection-start-column="20" selection-end-line="35" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/vma.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="60" column="23" lean-forward="false" selection-start-line="60" selection-start-column="23" selection-end-line="60" selection-end-column="23" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1413,21 +1013,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="258">
           <caret line="89" column="18" lean-forward="false" selection-start-line="89" selection-start-column="8" selection-end-line="89" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/vma.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="2" lean-forward="false" selection-start-line="0" selection-start-column="2" selection-end-line="0" selection-end-column="2" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/common/paging.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
+        <state relative-caret-position="720">
           <caret line="40" column="19" lean-forward="false" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="19" />
           <folding />
         </state>
@@ -1435,8 +1026,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/vm/vm.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-853">
+        <state relative-caret-position="2304">
           <caret line="128" column="22" lean-forward="false" selection-start-line="128" selection-start-column="4" selection-end-line="128" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/mmap.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5886">
+          <caret line="327" column="84" lean-forward="false" selection-start-line="327" selection-start-column="84" selection-end-line="327" selection-end-column="84" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/kernel.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3582">
+          <caret line="199" column="10" lean-forward="false" selection-start-line="199" selection-start-column="10" selection-end-line="199" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/page_fault.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="97" column="27" lean-forward="false" selection-start-line="97" selection-start-column="27" selection-end-line="97" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/c/stack.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="38" column="0" lean-forward="false" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1449,50 +1072,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/h/vma_heap.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/mmap.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1734">
-          <caret line="327" column="84" lean-forward="false" selection-start-line="327" selection-start-column="84" selection-end-line="327" selection-end-column="84" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/kernel.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="67">
-          <caret line="199" column="10" lean-forward="false" selection-start-line="199" selection-start-column="10" selection-end-line="199" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kernel/c/stack.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="38" column="0" lean-forward="true" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/kernel/c/vma.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="288" column="12" lean-forward="false" selection-start-line="288" selection-start-column="12" selection-end-line="288" selection-end-column="12" />
+        <state relative-caret-position="200">
+          <caret line="325" column="71" lean-forward="false" selection-start-line="325" selection-start-column="56" selection-end-line="325" selection-end-column="71" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vm/vma.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="90" column="29" lean-forward="true" selection-start-line="90" selection-start-column="29" selection-end-line="90" selection-end-column="29" />
+        <state relative-caret-position="161">
+          <caret line="107" column="41" lean-forward="false" selection-start-line="107" selection-start-column="26" selection-end-line="107" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kernel/h/vma_heap.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/vma.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="23" column="40" lean-forward="false" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/vma.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="121">
+          <caret line="52" column="46" lean-forward="false" selection-start-line="52" selection-start-column="46" selection-end-line="52" selection-end-column="46" />
           <folding />
         </state>
       </provider>

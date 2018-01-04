@@ -105,7 +105,7 @@ void host_map_vma(vm_area_t *vma) {
                 remap_region(vma->phys_page_start + (vma->start_addr - vma->old_start_addr), move_size, new_phys,
                              move_size);
             }
-            vma->updated = true;
+            vma->flags |= VMA_HAS_RESIZED;
         }
 
         if (vma->file_info.fd != -1) {
@@ -131,7 +131,6 @@ void host_map_vma(vm_area_t *vma) {
         vma->old_start_addr = vma->start_addr;
         vma->old_end_addr = vma->end_addr;
 
-        vma->faulted = true;
         vma->flags |= VMA_IS_PREFAULTED;
     }
 
