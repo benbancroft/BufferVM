@@ -12,7 +12,7 @@ int syscall_munmap(uint64_t addr, size_t length);
 int syscall_mprotect(void *addr, size_t len, int prot);
 ssize_t syscall_writev(uint64_t fd, const vm_iovec_t *vec, uint64_t vlen, int flags);
 
-uint64_t do_brk(uint64_t addr, uint64_t request);
+uint64_t do_brk(uint64_t addr, uint64_t request, uint64_t flags);
 
 void syscall_setup();
 void syscall_init();

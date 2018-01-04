@@ -47,6 +47,7 @@ struct vm_area {
 #define VMA_EXEC         0x00000004
 #define VMA_SHARED       0x00000008
 #define VMA_IS_VERSIONED    0x00000010
+#define VMA_ALLOC_ZEROED    0x00000012
 
 #define VMA_GROWS   0x00000010
 #define VMA_IS_PREFAULTED   0x00000020
@@ -55,6 +56,12 @@ static inline uint64_t prot_to_vma(uint64_t prot) {
     return TRANSFER_FLAG(prot, PROT_READ, VMA_READ) |
            TRANSFER_FLAG(prot, PROT_WRITE, VMA_WRITE) |
            TRANSFER_FLAG(prot, PROT_EXEC, VMA_EXEC);
+}
+
+static inline uint64_t vma_to_prot(uint64_t prot) {
+    return TRANSFER_FLAG(prot, VMA_READ, PROT_READ) |
+           TRANSFER_FLAG(prot, VMA_WRITE, PROT_WRITE)/* |
+           TRANSFER_FLAG(prot, VMA_EXEC, PROT_EXEC)*/;
 }
 
 static inline uint64_t vma_prot_to_pg(uint64_t prot) {

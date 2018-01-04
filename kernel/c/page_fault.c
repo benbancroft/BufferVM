@@ -27,7 +27,33 @@ void handle_segfault(uint64_t addr, uint64_t rip) {
     host_exit();
 }
 
-int handle_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip) {
+int handle_kernel_page_fault(uint64_t addr, uint32_t error_code, uint64_t rip) {
+    vm_area_t *vma;
+    uint64_t user_addr;
+
+    if (addr >= user_version_start && addr < user_version_end + PAGE_SIZE) {
+
+        user_addr = addr - user_version_start;
+
+        if (CHECK_BIT(error_code, 2)) {
+            vma = vma_find(user_addr);
+            if (vma == NULL || !(vma->flags & VMA_IS_VERSIONED)) {
+                printf("VA %p is either not mapped or does not support versioning. %lx %lx\n", user_addr, error_code, rip);
+                host_exit();
+            }
+        }
+
+        map_physical_pages(PAGE_ALIGN_DOWN(addr), -1, PDE64_NO_EXE | PDE64_WRITEABLE,
+                           1, MAP_ZERO_PAGES);
+        return (0);
+
+    } else {
+        printf("Kernel Page fault - VA: %p PC: %p Error: %d RIP: %p\n", addr, error_code, rip);
+        host_exit();
+    }
+}
+
+int handle_user_page_fault(uint64_t addr, uint64_t error_code, uint64_t rip) {
 
     vm_area_t *vma;
     bool grown = false;

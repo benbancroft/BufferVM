@@ -12,6 +12,8 @@
         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
         (type *)( (char *)__mptr - offsetof(type, member) );})
 
+#define CHECK_BIT(var, pos) ((var) & (1 << (pos)))
+
 #define ASSERT_FAIL() do { \
         printf("ASSERT: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
         host_exit(); \

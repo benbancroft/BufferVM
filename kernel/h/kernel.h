@@ -39,6 +39,7 @@ extern uint64_t kernel_min_address;
 
 extern uint64_t user_heap_start;
 extern uint64_t user_version_start;
+extern uint64_t user_version_end;
 
 void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, int argc, char *argv[], char *envp[]);
 void switch_user_land(void *entry, uint64_t stack_entry);

@@ -85,7 +85,7 @@ char *strncat(char *s1, const char *s2, size_t n) {
 int puts(const char *str) {
     int i = 0;
     while (str[i++]);
-    write(1, str, i);
+    write(1, str, i - 1);
 
     return 1;
 }

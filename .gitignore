@@ -31,3 +31,8 @@
 # Debug files
 *.dSYM/
 *.su
+
+# CMake
+cmake-build-debug/
+cmake-build-release/
+

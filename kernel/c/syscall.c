@@ -133,7 +133,7 @@ uint64_t syscall_brk(uint64_t brk) {
         user_heap_vma->end_addr = new_brk;
         vma_gap_update(user_heap_vma);
 
-        unmap_vma(user_heap_vma);
+        //unmap_vma(user_heap_vma);
         host_map_vma(user_heap_vma);
 
         printf("New brk at: %p\n", new_brk);

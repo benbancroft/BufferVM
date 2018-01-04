@@ -60,9 +60,8 @@ int grow_stack(vm_area_t *vma, uint64_t addr){
 
     vma_gap_update(vma);
 
-    unmap_vma(vma);
+    //Remap VMA, faulting mappings
     host_map_vma(vma);
 
-    //printf("grow stack\n");
     return 0;
 }

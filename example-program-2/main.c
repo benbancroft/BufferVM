@@ -22,7 +22,7 @@ int main(int argc, char *argv[], char *envp[]){
     size_t size = strlen(hello)+1;
 
     char *mem = malloc(size);
-    mem = set_version((void *)mem, size, 5);
+    //mem = set_version((void *)mem, size, 5);
 
     printf("Versioned buffer from %p to %p\n", mem, mem + size - 1);
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[], char *envp[]){
 
     mem = set_version_ptr(4, mem);
     mem[size-1] = 0;
-    //printf("here is some memory: %p %s\n", mem, mem);
+    printf("here is some memory: %p %s\n", mem, mem);
 
     return 0;
 }

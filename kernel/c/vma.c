@@ -150,7 +150,7 @@ void vma_link(vm_area_t *vma, vm_area_t *prev, rb_node_t **rb_link, rb_node_t *r
     vma_link_list(vma, prev, rb_parent);
     vma_link_rb(vma, rb_link, rb_parent);
 
-    unmap_vma(vma);
+    //unmap_vma(vma);
     host_map_vma(vma);
 }
 
@@ -184,9 +184,6 @@ static void vma_insert(vm_area_t *vma) {
                        &prev, &rb_link, &rb_parent))
         ASSERT(false);
 
-    //Set default phys page value
-    vma->phys_page_start = -1;
-
     vma_link(vma, prev, rb_link, rb_parent);
     //mm->map_count++;
 }
@@ -202,7 +199,7 @@ vma_unlink(vm_area_t *vma, vm_area_t *prev) {
 }
 
 void unmap_vma(vm_area_t *vma) {
-    //host_unmap_vma(vma);
+    host_unmap_vma(vma);
 
     size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
     for (size_t i = 0; i < pages; i++){
@@ -270,7 +267,7 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
         next->start_addr += adjust_next << PAGE_SHIFT;
         next->page_offset += adjust_next;
 
-        unmap_vma(next);
+        //unmap_vma(next);
         host_map_vma(next);
     }
 
@@ -299,7 +296,7 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
     }
 
     if (start_changed || end_changed){
-        unmap_vma(vma);
+        //unmap_vma(vma);
         host_map_vma(vma);
     }
 
@@ -326,8 +323,8 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
 }
 
 static inline int vma_can_merge(vm_area_t *vma, vm_file_t *file_info, uint64_t vm_flags) {
-    //TODO - check this covers everything
-    // will need to add a check with fcntl F_GETFL to heuristically test if open flags are the same for the fd
+    if (vma->flags ^ vm_flags)
+        return 0;
     if (vma->file_info.dev != file_info->dev || vma->file_info.inode != file_info->inode)
         return 0;
     return 1;
@@ -412,6 +409,9 @@ int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
     int err;
 
     new = vma_zalloc();
+    //Set default phys page value
+    new->phys_page_start = -1;
+
     if (!new)
         return -ENOMEM;
 
@@ -422,14 +422,14 @@ int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
         new->end_addr = addr;
     else {
         new->start_addr = addr;
-        new->page_offset += PAGE_DIFFERENCE(addr, vma->start_addr);
+        new->page_offset += PAGE_ALIGN_DOWN(addr - vma->start_addr);
     }
 
     //dup file descriptor
     new->file_info.fd = host_dup(new->file_info.fd);
 
     if (new_below)
-        err = vma_adjust(vma, addr, vma->end_addr, vma->page_offset + PAGE_DIFFERENCE(addr, new->start_addr), new);
+        err = vma_adjust(vma, addr, vma->end_addr, vma->page_offset + PAGE_ALIGN_DOWN(addr - vma->start_addr), new);
     else
         err = vma_adjust(vma, vma->start_addr, addr, vma->page_offset, new);
 

@@ -25,7 +25,7 @@ idt_page_fault_handler:
     movq %cr2, %rdi
     movq 64(%rsp), %rsi
     movq 72(%rsp), %rdx
-    call handle_page_fault
+    call handle_user_page_fault
     testq %rax, %rax
     je .unhandled_page_fault
 
@@ -34,21 +34,21 @@ idt_page_fault_handler:
     movq %gs:CPU_TMP_R15, %rcx
 
     btq $2, (%rsp)
-    jnc 2f
+    jnc .page_fault_exit
     swapgs
-2:
+.page_fault_exit:
     addq $8, %rsp
     iretq
 .kernel_page_fault:
-    movabs $LC3, %rdi
-    movq %cr2, %rsi
-    movq 8(%rsp), %rdx
-    movq (%rsp), %rcx
-    movq 32(%rsp), %r8
-    clr %rax       # needed for printf
-    call printf
+    pushScratchRegs()
+    movq %cr2, %rdi
+    movl 80(%rsp), %esi
+    movq 72(%rsp), %rdx
+    call handle_kernel_page_fault
 
-    call host_exit
+    popScratchRegs()
+
+    jmp .page_fault_exit
 .unhandled_page_fault:
     //all bets are off here - clobber the fuck out of everything
 
@@ -116,7 +116,5 @@ idt_page_fault_handler:
 .section .data
 LC0:
         .ascii "Unhandled Page fault - VA: %p PC: %p Error: %d SP: %p\n\0"
-LC3:
-        .ascii "Kernel Page fault - VA: %p PC: %p Error: %d SP: %p\n\0"
 LC1:
     .ascii "Version error\n\0"

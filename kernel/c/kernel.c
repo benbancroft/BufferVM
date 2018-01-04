@@ -24,6 +24,7 @@ tss_entry_t *tss;
 uint64_t kernel_stack;
 uint64_t user_heap_start;
 uint64_t user_version_start;
+uint64_t user_version_end;
 
 void xed_user_abort_function(const char *msg, const char *file, int line, void *other) {
     printf("abort thing needs writing!\n");
@@ -78,7 +79,8 @@ kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_start,
 
     vma_init(1000);
 
-    kernel_min_address = user_version_start = P2ALIGN(kernel_min_address, 2 * PAGE_SIZE) / 2;
+    user_version_end = P2ALIGN(kernel_min_address, 2 * PAGE_SIZE);
+    kernel_min_address = user_version_start = user_version_end / 2;
 
     user_stack_init(user_version_start, 16000);
 
@@ -196,9 +198,6 @@ void load_user_land(uint64_t esp, void *elf_entry, elf_info_t *user_elf_info, in
     stack_round(&esp);
 
     grow_stack(user_stack_vma, esp);
-    //prefault all the stack that has been allocated
-    //we do this as we cannot handle kernel page faults as it would use the same stack
-    vma_fault(user_stack_vma, false);
 
     //now we can copy stack arguments into faulted memory
 

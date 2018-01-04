@@ -41,6 +41,15 @@ inline rb_node_t *vma_rb_ptr(rb_node_t *vma) {
     return ((rb_node_t *) vma_heap_ptr(vma));
 }
 
+/*
+ * Combine the mmap "flags" argument into "flags" used internally.
+ */
+static inline uint64_t
+vma_to_flags(uint64_t flags) {
+    return TRANSFER_FLAG(flags, VMA_SHARED, MAP_SHARED) |
+            TRANSFER_INV_FLAG(flags, VMA_SHARED, MAP_PRIVATE);
+}
+
 static void remap_region(int64_t old_start, size_t old_size, int64_t new_start, size_t new_size) {
     void *ret = mremap(vm.mem + old_start, old_size, new_size,
                        MREMAP_MAYMOVE | MREMAP_FIXED, vm.mem + new_start);
@@ -51,7 +60,6 @@ static void remap_region(int64_t old_start, size_t old_size, int64_t new_start, 
 
         vma_print();
 
-        while(1);
         exit(1);
     } else {
         printf("Remapped PA %lx size %lx to PA %ld size %lx\n", old_start,
@@ -61,6 +69,7 @@ static void remap_region(int64_t old_start, size_t old_size, int64_t new_start, 
 
 void host_map_vma(vm_area_t *vma) {
     int64_t new_phys;
+    void *file_mmap_ret;
 
     vma = vma_ptr(vma);
 
@@ -76,39 +85,55 @@ void host_map_vma(vm_area_t *vma) {
         new_phys = map_physical_pages(vma->start_addr,
                                       -1, vma_prot_to_pg(vma->page_prot),
                                       pages,
-                                      MAP_CONTINUOUS);
-    }
+                                      MAP_CONTINUOUS |
+                                      TRANSFER_FLAG(vma->flags, VMA_ALLOC_ZEROED, MAP_ZERO_PAGES));
 
-    if (vma->phys_page_start != -1 && vma_changed) {
+        if (new_phys == -1) {
+            printf("Error mapping VA page at %p\n", (void *)vma->start_addr);
+            exit(1);
+        }
+
+        if (vma->phys_page_start != -1 && vma_changed && vma->file_info.fd == -1) {
             if (vma->old_start_addr >= vma->start_addr) {
                 size_t move_size =
                         old_size - (vma->old_end_addr > vma->end_addr ? vma->old_end_addr - vma->end_addr : 0);
-                printf("1 - file: %d old size %lx move size %lx offset %lx\n", vma->file_info.fd, old_size, move_size, vma->old_start_addr - vma->start_addr);
                 remap_region(vma->phys_page_start, move_size, new_phys + (vma->old_start_addr - vma->start_addr),
                              move_size);
             } else {
-                //wrong
-                printf("2 - file: %d\n", vma->file_info.fd);
                 size_t move_size = old_size - (vma->start_addr - vma->old_start_addr) -
                                    (vma->old_end_addr > vma->end_addr ? vma->old_end_addr - vma->end_addr : 0);
                 remap_region(vma->phys_page_start + (vma->start_addr - vma->old_start_addr), move_size, new_phys,
                              move_size);
             }
             vma->updated = true;
+        }
 
-            /*if (vma->file_info.fd != -1) {
-                printf("TODO files\n");
+        if (vma->file_info.fd != -1) {
+
+            //TODO - clean up old mapping
+            //munmap(vm.mem + vma->phys_page_start, old_size);
+
+            file_mmap_ret =
+                    mmap(vm.mem + new_phys, pages * PAGE_SIZE,
+                                    (int)vma_to_prot(vma->page_prot), (int)vma_to_flags(vma->flags) | MAP_FIXED,
+                                    vma->file_info.fd, vma->page_offset);
+
+            if (file_mmap_ret != vm.mem + new_phys) {
+
+                printf("Error mapping PA %p of length 0x%lx, err %d\n",
+                       vm.mem + new_phys, pages * PAGE_SIZE, errno);
                 exit(1);
-            }*/
+            }
+        }
+
+        vma->phys_page_start = new_phys;
+        vma->phys_page_end = new_phys + pages * PAGE_SIZE;
+        vma->old_start_addr = vma->start_addr;
+        vma->old_end_addr = vma->end_addr;
+
+        vma->faulted = true;
+        vma->flags |= VMA_IS_PREFAULTED;
     }
-
-    vma->phys_page_start = new_phys;
-    vma->phys_page_end = new_phys + pages * PAGE_SIZE;
-    vma->old_start_addr = vma->start_addr;
-    vma->old_end_addr = vma->end_addr;
-
-    vma->faulted = true;
-    vma->flags |= VMA_IS_PREFAULTED;
 
 }
 
@@ -117,7 +142,8 @@ void host_unmap_vma(vm_area_t *vma) {
 
     if (vma->phys_page_start != -1) {
         size_t pages = PAGE_DIFFERENCE(vma->old_end_addr, vma->old_start_addr);
-        printf("Unmapped Pages in range: %p to %p, num: %ld\n", (void *) vma->old_start_addr, (void *) vma->old_end_addr, pages);
+        printf("Unmapped Pages in range: %p to %p, num: %ld\n", (void *) vma->old_start_addr,
+               (void *) vma->old_end_addr, pages);
         for (size_t i = 0; i < pages; i++) {
             unmap_physical_page(vma->old_start_addr + i * PAGE_SIZE);
         }

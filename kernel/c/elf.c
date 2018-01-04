@@ -221,7 +221,7 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, uint64_t *elf_bias, elf_inf
         max_maddr = (uint64_t)PAGE_ALIGN(max_maddr);
 
         if (max_maddr > max_faddr) {
-            VERIFY(!do_brk(max_faddr, max_maddr - max_faddr));
+            VERIFY(!do_brk(max_faddr, max_maddr - max_faddr, VMA_ALLOC_ZEROED));
         }
     }
 
@@ -237,6 +237,9 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, uint64_t *elf_bias, elf_inf
 void load_elf64_interpreter(int fd, char *path, void **elf_entry, elf_info_t *elf_info, uint64_t base_addr) {
     elf_info_t interp_elf_info;
     interp_elf_info.base_addr = base_addr;
+
+    printf("Loading interpreter: %s\n", path);
+
     int user_interp_fd = read_binary(path);
     load_elf_binary(user_interp_fd, elf_entry, &interp_elf_info, true);
     elf_info->base_addr = (uint64_t) *elf_entry;

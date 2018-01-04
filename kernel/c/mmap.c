@@ -327,34 +327,11 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
     addr = mmap_region(&file_info, addr, length, vma_flags, vma_prot, offset, &vma);
 
-    //MAP_POPULATE | MAP_NONBLOCK cannot be used together
-    if (vma != NULL && (file_info.fd != -1 || (flags & (MAP_POPULATE | MAP_NONBLOCK)) == MAP_POPULATE)) {
-
-        //in the case of files, mappings need to be continuous
-        phys_addr = vma_fault(vma, true);
-        //phys_addr = vma->phys_page_start;
-
-        //printf("virtaddr %p %x %x\n", addr, org_length, offset);
-
-        vma->flags |= VMA_IS_PREFAULTED;
-
-        //mmap physical pages that have been pre-allocated
-        if (file_info.fd != -1) {
-            ASSERT(file_info.fd < 1000);
-            //mmap file into continuous physical pages
-            ASSERT(phys_addr != -1);
-            host_mmap_ret = (uint64_t) host_mmap((void *) phys_addr, length, prot, flags | MAP_FIXED, fd, offset);
-            ASSERT((int64_t) host_mmap_ret == phys_addr);
-
-            //printf("host mmap %p %p\n", host_mmap_ret, phys_addr);
-        }
-    }
-
     return addr;
 }
 
-uint64_t do_brk(uint64_t addr, uint64_t request) {
-    uint64_t error, len, flags, prot, pgoff = PAGE_OFFSET(addr);
+uint64_t do_brk(uint64_t addr, uint64_t request, uint64_t flags) {
+    uint64_t error, len, prot, pgoff = addr >> PAGE_SHIFT;
     vm_area_t *vma, *prev;
     rb_node_t **rb_link, *rb_parent;
     vm_file_t null_file_info = {-1, -1, -1};
@@ -367,7 +344,6 @@ uint64_t do_brk(uint64_t addr, uint64_t request) {
         return 0;
 
     prot  = VMA_READ | VMA_WRITE | VMA_EXEC;
-    flags = 0;
 
     error = get_unmapped_area(addr, len, 0, MAP_FIXED);
     if (PAGE_OFFSET(error))

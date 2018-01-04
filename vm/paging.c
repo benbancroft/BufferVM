@@ -171,13 +171,14 @@ int64_t allocate_pages(size_t num_pages, bool zero_page) {
 
     for (size_t i = 0; i < num_pages; i++) {
         uint64_t new_page = (page_counter++) * PAGE_SIZE;
-        if (i == 0)
+        if (i == 0) {
             new_page_start = new_page;
+            //not needed for fresh anonymous pages
+            /*if (zero_page)
+                memset(vm.mem + new_page, 0x0, PAGE_SIZE * num_pages);*/
+        }
 
-        if (zero_page)
-            memset(vm.mem + new_page, 0x0, PAGE_SIZE);
     }
-
 
     return new_page_start;
 }

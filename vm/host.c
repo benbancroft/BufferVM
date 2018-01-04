@@ -23,6 +23,9 @@
 static bool exit_vm = false;
 
 void host_exit() {
+#ifndef VM
+    __builtin_unreachable();
+#endif
     printf("Exit hostcall\n");
 
     vma_print();
