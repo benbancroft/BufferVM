@@ -90,5 +90,6 @@ void vma_print_node(vm_area_t *vma, bool follow, size_t page_count);
 void vma_print();
 
 vm_area_t *vma_find(uint64_t addr);
+vm_area_t *vma_find_phys(uint64_t addr);
 
 #endif //COMMON_VMA_H

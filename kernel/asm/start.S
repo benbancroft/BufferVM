@@ -6,7 +6,7 @@
 _start:
 	call kernel_main
 
-	call host_exit
+	call kernel_exit
 switch_user_land:
     push $(USER_DS | 3)
     push %rsi

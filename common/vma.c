@@ -72,6 +72,20 @@ void vma_print() {
     }
 }
 
+vm_area_t *vma_find_phys(uint64_t addr) {
+    vm_area_t *vma = vma_ptr(*vma_list_start_ptr);
+
+    while (vma) {
+
+        if (addr >= vma->start_addr && addr < vma->end_addr) {
+            return (vma);
+        }
+        vma = vma->next;
+    }
+
+    return (NULL);
+}
+
 vm_area_t *vma_find(uint64_t addr) {
     rb_node_t *rb_node;
     vm_area_t *vma = NULL;

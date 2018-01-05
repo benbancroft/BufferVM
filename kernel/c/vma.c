@@ -151,7 +151,7 @@ void vma_link(vm_area_t *vma, vm_area_t *prev, rb_node_t **rb_link, rb_node_t *r
     vma_link_rb(vma, rb_link, rb_parent);
 
     //unmap_vma(vma);
-    host_map_vma(vma);
+    kernel_map_vma(vma);
 }
 
 void
@@ -199,7 +199,7 @@ vma_unlink(vm_area_t *vma, vm_area_t *prev) {
 }
 
 void unmap_vma(vm_area_t *vma) {
-    host_unmap_vma(vma);
+    kernel_unmap_vma(vma);
 
     size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
     for (size_t i = 0; i < pages; i++){
@@ -209,7 +209,7 @@ void unmap_vma(vm_area_t *vma) {
 
 static vm_area_t *vma_remove(vm_area_t *vma) {
     if (vma->file_info.fd != -1)
-        host_close(vma->file_info.fd);
+        kernel_close(vma->file_info.fd);
 
     unmap_vma(vma);
     vma_free(vma);
@@ -268,7 +268,7 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
         next->page_offset += adjust_next;
 
         //unmap_vma(next);
-        host_map_vma(next);
+        kernel_map_vma(next);
     }
 
     if (remove_next) {
@@ -297,7 +297,7 @@ int vma_adjust(vm_area_t *vma, uint64_t start, uint64_t end, uint64_t pgoff, vm_
 
     if (start_changed || end_changed){
         //unmap_vma(vma);
-        host_map_vma(vma);
+        kernel_map_vma(vma);
     }
 
     if (remove_next) {
@@ -426,7 +426,7 @@ int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
     }
 
     //dup file descriptor
-    new->file_info.fd = host_dup(new->file_info.fd);
+    new->file_info.fd = kernel_dup(new->file_info.fd);
 
     if (new_below)
         err = vma_adjust(vma, addr, vma->end_addr, vma->page_offset + PAGE_ALIGN_DOWN(addr - vma->start_addr), new);
@@ -438,7 +438,7 @@ int vma_split(vm_area_t *vma, uint64_t addr, int new_below) {
 
     //on error, we need to clean up a few things - including the dup'd fd
     if (vma->file_info.fd != -1)
-        host_close(new->file_info.fd);
+        kernel_close(new->file_info.fd);
     vma_free(new);
     return err;
 }

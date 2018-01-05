@@ -284,12 +284,12 @@ uint64_t syscall_mmap(uint64_t addr, size_t length, uint64_t prot, uint64_t flag
 
     if (fd != -1) {
 
-        fd = host_dup(fd);
+        fd = kernel_dup(fd);
 
         //ASSERT(!IS_ERR_VALUE(fd));
 
         vm_stat_t stats;
-        host_fstat(fd, &stats);
+        kernel_fstat(fd, &stats);
 
         //store inode for comparison later
         //add extra stuff here as needed?

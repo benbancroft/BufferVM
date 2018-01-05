@@ -59,7 +59,7 @@ void vma_init(size_t max_entries) {
 
     kernel_min_address = vma_heap_addr = (uint64_t) vma_heap_head;
 
-    host_set_vma_heap(vma_heap_addr, vma_list_start_ptr, vma_rb_root_ptr);
+    kernel_set_vma_heap(vma_heap_addr, vma_list_start_ptr, vma_rb_root_ptr);
 }
 
 vm_area_t *vma_alloc() {

@@ -16,7 +16,7 @@ idt_invalid_opcode_handler:
     movq (%rsp), %rsi
     clr %rax       # needed for printf
     call printf
-    call host_exit
+    call kernel_exit
 idt_null_handler:
     cli
     movabs $LC0, %rdi
@@ -24,7 +24,7 @@ idt_null_handler:
     movl (%rsp), %edx
     clr %rax       # needed for printf
     call printf
-    call host_exit
+    call kernel_exit
 idt_debug_handler:
     #cli
 
@@ -80,7 +80,7 @@ idt_gpf_handler:
     movq 8(%rsp), %rdi
     movq $5, %rsi
     call disassemble_address
-    call host_exit
+    call kernel_exit
 
 .data
     LC0:

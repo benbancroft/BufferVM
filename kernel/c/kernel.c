@@ -28,7 +28,7 @@ uint64_t user_version_end;
 
 void xed_user_abort_function(const char *msg, const char *file, int line, void *other) {
     printf("abort thing needs writing!\n");
-    host_exit();
+    abort();
 }
 
 void *stack_alloc(uint64_t *sp, size_t length) {
@@ -101,7 +101,7 @@ kernel_main(void *kernel_entry, uint64_t _kernel_stack_max, uint64_t _tss_start,
     void *elf_entry;
     int user_bin_fd = read_binary(argv[0]);
     load_elf_binary(user_bin_fd, &elf_entry, &user_elf_info, false);
-    host_close(user_bin_fd);
+    kernel_close(user_bin_fd);
     user_heap_start = user_elf_info.max_page_addr;
 
     printf("Heap stack region: %p %p\n", user_version_start, user_heap_start);

@@ -61,7 +61,7 @@ int grow_stack(vm_area_t *vma, uint64_t addr){
     vma_gap_update(vma);
 
     //Remap VMA, faulting mappings
-    host_map_vma(vma);
+    kernel_map_vma(vma);
 
     return 0;
 }

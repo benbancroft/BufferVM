@@ -13,16 +13,16 @@
 
 bool is_elf(int fd) {
     unsigned char e_ident[EI_NIDENT];
-    host_read(fd, (char *) &e_ident, sizeof(e_ident));
-    host_lseek(fd, 0, SEEK_SET); // go to the beginning
+    kernel_read(fd, (char *) &e_ident, sizeof(e_ident));
+    kernel_lseek(fd, 0, SEEK_SET); // go to the beginning
 
     return memcmp(e_ident, "\177ELF", 4) == 0;
 }
 
 bool is_binary_64bit(int fd) {
     elf64_hdr_t elf_hdr;
-    host_read(fd, (char *) &elf_hdr, sizeof(elf64_hdr_t));
-    host_lseek(fd, 0, SEEK_SET); // go to the beginning
+    kernel_read(fd, (char *) &elf_hdr, sizeof(elf64_hdr_t));
+    kernel_lseek(fd, 0, SEEK_SET); // go to the beginning
 
     return elf_hdr.e_machine == EM_X86_64;
 }
@@ -112,8 +112,8 @@ int load_elf64_pg_hdrs(int fd, elf64_hdr_t *elf_hdr, uint64_t *elf_bias, elf_inf
     bool found_entry = false;
     elf64_phdr_t phdr[elf_hdr->e_phnum];
 
-    host_lseek(fd, elf_hdr->e_phoff, SEEK_SET);
-    host_read(fd, (char *) &phdr, sizeof(elf64_phdr_t) * elf_hdr->e_phnum);
+    kernel_lseek(fd, elf_hdr->e_phoff, SEEK_SET);
+    kernel_read(fd, (char *) &phdr, sizeof(elf64_phdr_t) * elf_hdr->e_phnum);
 
     if (is_interp) {
         total_size = total_mapping_size(phdr, elf_hdr->e_phnum);
@@ -252,7 +252,7 @@ int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool is_interp) {
     int ret;
     uint64_t elf_bias;
 
-    host_read(fd, (char *) &elf_hdr, sizeof(elf64_hdr_t));
+    kernel_read(fd, (char *) &elf_hdr, sizeof(elf64_hdr_t));
 
     printf("Entry point user: %p\n", elf_hdr.e_entry);
     printf("Num program headers: %d\n", elf_hdr.e_phnum);
@@ -262,19 +262,19 @@ int load_elf64(int fd, void **elf_entry, elf_info_t *elf_info, bool is_interp) {
     elf_info->entry_addr = (void *) elf_hdr.e_entry;
     if (elf_entry) *elf_entry = elf_info->entry_addr;
 
-    host_lseek(fd, elf_hdr.e_phoff, SEEK_SET);
+    kernel_lseek(fd, elf_hdr.e_phoff, SEEK_SET);
 
     for (size_t i = 0; i < elf_hdr.e_phnum; i++) {
         elf64_phdr_t phdr;
         uint64_t end_addr;
 
-        host_read(fd, (char *) &phdr, sizeof(elf64_phdr_t));
+        kernel_read(fd, (char *) &phdr, sizeof(elf64_phdr_t));
 
         if (phdr.p_type == PT_INTERP) {
 
             char interp_path[phdr.p_filesz];
-            host_lseek(fd, phdr.p_offset, SEEK_SET);
-            host_read(fd, interp_path, phdr.p_filesz);
+            kernel_lseek(fd, phdr.p_offset, SEEK_SET);
+            kernel_read(fd, interp_path, phdr.p_filesz);
 
             //load base elf image after interpreter
             if ((ret = load_elf64_pg_hdrs(fd, &elf_hdr, &elf_bias, elf_info, false))) {
@@ -332,7 +332,7 @@ int read_binary(char *name) {
     int file;
 
     //Open file
-    file = host_open(name, O_RDONLY, 0);
+    file = kernel_open(name, O_RDONLY, 0);
     if (file < 0) {
         printf("Unable to open file %s\n", name);
         return 0;

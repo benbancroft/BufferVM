@@ -1,20 +1,28 @@
 .text
 
-#define HOSTCALL_DEF(NAME)  \
-.globl host_## NAME;  \
-host_ ## NAME:   \
+#define HOSTCALL_DEF(PREFIX, NAME)  \
+.globl PREFIX ## _ ## NAME;  \
+PREFIX ## _ ## NAME:   \
     movq $(__COUNTER__), %rax;   \
     hlt; \
     ret;
 
-#define HOSTCALL_DEF2(NAME)  \
+#define APPCALL_DEF(NAME)    HOSTCALL_DEF(app, NAME)
+
+#define APPCALL_DEF2(NAME, arg1, arg2, arg3, arg4, arg5, arg6, ret)    APPCALL_DEF(NAME)
+
+#define APPCALL_DEF3(NAME)    APPCALL_DEF(NAME)
+
+#define KERNELCALL_DEF(NAME)    HOSTCALL_DEF(kernel, NAME)
+
+#define KERNELCALL_DEF2(NAME)  \
 .globl NAME;  \
 NAME:   \
     movq $(__COUNTER__), %rax;   \
     hlt; \
     ret;
 
-#define HOSTCALL_DEF_CUSTOM(NAME)
+#define KERNELCALL_DEF_CUSTOM(NAME)
 
 #include "../../common/host.h"
 

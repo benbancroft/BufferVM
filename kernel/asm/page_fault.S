@@ -64,7 +64,7 @@ idt_page_fault_handler:
     movq 8(%rsp), %rdi
     movq $5, %rsi
     call disassemble_address
-    call host_exit
+    call kernel_exit
 .page_fault_user_check:
     movq (%rsp), %rcx
     btq $0, %rcx
@@ -111,7 +111,7 @@ idt_page_fault_handler:
     clr %rax       # needed for printf
     call printf
 
-    call host_exit
+    call kernel_exit
 
 .section .data
 LC0:

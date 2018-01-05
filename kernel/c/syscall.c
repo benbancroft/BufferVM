@@ -15,16 +15,16 @@
 uint64_t curr_brk;
 
 void syscall_read(uint32_t fd, const char *buf, size_t count) {
-    host_read(fd, buf, count);
+    app_read(fd, buf, count);
 }
 
 void syscall_write(uint32_t fd, const char *buf, size_t count) {
-    host_write(fd, buf, count);
+    app_write(fd, buf, count);
 }
 
 int syscall_open(const char *filename, int32_t flags, uint16_t mode) {
     printf("Opening file: %s\n", filename);
-    int fd = host_open(filename, flags, mode);
+    int fd = app_open(filename, flags, mode);
     printf("open fd: %d\n", fd);
 
     return fd;
@@ -32,7 +32,7 @@ int syscall_open(const char *filename, int32_t flags, uint16_t mode) {
 
 int syscall_openat(int dfd, const char *filename, int32_t flags, uint16_t mode) {
     printf("Opening file: %s at fd: %d\n", filename, dfd);
-    int fd = host_openat(dfd, filename, flags, mode);
+    int fd = app_openat(dfd, filename, flags, mode);
     printf("open fd: %d\n", fd);
 
     return fd;
@@ -40,40 +40,40 @@ int syscall_openat(int dfd, const char *filename, int32_t flags, uint16_t mode) 
 
 int syscall_close(int32_t fd) {
     printf("closing fd: %d\n", fd);
-    return host_close(fd);
+    return app_close(fd);
 }
 
 int syscall_ioctl(uint32_t fd, uint64_t request, void *argp) {
     printf("syscall_ioctl fd: %d\n", fd);
     return 0;
-    //return host_fstat(fd, stats);
+    //return app_fstat(fd, stats);
 }
 
 int syscall_stat(const char *path, vm_stat_t *stats) {
     printf("syscall_stat path: %s\n", path);
-    return host_stat(path, stats);
+    return app_stat(path, stats);
 }
 
 int syscall_fstat(uint32_t fd, vm_stat_t *stats) {
     printf("syscall_fstat fd: %d\n", fd);
-    return host_fstat(fd, stats);
+    return app_fstat(fd, stats);
 }
 
 int syscall_access(const char *pathname, int mode) {
-    return host_access(pathname, mode);
+    return app_access(pathname, mode);
 }
 
 ssize_t syscall_writev(uint64_t fd, const vm_iovec_t *vec, uint64_t vlen, int flags) {
-    return host_writev(fd, vec, vlen, flags);
+    return app_writev(fd, vec, vlen, flags);
 }
 
 void syscall_exit_group(int status) {
     printf("Exit group status: %d\n", status);
-    host_exit();
+    kernel_exit();
 }
 
 void syscall_exit() {
-    host_exit();
+    kernel_exit();
 }
 
 uint64_t syscall_arch_prctl(int code, uint64_t addr) {
@@ -134,7 +134,7 @@ uint64_t syscall_brk(uint64_t brk) {
         vma_gap_update(user_heap_vma);
 
         //unmap_vma(user_heap_vma);
-        host_map_vma(user_heap_vma);
+        kernel_map_vma(user_heap_vma);
 
         printf("New brk at: %p\n", new_brk);
 
@@ -145,7 +145,7 @@ uint64_t syscall_brk(uint64_t brk) {
 }
 
 int syscall_uname(utsname_t *buf){
-    return host_uname(buf);
+    return app_uname(buf);
 }
 
 /* Syscall table and parameter info */

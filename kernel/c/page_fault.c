@@ -24,7 +24,7 @@ void handle_segfault(uint64_t addr, uint64_t rip) {
     printf("\nSEGFAULT ERROR at addr: %p\n", addr);
     printf("RIP: %p\n", rip);
     disassemble_address(rip, 5);
-    host_exit();
+    kernel_exit();
 }
 
 int handle_kernel_page_fault(uint64_t addr, uint32_t error_code, uint64_t rip) {
@@ -39,7 +39,7 @@ int handle_kernel_page_fault(uint64_t addr, uint32_t error_code, uint64_t rip) {
             vma = vma_find(user_addr);
             if (vma == NULL || !(vma->flags & VMA_IS_VERSIONED)) {
                 printf("VA %p is either not mapped or does not support versioning. %lx %lx\n", user_addr, error_code, rip);
-                host_exit();
+                kernel_exit();
             }
         }
 
@@ -49,7 +49,7 @@ int handle_kernel_page_fault(uint64_t addr, uint32_t error_code, uint64_t rip) {
 
     } else {
         printf("Kernel Page fault - VA: %p PC: %p Error: %d RIP: %p\n", addr, error_code, rip);
-        host_exit();
+        kernel_exit();
     }
 }
 

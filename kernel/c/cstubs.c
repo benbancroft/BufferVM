@@ -20,11 +20,11 @@ void free(void *ap){
 }
 
 ssize_t write(int file, const void *buffer, size_t count){
-    return host_write(file, buffer, count);
+    return kernel_write(file, buffer, count);
 }
 
 ssize_t read(int fd, void *buffer, size_t length){
-    return host_read(fd, buffer, length);
+    return kernel_read(fd, buffer, length);
 }
 
 int fprintf(FILE * stream, const char *format, ...){
@@ -32,7 +32,7 @@ int fprintf(FILE * stream, const char *format, ...){
 }
 
 void abort(void){
-    host_exit();
+    kernel_exit();
 }
 
 FILE *stderr = NULL;

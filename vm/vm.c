@@ -70,6 +70,8 @@ void vm_init(struct vm_t *vm, size_t mem_size)
 
     madvise(vm->mem, mem_size, MADV_MERGEABLE);
 
+    printf("VM memory: %p to %p\n", vm->mem, vm->mem + mem_size);
+
     memreg.slot = 0;
     memreg.flags = 0;
     memreg.guest_phys_addr = 0;

@@ -16,7 +16,7 @@
 
 #define ASSERT_FAIL() do { \
         printf("ASSERT: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
-        host_exit(); \
+        kernel_exit(); \
     } while (0)
 
 #define ASSERT(condition) VERIFY(condition)

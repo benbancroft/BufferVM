@@ -51,6 +51,7 @@ vma_to_flags(uint64_t flags) {
 }
 
 static void remap_region(int64_t old_start, size_t old_size, int64_t new_start, size_t new_size) {
+
     void *ret = mremap(vm.mem + old_start, old_size, new_size,
                        MREMAP_MAYMOVE | MREMAP_FIXED, vm.mem + new_start);
 
@@ -60,6 +61,8 @@ static void remap_region(int64_t old_start, size_t old_size, int64_t new_start, 
 
         vma_print();
 
+        while (1);
+
         exit(1);
     } else {
         printf("Remapped PA %lx size %lx to PA %ld size %lx\n", old_start,
@@ -67,7 +70,7 @@ static void remap_region(int64_t old_start, size_t old_size, int64_t new_start, 
     }
 }
 
-void host_map_vma(vm_area_t *vma) {
+void kernel_map_vma(vm_area_t *vma) {
     int64_t new_phys;
     void *file_mmap_ret;
 
@@ -76,6 +79,7 @@ void host_map_vma(vm_area_t *vma) {
     size_t pages = PAGE_DIFFERENCE(vma->end_addr, vma->start_addr);
     printf("Mapped Pages in range: %p to %p, num: %ld\n", (void *) vma->start_addr, (void *) vma->end_addr, pages);
     printf("Used to be in range: %p to %p\n", (void *) vma->old_start_addr, (void *) vma->old_end_addr);
+    printf("HPA: %p to %p\n", vm.mem + vma->phys_page_start, vm.mem + vma->phys_page_end);
 
     size_t old_size = vma->phys_page_end - vma->phys_page_start;
 
@@ -106,6 +110,8 @@ void host_map_vma(vm_area_t *vma) {
                              move_size);
             }
             vma->flags |= VMA_HAS_RESIZED;
+
+            mprotect(vm.mem + new_phys, pages * PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
         }
 
         if (vma->file_info.fd != -1) {
@@ -136,7 +142,7 @@ void host_map_vma(vm_area_t *vma) {
 
 }
 
-void host_unmap_vma(vm_area_t *vma) {
+void kernel_unmap_vma(vm_area_t *vma) {
     vma = vma_ptr(vma);
 
     if (vma->phys_page_start != -1) {
@@ -147,4 +153,18 @@ void host_unmap_vma(vm_area_t *vma) {
             unmap_physical_page(vma->old_start_addr + i * PAGE_SIZE);
         }
     }
+}
+
+int kernel_set_vma_heap(uint64_t i_vma_heap_addr, vm_area_t **vma_list_start, rb_root_t *vma_rb_root) {
+    uint64_t phys;
+
+    vma_heap_addr = i_vma_heap_addr;
+
+    if (!get_phys_addr((uint64_t)vma_list_start, &phys)) return (1);
+    vma_list_start_ptr = (vm_area_t **)(vm.mem + phys);
+
+    if (!get_phys_addr((uint64_t)vma_rb_root, &phys)) return (1);
+    vma_rb_root_ptr = (rb_root_t *)(vm.mem + phys);
+
+    return (0);
 }
